@@ -12,10 +12,10 @@
   
       <!-- Navigation Links -->
       <ul :class="['nav-links', { open: isOpen }]">
-        <li><a href="#home" @click="closeMenu">Home</a></li>
-        <li><a href="#about" @click="closeMenu">About</a></li>
-        <li><a href="#portfolio" @click="closeMenu">Portfolio</a></li>
-        <li><a href="#contact" @click="closeMenu">Contact</a></li>
+        <li><a href="#home" @click="closeMenu" @click.prevent="scrollTo('home')">Home</a></li>
+        <li><a href="#about" @click="closeMenu" @click.prevent="scrollTo('about')">About</a></li>
+        <li><a href="#portfolio" @click="closeMenu" @click.prevent="scrollTo('portfolio')">Portfolio</a></li>
+        <li><a href="#contact" @click="closeMenu" @click.prevent="scrollTo('contact')">Contact</a></li>
       </ul>
     </nav>
   </template>
@@ -26,6 +26,15 @@
   const isOpen = ref(false);
   const navbarRef = ref(null);
   
+  const scrollTo = (sectionId) => {
+  const section = document.getElementById(sectionId);
+  if (section) {
+    section.scrollIntoView({ behavior: 'smooth' });
+    menuOpen.value = false; // Close menu after scrolling
+    document.getElementById('menu-checkbox').checked = false; // Reset checkbox state
+  }
+};
+
   // Toggle menu open/close
   const toggleMenu = () => {
     isOpen.value = !isOpen.value;

@@ -22,6 +22,10 @@
  /* main{
   padding-top: 70px;
 } */
+html {
+  scroll-behavior: smooth;
+}
+
 .section{
   min-height: 100vh;
 }
