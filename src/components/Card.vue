@@ -22,19 +22,17 @@
 .card{
     display: flex;
     flex-direction: column;
-    width: 120px;
-    height: 120px;
+    width: 110px;
+    height: 90px;
     padding: 10px;
-    border: solid 1px var(--color-border);
-    /* border: none; */
-    border-radius: 8px;
-    /* background-color: var(--color-background-mute); */
+    border: none;
     background-color: transparent;
     text-align: center;
     align-content: center;
+    justify-content: center;
 }
 
 .card i{
-    font-size: 4rem;
+    font-size: 2.5rem;
 }
 </style>
