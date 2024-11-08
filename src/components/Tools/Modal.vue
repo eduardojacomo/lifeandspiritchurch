@@ -37,7 +37,9 @@ watch(props.project, () => {
             <li v-for="(t, index) in project.tags" :key="index">{{ t }}</li>
           </ul>
           <div class="links">
-            <div v-for="(l,index) in project.links" :key="index"><a :href="l.link" target="_blank"><span class="links-text">{{ l.plataforma }}</span></a></div>
+            <div v-for="(l,index) in project.links" :key="index">
+              <a :href="l.link" target="_blank"><span class="links-text"> <font-awesome-icon :icon="l.icon" />  {{ l.plataforma }}</span></a>
+            </div>
           </div>
       </div>
       <div class="content-projeto">
@@ -47,17 +49,7 @@ watch(props.project, () => {
           <button @click="prevImage" :disabled="currentImageIndex === 0"><font-awesome-icon icon="fa-solid fa-chevron-left" /></button>
           <button @click="nextImage" :disabled="currentImageIndex === project.images.length - 1"><font-awesome-icon icon="fa-solid fa-chevron-right" /></button>
         </div>
-        
-        <!-- Image Navigation -->
-        <!-- <div class="image-slider"> -->
-          <!-- <transition name="slide">
-            <img :key="currentImageIndex" :src="project.images[currentImageIndex]" alt="Imagem do Projeto" />
-          </transition> -->
-        <!-- </div>
-        <div class="legend">
-          <h2>{{ project.title }}</h2>
-          <p>{{ project.legend[currentImageIndex] }}</p>
-        </div> -->
+
       </div>
     </div>
   </div>

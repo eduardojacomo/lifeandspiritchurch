@@ -6,11 +6,11 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faGithub, faTwitter, faFacebook, faLinkedin, faInstagram, faVuejs, faJs, faHtml5, faPython } from '@fortawesome/free-brands-svg-icons';
 import { faBars, faTimes, faArrowRight, faChevronRight, faChevronLeft, faExternalLink, faXmark, faCode, faArrowLeft, faHandshake, 
     faBold, faItalic, faUnderline, faStrikethrough, faListOl, faListUl, faAlignCenter, faAlignJustify, faAlignLeft, faAlignRight, faHighlighter,
-    faFillDrip
+    faFillDrip, faEye
 } from '@fortawesome/free-solid-svg-icons';
 library.add(faGithub, faTwitter, faFacebook, faBars, faTimes, faLinkedin, faInstagram, faArrowRight, faChevronLeft, faChevronRight, 
     faExternalLink, faXmark, faCode, faArrowLeft, faHandshake, faBold, faItalic, faUnderline, faStrikethrough, faListOl, faListUl, faAlignCenter, 
-    faAlignJustify, faAlignLeft, faAlignRight, faFillDrip, faHighlighter);
+    faAlignJustify, faAlignLeft, faAlignRight, faFillDrip, faHighlighter, faEye);
 
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'

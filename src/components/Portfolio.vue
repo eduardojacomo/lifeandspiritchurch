@@ -6,7 +6,7 @@ const projects = ref([
   {
     title: 'Site para Psicóloga Renata',
     url: 'www.psirenatamachado.com',
-    links: [{plataforma: 'Demo', link:'https://www.psirenatamachado.com'}],
+    links: [{plataforma: 'Preview', link:'https://www.psirenatamachado.com', icon:'fa-solid fa-eye'}],
     tags:['HTML', 'CSS', 'JavaScript', 'Vue'],
     images: ['/src/assets/psirenatamachado.png','/src/assets/psirenatamachado _all.jpeg'],
     legend: ['Tela inicial do site'],
@@ -15,7 +15,7 @@ const projects = ref([
   {
     title: 'Sistema de Pedidos',
     url:'localhost',
-    links: [{plataforma: 'Code', link:'https://www.psirenatamachado.com'}, {plataforma: 'Demo', link:'https://www.psirenatamachado.com'}],
+    links: [{plataforma: 'Code', link:'https://www.psirenatamachado.com', icon:'fa-brands fa-github'}, {plataforma: 'Preview', link:'https://www.psirenatamachado.com', icon:'fa-solid fa-eye'}],
     tags:['HTML', 'CSS', 'JavaScript', 'Vue'],
     images: ['/src/assets/makeburguer_home.png', '/src/assets/makeburguer_pedidos.png', '/src/assets/makeburguer_newpedido.png'],
     legend: ['Tela de gerência de pedidos', 'Tela inicial da aplicação.', 'Tela onde o burguer é montado.'],
@@ -24,7 +24,7 @@ const projects = ref([
   {
     title: 'CourseAPI',
     url: 'https://github.com/eduardojacomo/CoursesAPI',
-    links: [{plataforma: 'Code', link:'https://github.com/eduardojacomo/CoursesAPI'}, {plataforma: 'Demo', link:''}],
+    links: [{plataforma: 'Code', link:'https://github.com/eduardojacomo/CoursesAPI' , icon:'fa-brands fa-github'}, {plataforma: 'Preview', link:'', icon:'fa-solid fa-eye'}],
     tags:['.Net', 'SQL Server'],
     images: ['/src/assets/CourseAPI.png'],
     legend: ['Tela inicial do site'],
