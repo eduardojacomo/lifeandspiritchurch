@@ -17,18 +17,18 @@ const projects = ref([
     url:'localhost',
     links: [{plataforma: 'Code', link:'https://www.psirenatamachado.com'}, {plataforma: 'Demo', link:'https://www.psirenatamachado.com'}],
     tags:['HTML', 'CSS', 'JavaScript', 'Vue'],
-    images: ['/src/assets/makeburguer_pedidos.png', '/src/assets/makeburguer_home.png', '/src/assets/makeburguer_newpedido.png'],
+    images: ['/src/assets/makeburguer_home.png', '/src/assets/makeburguer_pedidos.png', '/src/assets/makeburguer_newpedido.png'],
     legend: ['Tela de gerência de pedidos', 'Tela inicial da aplicação.', 'Tela onde o burguer é montado.'],
     details: 'Esse projeto simula um sistema de pedidos, onde o cliente pode escolher o tipo de pão, a carne e os complementos.'
   },
   {
-    title: 'Site para Psicóloga Renata',
-    url: 'www.psirenatamachado.com',
-    links: [],
-    tags:[],
-    images: ['/src/assets/psirenatamachado.png'],
+    title: 'CourseAPI',
+    url: 'https://github.com/eduardojacomo/CoursesAPI',
+    links: [{plataforma: 'Code', link:'https://github.com/eduardojacomo/CoursesAPI'}, {plataforma: 'Demo', link:''}],
+    tags:['.Net', 'SQL Server'],
+    images: ['/src/assets/CourseAPI.png'],
     legend: ['Tela inicial do site'],
-    details: 'A psicóloga Renata, especialista em terapia cognitico comportamental, precisava de um website moderno e funcional para melhorar sua presença online e ampliar a captação de pacientes.'
+    details: 'Esse projeto visa em fornecer uma API para cursos, contendo dados de módulos, aulas, alunos, instrutores, notas, acompanhamento das aulas etc.'
   },
   // Outros projetos
 ]);

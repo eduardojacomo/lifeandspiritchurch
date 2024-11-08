@@ -1,10 +1,14 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import Card from './Card.vue';
-
+import EditorText from './EditorText.vue';
 const about = 'Estou aguardando o seu contato. Vamos Criar juntos?'
 const title = 'Contact';
-          
+const content = ref('');
+const handleContentUpdate = (newContent) => {
+  content.value = newContent;
+};
+
 const observeElements = (el) => {
   const observer = new IntersectionObserver((entries) => {
     entries.forEach((entry) => {
@@ -41,6 +45,8 @@ onMounted(() => {
                 <font-awesome-icon icon="fa-solid fa-handshake" />
               </div>
               <p>{{ about }}</p>
+              <EditorText @update="handleContentUpdate" />
+              {{ content }}
             </div>
             
           </div>
