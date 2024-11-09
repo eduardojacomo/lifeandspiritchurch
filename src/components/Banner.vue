@@ -30,83 +30,105 @@
 </template>
 
 <style scoped>
-.banner{
+.banner {
     display: flex;
-    gap: .5rem;
-    height: auto;
+    gap: 0.5rem;
     width: 100%;
-    padding: 70px 2rem .5rem 2rem;
+    padding: 70px 2rem 0.5rem 2rem;
     position: relative;
 }
-.content{
+
+.content {
     display: flex;
-    width: 90%;
-    flex-direction: row;
+    flex: 1 0 380px;
+    flex-direction: column; 
 }
-.socials, .right-side{
+
+.image-content {
+    order: -1; 
+}
+
+@media screen and (min-width: 768px) {
+    .content {
+        flex-direction: row; 
+    }
+
+    .image-content {
+        order: 0;
+        min-height: 88vh;
+    }
+}
+
+@media screen and (min-width: 1024px) {
+    .content {
+        flex-wrap: wrap-reverse;
+    }
+
+    .image-content {
+        background-position: right;
+    }
+}
+
+
+.socials, .right-side {
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    gap: .5rem;
-    padding: 0 0 .5rem 1rem;
+    gap: 0.5rem;
+    padding: 0 0 0.5rem 1rem;
     font-size: 1.2rem;
 }
 
-.socials a{
+.socials a {
     text-decoration: none;
     color: var(--color-text);
     cursor: pointer;
 }
 
-.socials a:hover{
+.socials a:hover {
     color: var(--color-heading);
 }
 
-.text_content{
+.text_content {
     display: flex;
     flex-direction: column;
-    width: 500px;
+    flex: 1 0 380px; 
     justify-content: center;
     align-content: center;
-    width: 100%;
-    align-items: center;
-    
+    align-items: center;    
 }
 
-.text_content h1{
+.text_content h1 {
     font-family: "Poppins", sans-serif;
-    font-weight: 700;
-    font-style: normal;
     font-weight: 700;
     font-size: 36px;
     color: var(--color-heading);
 }
 
 .linha-vertical {
-    border-left: 2px solid var(--color-text); /* Define a borda esquerda */
-    height: 180px; /* Define a altura da linha */
+    border-left: 2px solid var(--color-text);
+    height: 180px;
     margin: 0 0 0 8px;
 }
 
-.text{
+.text {
     display: flex;
     flex-direction: column;    
 }
 
 .image-content {
     display: flex;
-    width: 70%;
+    width: clamp(380px, 100%, 520px);
     background-image: url("/src/assets/me.png");
-    overflow-x: hidden;
-    overflow-y: hidden;
+    overflow: hidden;
     opacity: 0.6;
     background-repeat: no-repeat;
     background-size: contain;
-    background-position: right;
-    height: 88vh;
+    background-position: center;
+    height: 50vh;
 }
 
-.vertical{  
+.vertical {  
     position: absolute;
     bottom: 50px;
     right: 20px;
@@ -122,14 +144,13 @@
     display: flex;
     flex-direction: row;
     gap: 10px;
-    font-size: .9rem;
+    font-size: 0.9rem;
     color: var(--color-text);
     border: none;
     cursor: pointer;
-    animation: moverVertical 2s infinite alternate; /* Animação vertical */
+    animation: moverVertical 2s infinite alternate;
     align-content: center;
 }
-
 
 @keyframes moverVertical {
     0% {
