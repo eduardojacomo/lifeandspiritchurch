@@ -17,7 +17,7 @@ const projects = ref([
     url:'localhost',
     links: [{plataforma: 'Code', link:'https://www.psirenatamachado.com', icon:'fa-brands fa-github'}, {plataforma: 'Preview', link:'https://www.psirenatamachado.com', icon:'fa-solid fa-eye'}],
     tags:['HTML', 'CSS', 'JavaScript', 'Vue'],
-    images: ['src/assets/makeburguer_home.png', 'src/assets/makeburguer_pedidos.png', 'src/assets/makeburguer_newpedido.png'],
+    images: ['/src/assets/makeburguer_home.png', '/src/assets/makeburguer_pedidos.png', '/src/assets/makeburguer_newpedido.png'],
     legend: ['Tela de gerência de pedidos', 'Tela inicial da aplicação.', 'Tela onde o burguer é montado.'],
     details: 'Esse projeto simula um sistema de pedidos, onde o cliente pode escolher o tipo de pão, a carne e os complementos.'
   },
