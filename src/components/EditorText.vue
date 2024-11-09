@@ -135,20 +135,11 @@ onBeforeUnmount(() => {
     display: flex;
     flex-direction: column;
     border: solid 1px var(--color-border);
-    /* border-radius: 16px; */
-    /* background-color: var(--color-background-mute); */
     padding: 5px;
 }
 
-/* #text-input {
-  margin-top: 10px;
-  border: 1px solid #dddddd;
-  padding: 20px;
-  height: 50vh;
-} */
-
 .toolbar{
-    /* border-bottom: solid 1px var(--color-text); */
+
     border: none;
     display: flex;
     flex-direction: row;
