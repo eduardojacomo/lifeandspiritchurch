@@ -45,8 +45,8 @@ onMounted(() => {
                 <font-awesome-icon icon="fa-solid fa-handshake" />
               </div>
               <p>{{ about }}</p>
-              <EditorText @update="handleContentUpdate" />
-              {{ content }}
+              <!-- <EditorText @update="handleContentUpdate" />
+              {{ content }} -->
             </div>
             
           </div>

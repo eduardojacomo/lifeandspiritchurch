@@ -8,9 +8,9 @@
     <div class="banner">
        <div class="socials">
             <div class="linha-vertical"></div>
-            <a href=""><font-awesome-icon icon="fa-brands fa-instagram" /></a> 
-            <a href="https://www.linkedin.com/in/eduardojacomo/" target="_blank"><font-awesome-icon icon="fa-brands fa-linkedin" /></a> 
-            <a href="https://github.com/eduardojacomo/" target="_blank"><font-awesome-icon icon="fa-brands fa-github"/></a>         
+            <!-- <a href=""><font-awesome-icon icon="fa-brands fa-instagram" /></a>  -->
+            <a href="https://www.linkedin.com/in/eduardojacomo/" target="_blank"><i class="devicon-linkedin-plain"></i></a> 
+            <a href="https://github.com/eduardojacomo/" target="_blank"><i class="devicon-github-original"></i></a>         
        </div>
        <div class="content">
            <div class="text_content">
