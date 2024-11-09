@@ -8,7 +8,7 @@ const projects = ref([
     url: 'www.psirenatamachado.com',
     links: [{plataforma: 'Preview', link:'https://www.psirenatamachado.com', icon:'fa-solid fa-eye'}],
     tags:['HTML', 'CSS', 'JavaScript', 'Vue'],
-    images: ['src/assets/psirenatamachado.png','src/assets/psirenatamachado _all.jpeg'],
+    images: [{ src: new URL('/src/assets/psirenatamachado.png', import.meta.url).href, alt: 'Image 1' }, { src: new URL('/src/assets/psirenatamachado _all.jpeg', import.meta.url).href, alt: 'Image 2' }],
     legend: ['Tela inicial do site'],
     details: 'A psicóloga Renata, especialista em terapia cognitico comportamental, precisava de um website moderno e funcional para melhorar sua presença online e ampliar a captação de pacientes.'
   },
@@ -17,7 +17,7 @@ const projects = ref([
     url:'localhost',
     links: [{plataforma: 'Code', link:'https://www.psirenatamachado.com', icon:'fa-brands fa-github'}, {plataforma: 'Preview', link:'https://www.psirenatamachado.com', icon:'fa-solid fa-eye'}],
     tags:['HTML', 'CSS', 'JavaScript', 'Vue'],
-    images: ['/src/assets/makeburguer_home.png', '/src/assets/makeburguer_pedidos.png', '/src/assets/makeburguer_newpedido.png'],
+    images: [{ src: new URL('/src/assets/makeburguer_home.png', import.meta.url).href, alt: 'Image 1' }, { src: new URL('/src/assets/makeburguer_pedidos.png', import.meta.url).href, alt: 'Image 2' }, { src: new URL('/src/assets/makeburguer_newpedido.png', import.meta.url).href, alt: 'Image 3' }],
     legend: ['Tela de gerência de pedidos', 'Tela inicial da aplicação.', 'Tela onde o burguer é montado.'],
     details: 'Esse projeto simula um sistema de pedidos, onde o cliente pode escolher o tipo de pão, a carne e os complementos.'
   },
@@ -26,7 +26,7 @@ const projects = ref([
     url: 'https://github.com/eduardojacomo/CoursesAPI',
     links: [{plataforma: 'Code', link:'https://github.com/eduardojacomo/CoursesAPI' , icon:'fa-brands fa-github'}, {plataforma: 'Preview', link:'', icon:'fa-solid fa-eye'}],
     tags:['.Net', 'SQL Server'],
-    images: ['src/assets/CourseAPI.png'],
+    images: [{ src: new URL('/src/assets/CourseAPI.png', import.meta.url).href, alt: 'Image 1' }],
     legend: ['Tela inicial do site'],
     details: 'Esse projeto visa em fornecer uma API para cursos, contendo dados de módulos, aulas, alunos, instrutores, notas, acompanhamento das aulas etc.'
   },
@@ -88,7 +88,7 @@ onMounted(() => {
                 @mouseover="hoveredProjectIndex = index"
                 @mouseleave="hoveredProjectIndex = null"
               >
-                <img :src="project.images[0]" alt="" class="image" />
+                <img :src="project.images[0].src" :alt="project.images[0].alt" class="image" />
                 <Transition name="slide-fade">
                     <button v-if="hoveredProjectIndex === index" @click="openModal(project)">
                       <font-awesome-icon icon="fa-solid fa-external-link" />

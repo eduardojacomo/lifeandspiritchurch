@@ -43,7 +43,7 @@ watch(props.project, () => {
           </div>
       </div>
       <div class="content-projeto">
-        <Navegador :imageSrc = "project.images[currentImageIndex]" :url="project.url"/>
+        <Navegador :imageSrc = "project.images[currentImageIndex].src" :url="project.url"/>
         <!-- <img :key="currentImageIndex" :src="project.images[currentImageIndex]" alt="Imagem do Projeto" /> -->
          <div class="botoes">
           <button @click="prevImage" :disabled="currentImageIndex === 0"><font-awesome-icon icon="fa-solid fa-chevron-left" /></button>
