@@ -6,8 +6,8 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faBars, faTimes, faArrowRight, faChevronRight, faChevronLeft, faExternalLink, faXmark, faCode, faArrowLeft, faHandshake, 
     faBold, faItalic, faUnderline, faStrikethrough, faListOl, faListUl, faAlignCenter, faAlignJustify, faAlignLeft, faAlignRight, faHighlighter,
     faFillDrip, faEye} from '@fortawesome/free-solid-svg-icons';
-library.add(faGithub, faTwitter, faFacebook, faBars, faTimes, faLinkedin, faInstagram, faArrowRight, faChevronLeft, faChevronRight, 
-    faExternalLink, faXmark, faCode, faArrowLeft, faHandshake, faBold, faItalic, faUnderline, faStrikethrough, faListOl, faListUl, faAlignCenter, 
+library.add(faBars, faTimes, faArrowRight, faChevronLeft, faChevronRight, faExternalLink, faXmark, faCode, faArrowLeft, faHandshake, 
+    faBold, faItalic, faUnderline, faStrikethrough, faListOl, faListUl, faAlignCenter, 
     faAlignJustify, faAlignLeft, faAlignRight, faFillDrip, faHighlighter, faEye);
 
 import { createApp } from 'vue'
