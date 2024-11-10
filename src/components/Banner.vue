@@ -139,7 +139,7 @@
 .vertical {  
     position: absolute;
     bottom: 50px;
-    right: 50px;
+    right: 5px;
     display: flex;
     transform: rotate(90deg);
     padding: 0 0 5rem 10px;

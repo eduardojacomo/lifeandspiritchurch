@@ -298,4 +298,14 @@ onMounted(() => {
 .text p {
   font-size: 1rem;
 }
+
+@media screen and (max-width: 768px){
+  .container{
+    padding: 70px .5rem 0.5rem .5rem;
+  }
+  .projects{
+    padding: 1rem;
+  }
+}
+
 </style>
