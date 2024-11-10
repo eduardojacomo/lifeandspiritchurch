@@ -16,9 +16,9 @@ import Contato from '@/components/Contato.vue';
     <section id="portfolio" class="section">
       <Portfolio />
     </section>
-    <section id="contact" class="section">
+    <!-- <section id="contact" class="section">
       <Contato />
-    </section>
+    </section> -->
   </main>
 </template>
 

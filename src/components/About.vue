@@ -95,7 +95,8 @@ onMounted(() => {
   
 
 <style scoped>
-/* Estilos para as animações */
+
+
 .container {
   display: flex;
   flex-direction: column;
@@ -159,7 +160,7 @@ onMounted(() => {
 
 .icon{
     display: flex;
-    padding: 1rem 5rem;
+    padding: 1rem 2rem;
     justify-content: center;
     align-items: center;
     font-size: 7rem;
@@ -204,4 +205,64 @@ onMounted(() => {
   opacity: 1;
   transform: translateY(0);
 }
+
+@media screen and (max-width: 1024px) {
+  .content{
+    padding: 0 2rem;
+  }
+  .icon {
+    visibility: collapse;
+    padding: 0;
+    font-size: 0;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .content {
+    padding: 0 1rem;
+  }
+
+  .icon {
+    visibility: collapse;
+    padding: 0;
+    font-size: 0;
+  }
+  .content.animate p{
+    padding: 0;
+  }
+
+  .container{
+    padding: 70px .5rem 1rem .5rem;
+  }
+  /* .linha-vertical{
+    margin: 0;
+  }
+  .socials{
+    padding: 0 0 .5rem 0;
+  } */
+}
+
+@media screen and (max-width: 480px) {
+  .title h1 {
+    font-size: 1.8rem;
+  }
+
+  .content.animate p {
+    font-size: 1rem;
+  }
+
+  .cards {
+    padding: 0.5rem;
+    gap: 0.5rem;
+  }
+
+  .icon {
+    visibility: hidden;
+  }
+
+  .content {
+    padding: 0 1rem;
+  }
+}
+
 </style>

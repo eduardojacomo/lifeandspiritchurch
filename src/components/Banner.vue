@@ -34,7 +34,7 @@
     display: flex;
     gap: 0.5rem;
     width: 100%;
-    padding: 70px 2rem 0.5rem 2rem;
+    padding: 70px .5rem 0.5rem .5rem;
     position: relative;
 }
 
@@ -56,6 +56,14 @@
     .image-content {
         order: 0;
         min-height: 88vh;
+    }
+    .banner{
+        padding: 70px 2rem 0.5rem 2rem;
+    }
+
+    .vertical {  
+        right: 20px;
+        padding: 0 0 5rem 10px;
     }
 }
 
@@ -131,7 +139,7 @@
 .vertical {  
     position: absolute;
     bottom: 50px;
-    right: 20px;
+    right: 50px;
     display: flex;
     transform: rotate(90deg);
     padding: 0 0 5rem 10px;
