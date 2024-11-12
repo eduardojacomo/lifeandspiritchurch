@@ -12,26 +12,39 @@
   
       <!-- Navigation Links -->
       <ul :class="['nav-links', { open: isOpen }]">
-        <li><a href="#home" @click="closeMenu" @click.prevent="scrollTo('home')">Home</a></li>
-        <li><a href="#about" @click="closeMenu" @click.prevent="scrollTo('about')">About</a></li>
-        <li><a href="#portfolio" @click="closeMenu" @click.prevent="scrollTo('portfolio')">Portfolio</a></li>
-        <li><a href="#contact" @click="closeMenu" @click.prevent="scrollTo('contact')">Contact</a></li>
+        <template v-if="isHomePage">
+      <li><a href="#home" @click="closeMenu" @click.prevent="scrollTo('home')">Home</a></li>
+      <li><a href="#about" @click="closeMenu" @click.prevent="scrollTo('about')">About</a></li>
+      <li><a href="#portfolio" @click="closeMenu" @click.prevent="scrollTo('portfolio')">Portfolio</a></li>
+      <li><a href="#contact" @click="closeMenu" @click.prevent="scrollTo('contact')">Contact</a></li>
+    </template>
+
+    <!-- Caso não esteja na página principal, use router-link -->
+    <template v-else>
+      <li><router-link to="/" @click="closeMenu">Home</router-link></li>
+      <li><router-link to="/#about" @click="closeMenu">About</router-link></li>
+      <li><router-link to="/#portfolio" @click="closeMenu">Portfolio</router-link></li>
+      <li><router-link to="/#contact" @click="closeMenu">Contact</router-link></li>
+    </template>
       </ul>
     </nav>
   </template>
   
   <script setup>
-  import { ref, onMounted, onBeforeUnmount } from 'vue';
+  import { ref, onMounted, onBeforeUnmount, computed } from 'vue';
+  import { useRoute } from 'vue-router';
   
   const isOpen = ref(false);
   const navbarRef = ref(null);
   
+  const route = useRoute();
+  const isHomePage = computed(() => route.path === '/' || route.path === '/home');
+
   const scrollTo = (sectionId) => {
   const section = document.getElementById(sectionId);
   if (section) {
     section.scrollIntoView({ behavior: 'smooth' });
-    menuOpen.value = false; // Close menu after scrolling
-    document.getElementById('menu-checkbox').checked = false; // Reset checkbox state
+    isOpen.value = false; // Close menu after scrolling
   }
 };
 
@@ -71,6 +84,7 @@
     align-items: center;
     padding: 1rem 2rem;
     background-color: var(--color-background);
+    /* background-color: var(--color-background); */
     color: white;
     z-index: 2000;
   }

@@ -1,18 +1,23 @@
 <script setup>
 import { ref, watch, onMounted } from 'vue'
-import Navegador from '../Navegador.vue';
+import Navegador from '../components/Navegador.vue';
+import {storeToRefs} from 'pinia';
+import {useProjects} from '@/stores/projectStore'
 
-const props = defineProps({
-  project: Object
-})
+const useprojects = useProjects();
+const {projectStore} = storeToRefs(useprojects);
+
+// const props = defineProps({
+//   name: String
+// })
 
 const resolucao = ref('');
 
-const emit = defineEmits(['close'])
+// const emit = defineEmits(['close'])
 const currentImageIndex = ref(0)
 
 const nextImage = () => {
-  if (currentImageIndex.value < props.project.images.length - 1) {
+  if (currentImageIndex.value < projectStore.images.length - 1) {
     currentImageIndex.value++
   }
 }
@@ -35,37 +40,34 @@ function verifyResolution(){
 
 }
 
-watch(props.project, () => {
-  currentImageIndex.value = 0 
-})
-
 onMounted(()=>{
+  
   verifyResolution();
 })
 </script>
 
 <template>
-  <div class="modal-overlay" @click.self="emit('close')">
-    <div class="modal-content">
-      <button class="close-button" @click="emit('close')"><font-awesome-icon icon="fa-solid fa-arrow-left" /></button>
+  <div class="container">
+    <div class="content">
+      <button class="close-button" ><font-awesome-icon icon="fa-solid fa-arrow-left" /></button>
       <div class="description">
-          <h2>{{ project.title }}</h2>
-          <p>{{ project.details }}</p>
+          <h2>{{ projectStore.title }}</h2>
+          <p>{{ projectStore.details }}</p>
           <ul>
-            <li v-for="(t, index) in project.tags" :key="index">{{ t }}</li>
+            <li v-for="(t, index) in projectStore.tags" :key="index">{{ t }}</li>
           </ul>
           <div class="links">
-            <div v-for="(l,index) in project.links" :key="index">
+            <div v-for="(l,index) in projectStore.links" :key="index">
               <a :href="l.link" target="_blank"><span class="links-text"> <font-awesome-icon :icon="l.icon" />  {{ l.plataforma }}</span></a>
             </div>
           </div>
       </div>
       <div class="content-projeto">
-        <Navegador :imageSrc = "project.images[currentImageIndex].src" :url="project.url"/>
+        <Navegador :imageSrc = "projectStore.images[currentImageIndex].src" :url="projectStore.url"/>
         <!-- <img :key="currentImageIndex" :src="project.images[currentImageIndex]" alt="Imagem do Projeto" /> -->
          <div class="botoes">
           <button @click="prevImage" :disabled="currentImageIndex === 0"><font-awesome-icon icon="fa-solid fa-chevron-left" /></button>
-          <button @click="nextImage" :disabled="currentImageIndex === project.images.length - 1"><font-awesome-icon icon="fa-solid fa-chevron-right" /></button>
+          <button @click="nextImage" :disabled="currentImageIndex === projectStore.images.length - 1"><font-awesome-icon icon="fa-solid fa-chevron-right" /></button>
         </div>
 
       </div>
@@ -101,25 +103,21 @@ onMounted(()=>{
   transform: translateX(0); 
 }
 
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
+.container {
   width: 100%;
-  height: 100%;
-  background-color: rgba(000, 000, 000,1);
+  height: 100vh;
+  background-color: var(--color-backgroud);
+  color: var(--color-text);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  padding: 70px 2rem 2rem 2rem;
 }
 
-.modal-content {
+.content {
   display: flex;
   flex-direction: row;
   gap: 1rem;
-  background-color: var(--color-backgroud);
-  color: var(--color-text);
   padding: 2rem;
   width: 100%;
   height: 100%;

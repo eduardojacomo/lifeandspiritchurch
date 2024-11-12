@@ -1,6 +1,13 @@
 <script setup>
 import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import Modal from './Tools/Modal.vue';
+import {storeToRefs} from 'pinia';
+import {useProjects} from '@/stores/projectStore'
+
+const useprojects = useProjects();
+const router = useRouter();
+const {projectStore, setProject} = storeToRefs(useprojects);
 
 const projects = ref([
   {
@@ -40,6 +47,11 @@ const hoveredProjectIndex = ref(null);
 function openModal(project) {
   selectedProject.value = project;
   showModal.value = true;
+}
+
+function setProjectDetail(project){
+  projectStore.value = project;
+  router.push({ name: 'projects'});
 }
 
 const closeModal = () => {
@@ -90,7 +102,7 @@ onMounted(() => {
               >
                 <img :src="project.images[0].src" :alt="project.images[0].alt" class="image" />
                 <Transition name="slide-fade">
-                    <button v-if="hoveredProjectIndex === index" @click="openModal(project)">
+                    <button v-if="hoveredProjectIndex === index" @click="setProjectDetail(project)">
                       <font-awesome-icon icon="fa-solid fa-external-link" />
                     </button>
                  </Transition>
@@ -108,7 +120,7 @@ onMounted(() => {
               <div v-if="showModal" class="modal-wrapper">
                 <div class="slide-background white-slide"></div>
                 <div class="slide-background black-slide"></div>
-                <div class="modal-content" v-if="!isAnimating">
+                <div class="modal-content">
                   <Modal :project="selectedProject" @close="closeModal" />
                 </div>
               </div>
@@ -121,6 +133,7 @@ onMounted(() => {
   
 
 <style scoped>
+
 /* Estilos para as animações do modal com translateX */
 @keyframes slide-in-white {
   0% {
@@ -233,17 +246,17 @@ onMounted(() => {
 
 .image-content {
   position: relative;
-  height: clamp(210px, 100%,337px);
+  height: clamp(210px, 100%, 337px);
   justify-content: center;
   align-items: center;
-  overflow: hidden; 
+  overflow: hidden;
 }
 
 .image-content img {
   width: 100%;
   height: 100%;
   object-fit: fill;
-  transition: all 0.3s ease-in-out; 
+  transition: all 0.3s ease-in-out;
 }
 
 .image-content:hover img {
@@ -260,14 +273,14 @@ onMounted(() => {
   right: 20px;
   bottom: 20px;
   font-size: 1rem;
-  opacity: 0; 
-  transform: translateY(20px); 
-  transition: all 0.3s ease-in-out; 
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.3s ease-in-out;
 }
 
 .image-content:hover button {
-  opacity: 1; 
-  transform: translateY(0); 
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .text {
@@ -279,9 +292,9 @@ onMounted(() => {
   padding: 1rem 5rem 0 2rem;
   text-align: justify;
   color: var(--color-heading);
-  opacity: 0; 
+  opacity: 0;
   transform: translateY(20px);
-  transition: all 0.3s ease-in-out; 
+  transition: all 0.3s ease-in-out;
 }
 
 .image-content:hover .text {
@@ -299,13 +312,28 @@ onMounted(() => {
   font-size: 1rem;
 }
 
-@media screen and (max-width: 768px){
-  .container{
-    padding: 70px .5rem 0.5rem .5rem;
+/* Responsividade para tablets e celulares */
+@media screen and (max-width: 768px) {
+  .container {
+    padding: 70px 0.5rem 0.5rem 0.5rem;
   }
-  .projects{
+
+  .projects {
     padding: 1rem;
   }
+
+  .image-content {
+    flex-direction: column;
+  }
+
+  .text h2 {
+    font-size: 1.1rem;
+  }
+
+  .text p {
+    font-size: 0.9rem;
+  }
 }
+
 
 </style>

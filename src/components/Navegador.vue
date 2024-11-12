@@ -27,9 +27,6 @@
   url: Text
 })
 
-  // Define a ref for the image source and a URL for the mock address bar
-//   const imageSrc = ref('/src/assets/psirenatamachado.png')
-//   const url = ref('https://www.psirenatamachado.com')
   </script>
   
   <style scoped>
