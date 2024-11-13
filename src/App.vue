@@ -1,10 +1,10 @@
 <template>
-  <header  :style="{ zIndex: navbarZIndex }">
+  <header  :style="{ visibility: navbarVisible }">
     <Navbar />
   </header>
   <main class="main-content">
     <transition name="page-transition" mode="out-in" @before-enter="setNavbarBehind" 
-    @after-enter="resetNavbarZIndex">
+    @after-enter="resetNavbar">
       <router-view />
     </transition>
   </main>
@@ -15,24 +15,23 @@ import { RouterView } from 'vue-router';
 import {ref} from 'vue';
 import Navbar from './components/Navbar.vue';
 
-// Controla o z-index da navbar
-const navbarZIndex = ref(1000); // valor padrão elevado para a navbar
+const navbarVisible = ref('hidden'); 
 
-// Define o z-index para enviar a navbar para trás
+
 function setNavbarBehind() {
-  navbarZIndex.value = 1; // diminui o z-index para ficar atrás da transição
+  navbarVisible.value = 'hidden';
 }
 
-// Restaura o z-index para o padrão após a transição
-function resetNavbarZIndex() {
-  navbarZIndex.value = 1000; // volta ao z-index elevado
+
+function resetNavbar() {
+  navbarVisible.value = 'visible';
 }
 
 </script>
 
 <style scoped>
 header {
-   /* z-index: 1000;  */
+   z-index: 1000;
   position: fixed;
   width: 100%;
   height: 70px; /* Definir a altura da navbar */

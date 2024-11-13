@@ -276,7 +276,7 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   padding: 10px;
-  width: clamp(400px, 100%, 450px);
+  width: clamp(400px, 100%, 500px);
 }
 
 .image-content {

@@ -130,7 +130,7 @@ onMounted(() => {
 }
 
 .content.animate p{
-    font-size: 1.2rem;
+    font-size: 1rem;
     padding: 1rem 0 1rem 3rem;
 }
 
@@ -262,6 +262,9 @@ onMounted(() => {
 
   .content {
     padding: 0 1rem;
+  }
+  .socials{
+    padding: 0 0 0.5rem 0 !important;
   }
 }
 

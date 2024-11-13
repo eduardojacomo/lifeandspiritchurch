@@ -106,6 +106,9 @@
         order:-1;
         background-position: center;
     }
+    .socials{
+        padding: 0 0 0.5rem 0 !important;
+    }
 }
 
 

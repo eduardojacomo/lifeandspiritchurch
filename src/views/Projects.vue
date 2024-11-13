@@ -213,7 +213,7 @@ onMounted(()=>{
   left: 0;
   padding: 0;
   justify-content: space-between;
-  z-index: 1001;
+  /* z-index: 1001; */
 }
 
 .legend {
