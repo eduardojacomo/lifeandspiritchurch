@@ -1,9 +1,10 @@
 <template>
-  <header>
+  <header  :style="{ zIndex: navbarZIndex }">
     <Navbar />
   </header>
   <main class="main-content">
-    <transition name="page-transition" mode="out-in">
+    <transition name="page-transition" mode="out-in" @before-enter="setNavbarBehind" 
+    @after-enter="resetNavbarZIndex">
       <router-view />
     </transition>
   </main>
@@ -11,17 +12,32 @@
 
 <script setup>
 import { RouterView } from 'vue-router';
+import {ref} from 'vue';
 import Navbar from './components/Navbar.vue';
+
+// Controla o z-index da navbar
+const navbarZIndex = ref(1000); // valor padrão elevado para a navbar
+
+// Define o z-index para enviar a navbar para trás
+function setNavbarBehind() {
+  navbarZIndex.value = 1; // diminui o z-index para ficar atrás da transição
+}
+
+// Restaura o z-index para o padrão após a transição
+function resetNavbarZIndex() {
+  navbarZIndex.value = 1000; // volta ao z-index elevado
+}
 
 </script>
 
 <style scoped>
 header {
-   z-index: 1000; 
+   /* z-index: 1000;  */
   position: fixed;
   width: 100%;
   height: 70px; /* Definir a altura da navbar */
   top: 0;
+  transition: z-index 0.3s ease;
 }
 /* A estrutura para a transição de página */
 .page-transition-enter-active,

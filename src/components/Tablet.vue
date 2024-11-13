@@ -2,18 +2,20 @@
   <div class="tablet">
     <div class="camera"></div>
     <div class="screen">
-      <!-- Conteúdo que aparece na tela do tablet -->
-      <div class="app">
-        <h2>Bem-vindo ao Mockup do Tablet</h2>
-        <p>Exemplo de interface para um tablet.</p>
-      </div>
+        <img :src="props.imageSrc" alt="Imagem do Site" />
+      
     </div>
     <div class="home-button"></div>
   </div>
 </template>
 
 <script setup>
-
+  import { ref } from 'vue'
+  
+  const props = defineProps({
+  imageSrc: Text,
+  url: Text
+})
 </script>
 
 <style scoped>
@@ -30,7 +32,7 @@
   height: 600px; /* Ajuste a altura conforme necessário */
   background-color: #333;
   border-radius: 20px;
-  padding: 25px;
+  padding: 8px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
@@ -56,8 +58,16 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  overflow-y: auto;
 }
 
+.screen img{
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 8px;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.1);
+}
 
 .app {
   text-align: center;

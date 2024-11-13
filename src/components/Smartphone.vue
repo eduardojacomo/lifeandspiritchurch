@@ -1,5 +1,10 @@
 <script setup>
-
+    import { ref } from 'vue'
+    
+    const props = defineProps({
+    imageSrc: Text,
+    url: Text
+    })
 </script>
 
 <template>
@@ -7,11 +12,7 @@
     <div class="camera"></div>
     <div class="speaker"></div>
     <div class="screen">
-      <!-- Conteúdo que aparece na tela do smartphone -->
-      <div class="app">
-        <h2>Bem-vindo ao Mockup</h2>
-        <p>Exemplo de uma interface</p>
-      </div>
+        <img :src="props.imageSrc" alt="Imagem do Site" />
     </div>
     <div class="home-button"></div>
   </div>
@@ -69,6 +70,15 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  overflow-y: auto;
+}
+
+.screen img{
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 8px;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.1);
 }
 
 /* Conteúdo interno da tela */

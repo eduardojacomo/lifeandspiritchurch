@@ -19,7 +19,7 @@
                     <TextEffect :words="['Developer', 'FullStack', 'Freelancer']"/>
                 </div>
            </div>
-           <div class="image-content"> </div>
+           <div class="image-content"></div>
        </div>
        
         <div class="vertical">
@@ -41,39 +41,70 @@
 .content {
     display: flex;
     flex: 1 0 380px;
-    flex-direction: column; 
+    flex-direction: row; 
+    /* position: relative; */
 }
 
 .image-content {
-    order: -1; 
+    order: 0; 
 }
 
-@media screen and (min-width: 768px) {
+@media screen and (max-width: 1024px){
+    .text_content h1 {
+        font-size: 32px !important;
+    }
+    .text{
+        font-size: 18px !important;
+    }
+    .text_content{
+        flex: 1 0 380px !important; 
+    }
+
+}
+
+ @media screen and (max-width: 780px) {
     .content {
-        flex-direction: row; 
+        flex-direction: column; 
+        justify-content: center;
+        position: relative;
+    }
+    .text_content{
+        justify-content: flex-start;
+        position: absolute;
+        top: 80%;
+        left: 7%;
     }
 
     .image-content {
-        order: 0;
-        min-height: 88vh;
+        height: 80vh;
+        order:-1;
+        background-position: center !important;
     }
-    .banner{
-        padding: 70px 2rem 0.5rem 2rem;
-    }
-
+/* 
     .vertical {  
         right: 20px;
         padding: 0 0 5rem 10px;
-    }
-}
+    } */
+} 
 
-@media screen and (min-width: 1024px) {
+ @media screen and (max-width: 480px) {
     .content {
-        flex-wrap: wrap-reverse;
+        flex-direction: column;
+        position: relative;
+        height: 75vh;
+    }
+
+    .text_content{
+        justify-content: flex-start;
+        position: absolute;
+        top: 80%;
+        left: 7%;
     }
 
     .image-content {
-        background-position: right;
+        height: 80vh;
+        order:-1;
+        background-position: center;
     }
 }
 
@@ -103,13 +134,13 @@
     flex: 1 0 380px; 
     justify-content: center;
     align-content: center;
-    align-items: center;    
+    align-items: center;
 }
 
 .text_content h1 {
     font-family: "Poppins", sans-serif;
     font-weight: 700;
-    font-size: 36px;
+    font-size: 42px;
     color: var(--color-heading);
 }
 
@@ -121,19 +152,20 @@
 
 .text {
     display: flex;
-    flex-direction: column;    
+    flex-direction: column; 
+    font-size: 22px;   
 }
 
 .image-content {
     display: flex;
-    width: clamp(380px, 100%, 520px);
-    background-image: url("/src/assets/me.png");
+    width: clamp(380px, 100%, 700px);
+    background-image: url("/src/assets/me.webp");
     overflow: hidden;
     opacity: 0.6;
     background-repeat: no-repeat;
     background-size: contain;
-    background-position: center;
-    height: 50vh;
+    background-position: left;
+    height: 88vh;
 }
 
 .vertical {  

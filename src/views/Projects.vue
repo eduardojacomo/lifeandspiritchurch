@@ -1,6 +1,8 @@
 <script setup>
-import { ref, watch, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import Navegador from '../components/Navegador.vue';
+import Smartphone from '@/components/Smartphone.vue';
+import Tablet from '@/components/Tablet.vue';
 import {storeToRefs} from 'pinia';
 import {useProjects} from '@/stores/projectStore'
 
@@ -17,7 +19,8 @@ const resolucao = ref('');
 const currentImageIndex = ref(0)
 
 const nextImage = () => {
-  if (currentImageIndex.value < projectStore.images.length - 1) {
+
+  if (currentImageIndex.value < projectStore.value.imagesNavegador.length - 1) {
     currentImageIndex.value++
   }
 }
@@ -32,7 +35,7 @@ function verifyResolution(){
   let _width = window.innerWidth;
   if (_width <= '480'){
     resolucao.value = 'Smartphone'
-  } else if ( _width > '480' && _width <= '768'){
+  } else if ( _width > '480' && _width <= '780'){
     resolucao.value = 'Tablet'
   }else{
     resolucao.value = 'Navegador'
@@ -40,9 +43,14 @@ function verifyResolution(){
 
 }
 
+onUnmounted(() => {
+      window.removeEventListener('resize', verifyResolution);
+    });
+
+
 onMounted(()=>{
-  
   verifyResolution();
+  window.addEventListener('resize', verifyResolution);
 })
 </script>
 
@@ -58,16 +66,20 @@ onMounted(()=>{
           </ul>
           <div class="links">
             <div v-for="(l,index) in projectStore.links" :key="index">
-              <a :href="l.link" target="_blank"><span class="links-text"> <font-awesome-icon :icon="l.icon" />  {{ l.plataforma }}</span></a>
+              <a :href="l.link" target="_blank" v-if="l.plataforma==='Code'"><span class="links-text"> <i class="devicon-github-original"></i> {{ l.plataforma }}</span></a>
+              <a :href="l.link" target="_blank" v-else><span class="links-text"> <font-awesome-icon :icon="l.icon" />  {{ l.plataforma }}</span></a>
             </div>
           </div>
       </div>
       <div class="content-projeto">
-        <Navegador :imageSrc = "projectStore.images[currentImageIndex].src" :url="projectStore.url"/>
+        <Navegador :imageSrc = "projectStore.imagesNavegador[currentImageIndex].src" :url="projectStore.url" v-if="resolucao === 'Navegador'"/>
+        <Tablet :imageSrc = "projectStore.imagesTablet[currentImageIndex].src" :url="projectStore.url" v-if="resolucao === 'Tablet'" />
+        <Smartphone :imageSrc = "projectStore.imagesSmartphone[currentImageIndex].src" :url="projectStore.url" v-if="resolucao ==='Smartphone'"/>
+     
         <!-- <img :key="currentImageIndex" :src="project.images[currentImageIndex]" alt="Imagem do Projeto" /> -->
          <div class="botoes">
           <button @click="prevImage" :disabled="currentImageIndex === 0"><font-awesome-icon icon="fa-solid fa-chevron-left" /></button>
-          <button @click="nextImage" :disabled="currentImageIndex === projectStore.images.length - 1"><font-awesome-icon icon="fa-solid fa-chevron-right" /></button>
+          <button @click="nextImage" :disabled="currentImageIndex === projectStore.imagesNavegador.length - 1"><font-awesome-icon icon="fa-solid fa-chevron-right" /></button>
         </div>
 
       </div>
@@ -103,6 +115,27 @@ onMounted(()=>{
   transform: translateX(0); 
 }
 
+@media screen and (max-width: 1024px){
+    .content{
+        flex-direction: column !important;
+        
+    }
+    .content-projeto{
+        justify-content: center;
+        order: -1;
+    }
+    .description{
+        padding: 1rem .5rem;
+        height: auto;
+    }
+}
+
+/* @media screen and (max-width: 480px){
+    .content{
+        flex-direction: column;
+    }
+} */
+
 .container {
   width: 100%;
   height: 100vh;
@@ -111,7 +144,6 @@ onMounted(()=>{
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 70px 2rem 2rem 2rem;
 }
 
 .content {
@@ -123,16 +155,18 @@ onMounted(()=>{
   height: 100%;
   /* position: relative; */
   align-items: center;
+  padding: 72px 2rem 2rem 2rem;
 }
 
 .content-projeto{
   display: flex;
   position: relative;
+  justify-content: center;
 }
 
 .close-button {
   position: absolute;
-  top: 1rem;
+  top: 82px;
   left: 1rem;
   cursor: pointer;
   border: none;
@@ -172,13 +206,13 @@ onMounted(()=>{
 .botoes {
   display: flex;
   flex-direction: row;
-  width: 100px;
+  width: 100%;
   position: absolute;
   /* top: 50%; */
-  top: 10px;
+  top: 50%;
   left: 0;
-  padding: 0 0 0 150px;
-  justify-content: center;
+  padding: 0;
+  justify-content: space-between;
   z-index: 1001;
 }
 
@@ -192,9 +226,10 @@ onMounted(()=>{
 
 .description{
   display: flex;
-  width: 400px;
-flex-direction: column;
-padding: 0 .5rem;
+  flex: 1 0 380px;
+  max-width: 450px;
+  flex-direction: column;
+  padding: 0 .5rem;
 }
 
 .description h2{

@@ -14,7 +14,6 @@
       <!-- Display Image Area -->
       <div class="browser-content">
         <img :src="props.imageSrc" alt="Imagem do Site" />
-        <!-- <iframe :src="url" frameborder="0" class="iframe-content"></iframe> -->
       </div>
     </div>
   </template>
@@ -31,8 +30,8 @@
   
   <style scoped>
   .browser-window {
-    width: 100%;
-    max-width: 1024px;
+    width: clamp(600px,100%,800px);
+    max-height: 520px ;
     border-radius: 8px;
     box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
     border: 1px solid var(--color-border);

@@ -34,4 +34,10 @@ html {
   min-height: 100vh;
 }
 
+@media screen and (max-width: 480px){
+  .section{
+  min-height: auto;
+}
+}
+
 </style>
