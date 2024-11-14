@@ -57,7 +57,7 @@ onMounted(()=>{
 <template>
   <div class="container">
     <div class="content">
-      <button class="close-button" ><font-awesome-icon icon="fa-solid fa-arrow-left" /></button>
+      <router-link to="/" class="close-button"><font-awesome-icon icon="fa-solid fa-arrow-left" /></router-link>
       <div class="description">
           <h2>{{ projectStore.title }}</h2>
           <p>{{ projectStore.details }}</p>

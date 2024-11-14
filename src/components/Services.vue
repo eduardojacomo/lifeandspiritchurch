@@ -1,38 +1,10 @@
 <script setup>
-import { ref, onMounted, computed, watch } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import Card from './Card.vue';
-import { useI18n } from 'vue-i18n';
-
-const { t, locale } = useI18n();
 
 const about = 'Como desenvolvedor Full Stack especializado em soluções baseadas em dados, minha missão é transformar informações complexas em insights acionáveis e criar experiências digitais robustas e otimizadas. Com uma sólida base tanto em backend quanto em frontend, sou apaixonado por todo o processo de desenvolvimento de software, desde o planejamento até a implementação e otimização de sistemas escaláveis.\nNos últimos [2 anos], tenho trabalhado em projetos que abrangem desde a construção de APIs eficientes e escaláveis, até a implementação de interfaces de usuário intuitivas. Minha abordagem combina a análise de dados e a automação para otimizar processos e garantir que cada solução seja alinhada com os objetivos de negócio.'
 
-const skills = ref([
-  { icon: 'devicon-html5-plain-wordmark colored', label: 'HTML', group:'Front-End' },
-  { icon: 'devicon-css3-plain colored', label: 'CSS' , group:'Front-End' },
-  { icon: 'devicon-javascript-plain colored', label: 'JavaScript' , group:'Front-End' },
-  { icon: 'devicon-vuejs-plain colored', label: 'Vue' , group:'Framework' },
-  { icon: 'devicon-bootstrap-plain colored', label: 'Bootstrap' , group:'Framework' },
-  { icon: 'devicon-bulma-plain colored', label: 'Bulma' , group:'Framework' },
-  { icon: 'devicon-dotnetcore-plain colored', label: '.Net' , group:'Back-End' },
-  { icon: 'devicon-python-plain colored', label: 'Python', group:'Back-End' },
-  { icon: 'devicon-nextjs-original-wordmark', label: 'Next JS', group:'Back-End' },
-  { icon: 'devicon-microsoftsqlserver-plain-wordmark colored', label: 'SQL Server' , group:'Database' },
-  { icon: 'devicon-postgresql-plain colored', label: 'Postgre SQL' , group:'Database' },
-  { icon: 'devicon-mongodb-plain colored', label: 'MongoDB' , group:'Database' }
-]);
 
-          
-const groupedSkills = computed(() => {
-  const groups = {};
-  skills.value.forEach(skill => {
-    if (!groups[skill.group]) {
-      groups[skill.group] = [];
-    }
-    groups[skill.group].push(skill);
-  });
-  return groups;
-});
 
 
 const observeElements = (el) => {
@@ -49,10 +21,6 @@ const observeElements = (el) => {
   el.forEach((element) => observer.observe(element));
 };
 
-watch(locale, () => {
-  // Isso forçará a atualização do conteúdo quando o idioma mudar
-});
-
 onMounted(() => {
   const sections = document.querySelectorAll('.animate');
   observeElements(sections);
@@ -63,7 +31,7 @@ onMounted(() => {
     <main>
       <div class="container">
         <div class="title animate">
-          <h1>{{ t('_aboutTitle') }}</h1>
+          <h1>Services</h1>
         </div>
         <div class="column">
           <div class="socials">
@@ -74,7 +42,7 @@ onMounted(() => {
               <div class="icon">
                 <font-awesome-icon icon="fa-solid fa-code" />
               </div>
-              <p>{{ t('_aboutDescription') }}</p>
+              <p>{{ about }}</p>
             </div>
   
             <div class="title animate">
@@ -83,15 +51,10 @@ onMounted(() => {
   
             <!-- Iterar sobre os grupos de habilidades -->
             <div class="cards">
-              <div v-for="(skills, groupName) in groupedSkills" :key="groupName" class="category animate">
-                  <div class="skills-group">
-                    <h3>{{ groupName }}</h3> <!-- Nome da categoria -->
-                    <div class="card-content animate">
-                        <div v-for="(skill, index) in skills" :key="index" class="animate">
-                            <Card :icon="skill.icon" :label="skill.label" />
-                        </div>
-                    </div>
-                </div>
+              <div class="category animate">
+                API
+                Website
+                Chatbot
               </div>
             </div>
           </div>

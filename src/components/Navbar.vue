@@ -1,16 +1,21 @@
 <template>
     <nav class="navbar" ref="navbarRef">
-      <!-- Logo Section -->
+
       <div class="logo">
         <a href="#">MyLogo</a>
       </div>
-  
-      <!-- Hamburger Icon for All Devices -->
+
+      <input type="checkbox" id="checkboxInput">
+      <label for="checkboxInput" class="toggleSwitch" @click="toggleLanguage">
+      <div class="speaker">{{ currentLanguageLabel }}</div>
+      <div class="mute-speaker">{{ currentLanguageLabel }}</div>
+      </label>
+
       <div class="hamburger" @click="toggleMenu">
         <font-awesome-icon :icon="isOpen ? 'fa-solid fa-times' : 'fa-solid fa-bars'" />
       </div>
   
-      <!-- Navigation Links -->
+
       <ul :class="['nav-links', { open: isOpen }]">
         <template v-if="isHomePage">
       <li><a href="#home" @click="closeMenu" @click.prevent="scrollTo('home')">Home</a></li>
@@ -33,7 +38,17 @@
   <script setup>
   import { ref, onMounted, onBeforeUnmount, computed } from 'vue';
   import { useRoute } from 'vue-router';
-  
+  import { useI18n } from 'vue-i18n';
+
+  const { locale } = useI18n();
+
+  // Alterna o idioma entre 'pt' e 'en'
+  function toggleLanguage() {
+    locale.value = locale.value === 'pt' ? 'en' : 'pt';
+  }
+
+  // Computed para mostrar o idioma atual no botão
+  const currentLanguageLabel = computed(() => (locale.value === 'pt' ? 'PT' : 'EN'));
   const isOpen = ref(false);
   const navbarRef = ref(null);
   
@@ -138,7 +153,74 @@
     background-color: #444;
     color: #ddd;
   }
-  
+
+  /*toogle */
+  .toggleSwitch {
+  width: 50px;
+  height: 30px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  border-bottom:solid 1px gray;
+  cursor: pointer;
+  transition-duration: .3s;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.13);
+  overflow: hidden;
+}
+
+/* Hide default HTML checkbox */
+  #checkboxInput {
+    display: none;
+  }
+
+
+
+ 
+
+  .speaker {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    transition-duration: .3s;
+  }
+
+  .mute-speaker {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    z-index: 3;
+    transition-duration: .3s;
+  }
+
+  #checkboxInput:checked +.toggleSwitch .speaker {
+    opacity: 0;
+    transition-duration: .3s;
+  }
+
+  #checkboxInput:checked +.toggleSwitch .mute-speaker {
+    opacity: 1;
+    transition-duration: .3s;
+  }
+
+  #checkboxInput:active + .toggleSwitch {
+    transform: scale(0.7);
+  }
+
+  #checkboxInput:hover + .toggleSwitch {
+    background-color: var(--color-background-mute);
+    /* background-color: rgb(61, 61, 61); */
+  }
+
+
   @media (max-width: 768px) {
     .nav-links {
       width: 100%;

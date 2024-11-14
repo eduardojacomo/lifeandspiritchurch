@@ -1,6 +1,13 @@
 <script setup>
   import TextEffect from '@/components/Tools/TextEffect.vue';
-  
+  import { useI18n } from 'vue-i18n';
+
+
+  const { t, locale } = useI18n();
+
+  function switchLanguage(language){
+    locale.value = language;
+  }
 </script>
 
 <template>
@@ -164,7 +171,7 @@
     width: clamp(380px, 100%, 700px);
     background-image: url("/src/assets/me.webp");
     overflow: hidden;
-    opacity: 0.6;
+    opacity: 0.8;
     background-repeat: no-repeat;
     background-size: contain;
     background-position: left;

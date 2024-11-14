@@ -2,6 +2,7 @@
   import Banner from '../components/Banner.vue'
   import About from '../components/About.vue'
   import Portfolio from '../components/Portfolio.vue'
+  import Services from '@/components/Services.vue';
 import Contato from '@/components/Contato.vue';
 </script>
 
@@ -9,6 +10,9 @@ import Contato from '@/components/Contato.vue';
   <main>
     <section id="home" class="section">
       <Banner />
+    </section>
+    <section id="portfolio" class="section">
+      <Services />
     </section>
     <section id="about" class="section">
       <About />
