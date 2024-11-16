@@ -2,10 +2,14 @@
 import { ref, onMounted, computed, watch } from 'vue';
 import Card from './Card.vue';
 import { useI18n } from 'vue-i18n';
+import {useLanguage} from '../stores/languageStore'
+import {storeToRefs} from 'pinia';
+
+const uselanguage = useLanguage();
+const { currentLocaleKey} = storeToRefs(uselanguage);
 
 const { t, locale } = useI18n();
 
-const about = 'Como desenvolvedor Full Stack especializado em soluções baseadas em dados, minha missão é transformar informações complexas em insights acionáveis e criar experiências digitais robustas e otimizadas. Com uma sólida base tanto em backend quanto em frontend, sou apaixonado por todo o processo de desenvolvimento de software, desde o planejamento até a implementação e otimização de sistemas escaláveis.\nNos últimos [2 anos], tenho trabalhado em projetos que abrangem desde a construção de APIs eficientes e escaláveis, até a implementação de interfaces de usuário intuitivas. Minha abordagem combina a análise de dados e a automação para otimizar processos e garantir que cada solução seja alinhada com os objetivos de negócio.'
 
 const skills = ref([
   { icon: 'devicon-html5-plain-wordmark colored', label: 'HTML', group:'Front-End' },
@@ -63,7 +67,9 @@ onMounted(() => {
     <main>
       <div class="container">
         <div class="title animate">
-          <h1>{{ t('_aboutTitle') }}</h1>
+          <Transition name="fade" mode="out-in">
+            <h1 :key="currentLocaleKey">{{ t('_aboutTitle') }}</h1>
+          </Transition>
         </div>
         <div class="column">
           <div class="socials">
@@ -74,7 +80,9 @@ onMounted(() => {
               <div class="icon">
                 <font-awesome-icon icon="fa-solid fa-code" />
               </div>
-              <p>{{ t('_aboutDescription') }}</p>
+              <Transition name="fade" mode="out-in">
+                <p :key="currentLocaleKey">{{ t('_aboutDescription') }}</p>
+              </Transition>
             </div>
   
             <div class="title animate">
@@ -103,6 +111,15 @@ onMounted(() => {
 
 <style scoped>
 
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
 
 .container {
   display: flex;

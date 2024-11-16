@@ -1,4 +1,13 @@
 {
     "_aboutTitle": "Sobre",
-    "_aboutDescription": "Como desenvolvedor Full Stack especializado em soluções baseadas em dados, minha missão é transformar informações complexas em insights acionáveis e criar experiências digitais robustas e otimizadas. Com uma sólida base tanto em backend quanto em frontend, sou apaixonado por todo o processo de desenvolvimento de software, desde o planejamento até a implementação e otimização de sistemas escaláveis. Nos últimos [2 anos], tenho trabalhado em projetos que abrangem desde a construção de APIs eficientes e escaláveis, até a implementação de interfaces de usuário intuitivas. Minha abordagem combina a análise de dados e a automação para otimizar processos e garantir que cada solução seja alinhada com os objetivos de negócio."
+    "_aboutDescription": "Como desenvolvedor Full Stack especializado em soluções baseadas em dados, minha missão é transformar informações complexas em insights acionáveis e criar experiências digitais robustas e otimizadas. Com uma sólida base tanto em backend quanto em frontend, sou apaixonado por todo o processo de desenvolvimento de software, desde o planejamento até a implementação e otimização de sistemas escaláveis. Nos últimos [2 anos], tenho trabalhado em projetos que abrangem desde a construção de APIs eficientes e escaláveis, até a implementação de interfaces de usuário intuitivas. Minha abordagem combina a análise de dados e a automação para otimizar processos e garantir que cada solução seja alinhada com os objetivos de negócio.",
+    "_servicesTitle": "Serviços",
+    "_servicesDescription": "Como desenvolvedor Full Stack especializado em soluções baseadas em dados, minha missão é transformar informações complexas em insights acionáveis e criar experiências digitais robustas e otimizadas. Com uma sólida base tanto em backend quanto em frontend, sou apaixonado por todo o processo de desenvolvimento de software, desde o planejamento até a implementação e otimização de sistemas escaláveis. Nos últimos [2 anos], tenho trabalhado em projetos que abrangem desde a construção de APIs eficientes e escaláveis, até a implementação de interfaces de usuário intuitivas. Minha abordagem combina a análise de dados e a automação para otimizar processos e garantir que cada solução seja alinhada com os objetivos de negócio.",
+    "_nav":{
+      "_home": "Home",
+      "_about": "Sobre",
+      "_services": "Serviços",
+      "_projects": "Portifólio",
+      "_contact": "Contato"
+    } 
   }

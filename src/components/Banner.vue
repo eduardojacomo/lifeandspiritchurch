@@ -1,13 +1,30 @@
 <script setup>
+  import { onMounted } from 'vue';
   import TextEffect from '@/components/Tools/TextEffect.vue';
   import { useI18n } from 'vue-i18n';
 
+  const { t } = useI18n();
 
-  const { t, locale } = useI18n();
+  const observeElements = (el) => {
+  const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('in-view');
+        } else {
+            entry.target.classList.remove('in-view');
+        }
+        });
+    });
 
-  function switchLanguage(language){
-    locale.value = language;
-  }
+    el.forEach((element) => observer.observe(element));
+    };
+
+
+    onMounted(() => {
+        const sections = document.querySelectorAll('.animate');
+        observeElements(sections);
+    });
+
 </script>
 
 <template>
@@ -26,7 +43,7 @@
                     <TextEffect :words="['Developer', 'FullStack', 'Freelancer']"/>
                 </div>
            </div>
-           <div class="image-content"></div>
+           <div class="image-content animate"><div class="element"></div></div>
        </div>
        
         <div class="vertical">
@@ -37,6 +54,15 @@
 </template>
 
 <style scoped>
+.animate {
+  opacity: 0;
+  transition: all 0.8s ease-out;
+}
+
+.in-view {
+  opacity: 1;
+}
+
 .banner {
     display: flex;
     gap: 0.5rem;
@@ -171,11 +197,21 @@
     width: clamp(380px, 100%, 700px);
     background-image: url("/src/assets/me.webp");
     overflow: hidden;
-    opacity: 0.8;
+    /* opacity: 1; */
     background-repeat: no-repeat;
     background-size: contain;
     background-position: left;
     height: 88vh;
+}
+
+.element {
+  background: linear-gradient(
+    to top,
+    black,
+    rgba(255, 0, 0, 0)
+  );
+  width: 100%;
+  height: 100%;
 }
 
 .vertical {  

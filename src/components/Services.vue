@@ -1,10 +1,9 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
-import Card from './Card.vue';
+import { useI18n } from 'vue-i18n';
+import CardService from './CardService.vue';
 
-const about = 'Como desenvolvedor Full Stack especializado em soluções baseadas em dados, minha missão é transformar informações complexas em insights acionáveis e criar experiências digitais robustas e otimizadas. Com uma sólida base tanto em backend quanto em frontend, sou apaixonado por todo o processo de desenvolvimento de software, desde o planejamento até a implementação e otimização de sistemas escaláveis.\nNos últimos [2 anos], tenho trabalhado em projetos que abrangem desde a construção de APIs eficientes e escaláveis, até a implementação de interfaces de usuário intuitivas. Minha abordagem combina a análise de dados e a automação para otimizar processos e garantir que cada solução seja alinhada com os objetivos de negócio.'
-
-
+const { t, locale } = useI18n();
 
 
 const observeElements = (el) => {
@@ -31,7 +30,7 @@ onMounted(() => {
     <main>
       <div class="container">
         <div class="title animate">
-          <h1>Services</h1>
+          <h1>{{t('_servicesTitle')}}</h1>
         </div>
         <div class="column">
           <div class="socials">
@@ -39,23 +38,16 @@ onMounted(() => {
           </div>
           <div class="row">
             <div class="content animate">
-              <div class="icon">
-                <font-awesome-icon icon="fa-solid fa-code" />
-              </div>
               <p>{{ about }}</p>
             </div>
-  
-            <div class="title animate">
-              <h2>Skills</h2>
-            </div>
-  
-            <!-- Iterar sobre os grupos de habilidades -->
-            <div class="cards">
-              <div class="category animate">
-                API
-                Website
-                Chatbot
-              </div>
+            <font-awesome-icon icon="" />
+            <div class="cards animate">
+    
+                <CardService :icon="'fa-light fa-mobile'" :title="'APP'" :content="'content lorem insum I use animation as a third dimension by which to simplify experiences '" />
+                <CardService :icon="'fa-light fa-terminal'" :title="'Developer'" :content="'content lorem insum I use animation as a third dimension by which to simplify experiences '"/>
+                <CardService :icon="'fa-light fa-robot'" :title="'WhatsApp BOT'" :content="'content lorem insum I use animation as a third dimension by which to simplify experiences '"/>
+                <CardService :icon="'fa-light fa-laptop-code'" :title="'Developer'" :content="'content lorem insum I use animation as a third dimension by which to simplify experiences '"/>
+     
             </div>
           </div>
         </div>
@@ -107,7 +99,7 @@ onMounted(() => {
 .cards {
   display: flex;
   gap: 1.5rem;
-  padding: 0 6rem 1rem 8rem;
+  /* padding: 0 6rem 1rem 8rem; */
   flex-wrap: wrap;
   justify-content: center;
 }

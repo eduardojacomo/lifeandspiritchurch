@@ -1,97 +1,113 @@
+<script setup>
+import { ref, onMounted, onBeforeUnmount, computed, watch } from 'vue';
+import { useRoute } from 'vue-router';
+import { useI18n } from 'vue-i18n';
+import {useLanguage} from '../stores/languageStore'
+import {storeToRefs} from 'pinia';
+
+const uselanguage = useLanguage();
+const { locale, currentLocaleKey} = storeToRefs(uselanguage);
+
+function setLanguage() {
+  uselanguage.setLanguage();
+  console.log(locale.value);
+ }
+const { t, locale: i18nLocale } = useI18n();
+ 
+
+const isOpen = ref(false);
+const navbarRef = ref(null);
+// const menuitems = ref([]);
+const route = useRoute();
+const isHomePage = computed(() => route.path === '/' || route.path === '/home');
+
+
+const scrollTo = (sectionId) => {
+const section = document.getElementById(sectionId);
+if (section) {
+  section.scrollIntoView({ behavior: 'smooth' });
+  isOpen.value = false; // Close menu after scrolling
+}
+};
+
+const toggleMenu = () => {
+  isOpen.value = !isOpen.value;
+};
+
+const closeMenu = () => {
+  isOpen.value = false;
+};
+  
+const handleClickOutside = (event) => {
+  if (navbarRef.value && !navbarRef.value.contains(event.target)) {
+    isOpen.value = false;
+  }
+};
+
+watch(locale, (newLocale) => {
+  i18nLocale.value = newLocale; // Atualiza o vue-i18n quando o Pinia mudar
+});
+
+onMounted(() => {
+  document.addEventListener('click', handleClickOutside);
+  
+});
+
+
+onBeforeUnmount(() => {
+  document.removeEventListener('click', handleClickOutside);
+});
+</script>
+
 <template>
     <nav class="navbar" ref="navbarRef">
 
       <div class="logo">
         <a href="#">MyLogo</a>
+        <button class="languageButton" @click="setLanguage">
+          <font-awesome-icon icon="fa-solid fa-language" /> <span>{{ locale === 'pt' ? 'PT-BR' : 'EN' }} </span>
+      </button>
       </div>
-
-      <input type="checkbox" id="checkboxInput">
-      <label for="checkboxInput" class="toggleSwitch" @click="toggleLanguage">
-      <div class="speaker">{{ currentLanguageLabel }}</div>
-      <div class="mute-speaker">{{ currentLanguageLabel }}</div>
-      </label>
-
+      
       <div class="hamburger" @click="toggleMenu">
         <font-awesome-icon :icon="isOpen ? 'fa-solid fa-times' : 'fa-solid fa-bars'" />
       </div>
   
-
-      <ul :class="['nav-links', { open: isOpen }]">
-        <template v-if="isHomePage">
-      <li><a href="#home" @click="closeMenu" @click.prevent="scrollTo('home')">Home</a></li>
-      <li><a href="#about" @click="closeMenu" @click.prevent="scrollTo('about')">About</a></li>
-      <li><a href="#portfolio" @click="closeMenu" @click.prevent="scrollTo('portfolio')">Portfolio</a></li>
-      <li><a href="#contact" @click="closeMenu" @click.prevent="scrollTo('contact')">Contact</a></li>
-    </template>
-
-    <!-- Caso não esteja na página principal, use router-link -->
-    <template v-else>
-      <li><router-link to="/" @click="closeMenu">Home</router-link></li>
-      <li><router-link to="/#about" @click="closeMenu">About</router-link></li>
-      <li><router-link to="/#portfolio" @click="closeMenu">Portfolio</router-link></li>
-      <li><router-link to="/#contact" @click="closeMenu">Contact</router-link></li>
-    </template>
-      </ul>
+      <Transition name="fade" mode="out-in">
+            
+        <ul :class="['nav-links', { open: isOpen }]" :key="currentLocaleKey">
+          <template v-if="isHomePage">
+            <li><a href="#home" @click="closeMenu" @click.prevent="scrollTo('home')">{{ t('_nav._home') }}</a></li>
+            <li><a href="#about" @click="closeMenu" @click.prevent="scrollTo('services')">{{ t('_nav._services') }}</a></li>
+            <li><a href="#about" @click="closeMenu" @click.prevent="scrollTo('about')">{{ t('_nav._about') }}</a></li>
+            <li><a href="#portfolio" @click="closeMenu" @click.prevent="scrollTo('portfolio')">{{ t('_nav._projects') }}</a></li>
+            <li><a href="#contact" @click="closeMenu" @click.prevent="scrollTo('contact')">{{ t('_nav._contact') }}</a></li>
+          </template>
+  
+          <template v-else>
+            <li > </li>
+            <li><router-link to="/" @click="closeMenu">{{ t('_nav._home') }}</router-link></li>
+            <li><router-link to="/#services" @click="closeMenu">{{ t('_nav._services') }}</router-link></li>
+            <li><router-link to="/#about" @click="closeMenu">{{ t('_nav._about') }}</router-link></li>
+            <li><router-link to="/#portfolio" @click="closeMenu">{{ t('_nav._projects') }}</router-link></li>
+            <li><router-link to="/#contact" @click="closeMenu">{{ t('_nav._contact') }}</router-link></li>
+          </template>
+        </ul>
+      </Transition>    
     </nav>
   </template>
   
-  <script setup>
-  import { ref, onMounted, onBeforeUnmount, computed } from 'vue';
-  import { useRoute } from 'vue-router';
-  import { useI18n } from 'vue-i18n';
-
-  const { locale } = useI18n();
-
-  // Alterna o idioma entre 'pt' e 'en'
-  function toggleLanguage() {
-    locale.value = locale.value === 'pt' ? 'en' : 'pt';
-  }
-
-  // Computed para mostrar o idioma atual no botão
-  const currentLanguageLabel = computed(() => (locale.value === 'pt' ? 'PT' : 'EN'));
-  const isOpen = ref(false);
-  const navbarRef = ref(null);
-  
-  const route = useRoute();
-  const isHomePage = computed(() => route.path === '/' || route.path === '/home');
-
-  const scrollTo = (sectionId) => {
-  const section = document.getElementById(sectionId);
-  if (section) {
-    section.scrollIntoView({ behavior: 'smooth' });
-    isOpen.value = false; // Close menu after scrolling
-  }
-};
-
-  // Toggle menu open/close
-  const toggleMenu = () => {
-    isOpen.value = !isOpen.value;
-  };
-  
-  // Close the menu when a link is clicked
-  const closeMenu = () => {
-    isOpen.value = false;
-  };
-  
-  // Handle clicks outside the navbar
-  const handleClickOutside = (event) => {
-    if (navbarRef.value && !navbarRef.value.contains(event.target)) {
-      isOpen.value = false;
-    }
-  };
-  
-  // Add event listener to detect clicks outside
-  onMounted(() => {
-    document.addEventListener('click', handleClickOutside);
-  });
-  
-  // Remove event listener when component is destroyed
-  onBeforeUnmount(() => {
-    document.removeEventListener('click', handleClickOutside);
-  });
-  </script>
-  
   <style scoped>
+  /* Transitions */
+    .fade-enter-active,
+    .fade-leave-active {
+      transition: opacity 0.5s ease;
+    }
+
+    .fade-enter-from,
+    .fade-leave-to {
+      opacity: 0;
+    }
   /* General styles */
   .navbar {
     display: flex;
@@ -104,6 +120,13 @@
     z-index: 2000;
   }
   
+  .logo {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    align-items: center;
+  }
+
   .logo a {
     text-decoration: none;
     color: white;
@@ -154,72 +177,23 @@
     color: #ddd;
   }
 
-  /*toogle */
-  .toggleSwitch {
-  width: 50px;
-  height: 30px;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: transparent;
-  border-bottom:solid 1px gray;
-  cursor: pointer;
-  transition-duration: .3s;
-  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.13);
-  overflow: hidden;
-}
-
-/* Hide default HTML checkbox */
-  #checkboxInput {
-    display: none;
-  }
-
-
-
- 
-
-  .speaker {
-    width: 100%;
-    height: 100%;
+  .languageButton {
+    cursor: pointer;
     display: flex;
+    flex-direction: row;
+    gap: .5rem;
+    background-color: transparent;
+    border: none;
+    width: 150px;
+    justify-content: flex-start;
+    color: var(--color-text);
+    font-size: 1.2rem;
     align-items: center;
-    justify-content: center;
-    z-index: 2;
-    transition-duration: .3s;
   }
 
-  .mute-speaker {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    z-index: 3;
-    transition-duration: .3s;
+  .languageButton span{
+    font-size: .8rem;
   }
-
-  #checkboxInput:checked +.toggleSwitch .speaker {
-    opacity: 0;
-    transition-duration: .3s;
-  }
-
-  #checkboxInput:checked +.toggleSwitch .mute-speaker {
-    opacity: 1;
-    transition-duration: .3s;
-  }
-
-  #checkboxInput:active + .toggleSwitch {
-    transform: scale(0.7);
-  }
-
-  #checkboxInput:hover + .toggleSwitch {
-    background-color: var(--color-background-mute);
-    /* background-color: rgb(61, 61, 61); */
-  }
-
 
   @media (max-width: 768px) {
     .nav-links {

@@ -5,8 +5,8 @@ import Modal from './Tools/Modal.vue';
 import {storeToRefs} from 'pinia';
 import {useProjects} from '@/stores/projectStore'
 
-const useprojects = useProjects();
 const router = useRouter();
+const useprojects = useProjects();
 const {projectStore, setProject} = storeToRefs(useprojects);
 const resolucao = ref('');
 
