@@ -9,5 +9,8 @@
       "_services": "Services",
       "_projects": "Projects",
       "_contact": "Contact"
+    },
+    "_link": {
+      "_more":"Read More"
     }
   }

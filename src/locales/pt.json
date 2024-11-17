@@ -9,5 +9,8 @@
       "_services": "Serviços",
       "_projects": "Portifólio",
       "_contact": "Contato"
+    },
+    "_link": {
+      "_more":"Saiba Mais"
     } 
   }

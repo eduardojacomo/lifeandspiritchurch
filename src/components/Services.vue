@@ -43,10 +43,10 @@ onMounted(() => {
             <font-awesome-icon icon="" />
             <div class="cards animate">
     
-                <CardService :icon="'fa-light fa-mobile'" :title="'APP'" :content="'content lorem insum I use animation as a third dimension by which to simplify experiences '" />
-                <CardService :icon="'fa-light fa-terminal'" :title="'Developer'" :content="'content lorem insum I use animation as a third dimension by which to simplify experiences '"/>
-                <CardService :icon="'fa-light fa-robot'" :title="'WhatsApp BOT'" :content="'content lorem insum I use animation as a third dimension by which to simplify experiences '"/>
-                <CardService :icon="'fa-light fa-laptop-code'" :title="'Developer'" :content="'content lorem insum I use animation as a third dimension by which to simplify experiences '"/>
+                <CardService :icon="'fa-solid fa-mobile'" :title="'APP'" :link="'mobile'" :content="'content lorem insum I use animation as a third dimension by which to simplify experiences '" />
+                <CardService :icon="'fa-solid fa-terminal'" :title="'Developer'" :link="'developer'" :content="'content lorem insum I use animation as a third dimension by which to simplify experiences '"/>
+                <CardService :icon="'fa-solid fa-robot'" :title="'WhatsApp BOT'" :link="'bots'" :content="'content lorem insum I use animation as a third dimension by which to simplify experiences '"/>
+                <CardService :icon="'fa-solid fa-laptop-code'" :title="'Web Solutions'" :link="'websolutions'" :content="'content lorem insum I use animation as a third dimension by which to simplify experiences '"/>
      
             </div>
           </div>
