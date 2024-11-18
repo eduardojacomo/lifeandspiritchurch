@@ -197,6 +197,8 @@
     width: clamp(380px, 100%, 700px);
     background-image: url("/src/assets/me.webp");
     overflow: hidden;
+    filter: brightness(130%);
+    filter: contrast(105%);
     /* opacity: 1; */
     background-repeat: no-repeat;
     background-size: contain;

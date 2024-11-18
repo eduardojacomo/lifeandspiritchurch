@@ -186,7 +186,7 @@ onBeforeUnmount(() => {
     border: none;
     width: 150px;
     justify-content: flex-start;
-    color: var(--color-text);
+    color: var(--color-heading);
     font-size: 1.2rem;
     align-items: center;
   }

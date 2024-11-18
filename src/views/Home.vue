@@ -11,7 +11,7 @@ import Contato from '@/components/Contato.vue';
     <section id="home" class="section">
       <Banner />
     </section>
-    <section id="portfolio" class="section">
+    <section id="services" class="section">
       <Services />
     </section>
     <section id="about" class="section">
