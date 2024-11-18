@@ -86,16 +86,21 @@ onMounted(() => {
   
             <!-- Iterar sobre os grupos de habilidades -->
             <div class="cards">
-              <div v-for="(skills, groupName) in groupedSkills" :key="groupName" class="category animate">
+              <!-- <div v-for="(skills, groupName) in groupedSkills" :key="groupName" class="category animate">
                   <div class="skills-group">
-                    <h3>{{ groupName }}</h3> <!-- Nome da categoria -->
+                    <h3>{{ groupName }}</h3>
                     <div class="card-content animate">
                         <div v-for="(skill, index) in skills" :key="index" class="animate">
                             <Card :icon="skill.icon" :label="skill.label" />
                         </div>
                     </div>
                 </div>
-              </div>
+              </div> -->
+                <div class="card-content animate">
+                    <div v-for="(skill, index) in skills" :key="index" class="animate">
+                        <Card :icon="skill.icon" :label="skill.label" class="card-skill" />
+                    </div>
+                  </div>
             </div>
               </div>
             </div>
@@ -146,6 +151,12 @@ onMounted(() => {
   font-weight: 500;
 }
 
+.card-skill{
+  border: none;
+  border-radius: 8px;
+  background-color: var(--color-background-soft);
+}
+
 .content {
   display: flex;
   padding: 0 3rem;
@@ -171,6 +182,13 @@ onMounted(() => {
 .column, .card-content {
     display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
+}
+.card-content{
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
 }
 
 .row {

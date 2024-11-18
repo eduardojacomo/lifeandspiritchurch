@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
-import Modal from './Tools/Modal.vue';
+import { useI18n } from 'vue-i18n';
 import {storeToRefs} from 'pinia';
 import {useProjects} from '@/stores/projectStore'
 
@@ -9,7 +9,7 @@ const router = useRouter();
 const useprojects = useProjects();
 const {projectStore, setProject} = storeToRefs(useprojects);
 const resolucao = ref('');
-
+const { t } = useI18n();
 
 const projects = ref([
   {
@@ -21,6 +21,7 @@ const projects = ref([
     imagesTablet: [{ src: new URL('/src/assets/psirenatamachado.png', import.meta.url).href, alt: 'Image 1'}, { src: new URL('/src/assets/psirenatamachado _all.jpeg', import.meta.url).href, alt: 'Image 2'}],
     imagesSmartphone: [{ src: new URL('/src/assets/psirenatamachado.png', import.meta.url).href, alt: 'Image 1'}, { src: new URL('/src/assets/psirenatamachado _all.jpeg', import.meta.url).href, alt: 'Image 2'}],
     legend: ['Tela inicial do site'],
+    description: 'Site moderno, responsivo, rápido e que atende as necessidades do cliente',
     details: 'A psicóloga Renata, especialista em terapia cognitico comportamental, precisava de um website moderno e funcional para melhorar sua presença online e ampliar a captação de pacientes.'
   },
   {
@@ -38,6 +39,7 @@ const projects = ref([
     { src: new URL('/src/assets/makeburguer_pedidos.png', import.meta.url).href, alt: 'Image 2'}, 
     { src: new URL('/src/assets/makeburguer_newpedido.png', import.meta.url).href, alt: 'Image 3'}],
     legend: ['Tela de gerência de pedidos', 'Tela inicial da aplicação.', 'Tela onde o burguer é montado.'],
+    description: 'Sistema gerenciador de pedidos utilizando o framework VueJS',
     details: 'Esse projeto simula um sistema de pedidos, onde o cliente pode escolher o tipo de pão, a carne e os complementos.'
   },
   {
@@ -49,6 +51,7 @@ const projects = ref([
     imagesTablet: [{ src: new URL('/src/assets/apiCourseTablet.jpeg', import.meta.url).href, alt: 'Image 1'}],
     imagesSmartphone: [{ src: new URL('/src/assets/apiCourseSmartphone.jpeg', import.meta.url).href, alt: 'Image 1'}],
     legend: ['Tela inicial do site'],
+    description: 'API RestFull utilizando as tecnologias .NET, SQL Server, Entity Framework, Swager',
     details: 'Esse projeto visa em fornecer uma API para cursos, contendo dados de módulos, aulas, alunos, instrutores, notas, acompanhamento das aulas etc.'
   },
   // Outros projetos
@@ -116,7 +119,8 @@ onMounted(() => {
     <main>
       <div class="container">
         <div class="title">
-          <h1>Portifolio</h1>
+          <h1>{{ t('_projectsTitle') }}</h1>
+          <h3>{{ t('_projectsDescription') }}</h3>
         </div>
 
           <!-- <div class="socials">
@@ -128,25 +132,29 @@ onMounted(() => {
               :key="index"
               class="column_portifolio animate"
             >
-              <div v-if="resolucao === 'Navegador'"
+              <div 
               class="image-content"
               @mouseover="hoveredProjectIndex = index"
               @mouseleave="hoveredProjectIndex = null" >
                 <img :src="project.imagesNavegador[0].src" :alt="project.imagesNavegador[0].alt" class="image" />
-                
+                  
                 <Transition name="slide-fade">
                     <button v-if="hoveredProjectIndex === index" @click="setProjectDetail(project)">
                       <font-awesome-icon icon="fa-solid fa-external-link" />
                     </button>
                  </Transition>
-                 <Transition class="slide-fade">
+                 <!-- <Transition class="slide-fade">
                      <div class="text"  v-if="hoveredProjectIndex === index">
                       <h2><strong>{{ project.title }}</strong></h2>
                       <p>{{ project.description }}</p>
-                    </div>
-                 </Transition>
+                    </div> 
+                 </Transition>-->
             </div>
-            <div v-else class="image-content-mobile">
+            <div class="text">
+                      <h2><strong>{{ project.title }}</strong></h2>
+                      <p>{{ project.description }}</p>
+                  </div>
+            <!-- <div v-else class="image-content-mobile">
                 <img :src="project.imagesNavegador[0].src" :alt="project.imagesNavegador[0].alt" class="image" />
                 <div class="mobile-details">
                   <div class="text-mobile">
@@ -157,7 +165,7 @@ onMounted(() => {
                   </button>
 
                 </div>
-            </div>
+            </div> -->
           </div>
   
           </div>
@@ -255,7 +263,9 @@ onMounted(() => {
 
 .title {
   display: flex;
+  flex-direction: column;
   width: 100%;
+  align-items: center;
   justify-content: center;
   padding: 1rem 1rem 0.8rem 1rem;
 }
@@ -275,8 +285,12 @@ onMounted(() => {
 .column_portifolio {
   display: flex;
   flex-direction: column;
-  padding: 10px;
+  padding: 20px;
+  border: solid 1px var(--color-border);
+  /* border-radius: 8px; */
+  /* background-color: var(--color-background-mute); */
   width: clamp(400px, 100%, 500px);
+  gap: .5rem;
 }
 
 .image-content {
@@ -322,16 +336,16 @@ onMounted(() => {
 
 .text {
   display: flex;
-  position: absolute;
+  /* position: absolute; */
   flex-direction: column;
-  bottom: 20px;
-  left: 0;
-  padding: 1rem 5rem 0 2rem;
+  /* bottom: 20px;
+  left: 0; */
+  padding: 1rem;
   text-align: justify;
   color: var(--color-heading);
-  opacity: 0;
+  /* opacity: 0;
   transform: translateY(20px);
-  transition: all 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out; */
 }
 
 .image-content-mobile {
@@ -379,10 +393,10 @@ onMounted(() => {
   color:var(--color-text);
 }
 
-.image-content:hover .text {
+/* .image-content:hover .text {
   opacity: 1;
   transform: translateY(0);
-}
+} */
 
 .text h2, .text-mobile h2 {
   text-align: center;

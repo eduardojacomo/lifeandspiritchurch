@@ -75,7 +75,7 @@ onBeforeUnmount(() => {
   
       <Transition name="fade" mode="out-in">
             
-        <ul :class="['nav-links', { open: isOpen }]" :key="currentLocaleKey">
+        <ul :class="['nav-links', { open: isOpen }]" :key="isOpen">
           <template v-if="isHomePage">
             <li><a href="#home" @click="closeMenu" @click.prevent="scrollTo('home')">{{ t('_nav._home') }}</a></li>
             <li><a href="#about" @click="closeMenu" @click.prevent="scrollTo('services')">{{ t('_nav._services') }}</a></li>
@@ -99,15 +99,30 @@ onBeforeUnmount(() => {
   
   <style scoped>
   /* Transitions */
-    .fade-enter-active,
-    .fade-leave-active {
-      transition: opacity 0.5s ease;
-    }
+  .fade-enter-active,
+  .fade-leave-active {
+  transition: all 0.5s ease-in;
+}
 
-    .fade-enter-from,
-    .fade-leave-to {
-      opacity: 0;
-    }
+.fade-enter-from {
+  opacity: 0;
+  transform: translateX(100px); 
+}
+
+.fade-enter-to {
+  opacity: 1;
+  transform: translateX(0); 
+}
+
+.fade-leave-from {
+  opacity: 1;
+  transform: translateX(0); 
+}
+
+.fade-leave-to {
+  opacity: 0;
+  transform: translateX(100px); 
+}
   /* General styles */
   .navbar {
     display: flex;
@@ -138,6 +153,7 @@ onBeforeUnmount(() => {
   .hamburger {
     font-size: 1.5rem;
     cursor: pointer;
+    
   }
   
   /* Navigation links */
@@ -198,6 +214,12 @@ onBeforeUnmount(() => {
   @media (max-width: 768px) {
     .nav-links {
       width: 100%;
+    }
+    .hamburger{
+      z-index: 100;
+    }
+    .nav-links.open {
+      justify-content: center;
     }
   }
   </style>
