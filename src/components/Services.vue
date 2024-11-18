@@ -33,9 +33,9 @@ onMounted(() => {
           <h1>{{t('_servicesTitle')}}</h1>
         </div>
         <div class="column">
-          <div class="socials">
+          <!-- <div class="socials">
             <div class="linha-vertical"></div>
-          </div>
+          </div> -->
           <div class="row">
             <div class="content animate">
               <p>{{ about }}</p>

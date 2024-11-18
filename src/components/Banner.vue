@@ -47,7 +47,7 @@
        </div>
        
         <div class="vertical">
-            <a href="#about" class="botao-scroll"><span>SAIBA MAIS</span><font-awesome-icon icon="fa-solid fa-arrow-right" /></a>
+            <a href="#about" class="botao-scroll"><span>{{ t('_homeMore') }}</span><font-awesome-icon icon="fa-solid fa-arrow-right" /></a>
         </div>
     </div>
   </main>
@@ -197,13 +197,15 @@
     width: clamp(380px, 100%, 700px);
     background-image: url("/src/assets/me.webp");
     overflow: hidden;
-    filter: brightness(130%);
+    filter: brightness(100%);
     filter: contrast(105%);
     /* opacity: 1; */
     background-repeat: no-repeat;
     background-size: contain;
     background-position: left;
     height: 88vh;
+    /* justify-content: flex-end; */
+    align-items: flex-end;
 }
 
 .element {
@@ -213,7 +215,7 @@
     rgba(255, 0, 0, 0)
   );
   width: 100%;
-  height: 100%;
+  height: 50%;
 }
 
 .vertical {  

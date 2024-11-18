@@ -118,10 +118,10 @@ onMounted(() => {
         <div class="title">
           <h1>Portifolio</h1>
         </div>
-        <div class="column">
-          <div class="socials">
+
+          <!-- <div class="socials">
             <div class="linha-vertical"></div>
-          </div>
+          </div> -->
           <div class="projects">
             <div
               v-for="(project, index) in projects"
@@ -161,7 +161,7 @@ onMounted(() => {
           </div>
   
           </div>
-        </div>
+        
       </div>
     </main>
   </template>
@@ -285,6 +285,8 @@ onMounted(() => {
   justify-content: center;
   align-items: center;
   overflow: hidden;
+  border: none;
+  border-radius: 8px;
 }
 
 .image-content img {

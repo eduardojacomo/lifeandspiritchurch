@@ -162,6 +162,7 @@ onMounted(()=>{
   display: flex;
   position: relative;
   justify-content: center;
+  width: clamp(380px, 100%, 910px);
 }
 
 .close-button {
@@ -173,6 +174,7 @@ onMounted(()=>{
   background-color: transparent;
   color: var(--color-heading);
   font-size: 1.5rem;
+  z-index: 200;
 }
 
 .image-slider {

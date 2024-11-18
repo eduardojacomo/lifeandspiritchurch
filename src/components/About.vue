@@ -71,21 +71,16 @@ onMounted(() => {
             <h1 :key="currentLocaleKey">{{ t('_aboutTitle') }}</h1>
           </Transition>
         </div>
-        <div class="column">
-          <div class="socials">
-            <div class="linha-vertical"></div>
-          </div>
-          <div class="row">
-            <div class="content animate">
-              <div class="icon">
-                <font-awesome-icon icon="fa-solid fa-code" />
+        <div class="row">
+          <div class="content animate">
+              <div class="image animate">
+                  <img src="/src/assets/about.webp" alt="Me" />
               </div>
-              <Transition name="fade" mode="out-in">
-                <p :key="currentLocaleKey">{{ t('_aboutDescription') }}</p>
-              </Transition>
-            </div>
-  
-            <div class="title animate">
+              <div class="row">
+                <Transition name="fade" mode="out-in">
+                  <p :key="currentLocaleKey">{{ t('_aboutDescription') }}</p>
+                </Transition>
+                <div class="title animate">
               <h2>Skills</h2>
             </div>
   
@@ -102,8 +97,12 @@ onMounted(() => {
                 </div>
               </div>
             </div>
+              </div>
+            </div>
+            
+          
           </div>
-        </div>
+
       </div>
     </main>
   </template>
@@ -149,19 +148,21 @@ onMounted(() => {
 
 .content {
   display: flex;
-  padding: 0 7rem;
+  padding: 0 3rem;
   text-align: justify;
+  align-items: flex-start;
+  justify-content: center;
 }
 
 .content.animate p{
     font-size: 1rem;
-    padding: 1rem 0 1rem 3rem;
+    padding: 1rem 0 1rem 2rem;
 }
 
 .cards {
   display: flex;
   gap: 1.5rem;
-  padding: 0 6rem 1rem 8rem;
+  /* padding: 0 1rem; */
   flex-wrap: wrap;
   justify-content: center;
 }
@@ -182,12 +183,20 @@ onMounted(() => {
   margin: 0 0 0 8px;
 }
 
-.icon{
+.image{
     display: flex;
     padding: 1rem 2rem;
     justify-content: center;
     align-items: center;
     font-size: 7rem;
+    width: 380px;
+}
+
+.image img{
+  overflow: hidden;
+  width: 350px;
+  border: none;
+  border-radius: 8px;
 }
 
 .category h3 {
@@ -233,12 +242,9 @@ onMounted(() => {
 @media screen and (max-width: 1024px) {
   .content{
     padding: 0 2rem;
+    flex-wrap: wrap;
   }
-  .icon {
-    visibility: collapse;
-    padding: 0;
-    font-size: 0;
-  }
+  
 }
 
 @media screen and (max-width: 768px) {
@@ -246,11 +252,6 @@ onMounted(() => {
     padding: 0 1rem;
   }
 
-  .icon {
-    visibility: collapse;
-    padding: 0;
-    font-size: 0;
-  }
   .content.animate p{
     padding: 0;
   }
@@ -278,10 +279,6 @@ onMounted(() => {
   .cards {
     padding: 0.5rem;
     gap: 0.5rem;
-  }
-
-  .icon {
-    visibility: hidden;
   }
 
   .content {
