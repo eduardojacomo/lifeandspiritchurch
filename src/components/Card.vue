@@ -22,8 +22,8 @@
 .card{
     display: flex;
     flex-direction: column;
-    width: 110px;
-    height: 90px;
+    width: 160px;
+    height: 120px;
     padding: 10px;
     border: none;
     background-color: transparent;

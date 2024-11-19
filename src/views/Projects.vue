@@ -1,20 +1,18 @@
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, onBeforeMount } from 'vue'
 import Navegador from '../components/Navegador.vue';
 import Smartphone from '@/components/Smartphone.vue';
 import Tablet from '@/components/Tablet.vue';
 import {storeToRefs} from 'pinia';
 import {useProjects} from '@/stores/projectStore'
+import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 
 const useprojects = useProjects();
 const {projectStore} = storeToRefs(useprojects);
-
-// const props = defineProps({
-//   name: String
-// })
-
+const route = useRouter();
 const resolucao = ref('');
-
+const { t } = useI18n();
 // const emit = defineEmits(['close'])
 const currentImageIndex = ref(0)
 
@@ -28,6 +26,12 @@ const nextImage = () => {
 const prevImage = () => {
   if (currentImageIndex.value > 0) {
     currentImageIndex.value--
+  }
+}
+
+function verifyData(){
+  if (!projectStore.value.codigo){
+    route.push('/#portfolio');
   }
 }
 
@@ -47,6 +51,9 @@ onUnmounted(() => {
       window.removeEventListener('resize', verifyResolution);
     });
 
+onBeforeMount(()=>{
+  verifyData();
+})
 
 onMounted(()=>{
   verifyResolution();
@@ -59,10 +66,10 @@ onMounted(()=>{
     <div class="content">
       <router-link to="/" class="close-button"><font-awesome-icon icon="fa-solid fa-arrow-left" /></router-link>
       <div class="description">
-          <h2>{{ projectStore.title }}</h2>
-          <p>{{ projectStore.details }}</p>
+          <h2> {{t(`_${projectStore.codigo}._title`)}} </h2>
+          <p>{{t(`_${projectStore.codigo}._details`)}}</p>
           <ul>
-            <li v-for="(t, index) in projectStore.tags" :key="index">{{ t }}</li>
+            <li v-for="(tag, index) in projectStore.tags" :key="index">{{ tag }}</li>
           </ul>
           <div class="links">
             <div v-for="(l,index) in projectStore.links" :key="index">
@@ -71,13 +78,13 @@ onMounted(()=>{
             </div>
           </div>
       </div>
-      <div class="content-projeto">
+      <div class="content-projeto" v-if="projectStore">
         <Navegador :imageSrc = "projectStore.imagesNavegador[currentImageIndex].src" :url="projectStore.url" v-if="resolucao === 'Navegador'"/>
         <Tablet :imageSrc = "projectStore.imagesTablet[currentImageIndex].src" :url="projectStore.url" v-if="resolucao === 'Tablet'" />
         <Smartphone :imageSrc = "projectStore.imagesSmartphone[currentImageIndex].src" :url="projectStore.url" v-if="resolucao ==='Smartphone'"/>
      
         <!-- <img :key="currentImageIndex" :src="project.images[currentImageIndex]" alt="Imagem do Projeto" /> -->
-         <div class="botoes">
+         <div class="botoes" v-if="projectStore.imagesNavegador">
           <button @click="prevImage" :disabled="currentImageIndex === 0"><font-awesome-icon icon="fa-solid fa-chevron-left" /></button>
           <button @click="nextImage" :disabled="currentImageIndex === projectStore.imagesNavegador.length - 1"><font-awesome-icon icon="fa-solid fa-chevron-right" /></button>
         </div>

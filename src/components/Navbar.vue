@@ -85,7 +85,6 @@ onBeforeUnmount(() => {
           </template>
   
           <template v-else>
-            <li > </li>
             <li><router-link to="/" @click="closeMenu">{{ t('_nav._home') }}</router-link></li>
             <li><router-link to="/#services" @click="closeMenu">{{ t('_nav._services') }}</router-link></li>
             <li><router-link to="/#about" @click="closeMenu">{{ t('_nav._about') }}</router-link></li>

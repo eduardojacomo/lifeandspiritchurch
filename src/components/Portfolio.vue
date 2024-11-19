@@ -13,6 +13,7 @@ const { t } = useI18n();
 
 const projects = ref([
   {
+    codigo: 'p1',
     title: 'Site para Psicóloga Renata',
     url: 'www.psirenatamachado.com',
     links: [{plataforma: 'Preview', link:'https://www.psirenatamachado.com', icon:'fa-solid fa-eye'}],
@@ -25,6 +26,7 @@ const projects = ref([
     details: 'A psicóloga Renata, especialista em terapia cognitico comportamental, precisava de um website moderno e funcional para melhorar sua presença online e ampliar a captação de pacientes.'
   },
   {
+    codigo: 'p2',
     title: 'Sistema de Pedidos',
     url:'localhost',
     links: [{plataforma: 'Code', link:'https://www.psirenatamachado.com', icon:'fa-brands fa-github'}, {plataforma: 'Preview', link:'https://www.psirenatamachado.com', icon:'fa-solid fa-eye'}],
@@ -43,6 +45,7 @@ const projects = ref([
     details: 'Esse projeto simula um sistema de pedidos, onde o cliente pode escolher o tipo de pão, a carne e os complementos.'
   },
   {
+    codigo: 'p3',
     title: 'CourseAPI',
     url: 'https://github.com/eduardojacomo/CoursesAPI',
     links: [{plataforma: 'Code', link:'https://github.com/eduardojacomo/CoursesAPI' , icon:'fa-brands fa-github'}, {plataforma: 'Preview', link:'', icon:'fa-solid fa-eye'}],
@@ -151,8 +154,8 @@ onMounted(() => {
                  </Transition>-->
             </div>
             <div class="text">
-                      <h2><strong>{{ project.title }}</strong></h2>
-                      <p>{{ project.description }}</p>
+                      <h2><strong>{{t(`_${project.codigo}._title`)}} </strong></h2>
+                      <p>{{ t(`_${project.codigo}._description`) }}</p>
                   </div>
             <!-- <div v-else class="image-content-mobile">
                 <img :src="project.imagesNavegador[0].src" :alt="project.imagesNavegador[0].alt" class="image" />
@@ -336,13 +339,14 @@ onMounted(() => {
 
 .text {
   display: flex;
-  /* position: absolute; */
   flex-direction: column;
+  padding: 0 1rem 1rem 1rem;
+  text-align: justify;
+  color: var(--color-text);
+  gap: 1rem;
+  /* position: absolute; */
   /* bottom: 20px;
   left: 0; */
-  padding: 1rem;
-  text-align: justify;
-  color: var(--color-heading);
   /* opacity: 0;
   transform: translateY(20px);
   transition: all 0.3s ease-in-out; */
