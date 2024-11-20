@@ -37,16 +37,16 @@ onMounted(() => {
             <div class="linha-vertical"></div>
           </div> -->
           <div class="row">
-            <div class="content animate">
+            <!-- <div class="content animate">
               <p>{{ about }}</p>
-            </div>
+            </div> -->
             <font-awesome-icon icon="" />
             <div class="cards animate">
     
-                <CardService :icon="'fa-solid fa-mobile'" :title="'APP'" :link="'mobile'" :content="'content lorem insum I use animation as a third dimension by which to simplify experiences '" />
-                <CardService :icon="'fa-solid fa-terminal'" :title="'Developer'" :link="'developer'" :content="'content lorem insum I use animation as a third dimension by which to simplify experiences '"/>
-                <CardService :icon="'fa-solid fa-robot'" :title="'WhatsApp BOT'" :link="'bots'" :content="'content lorem insum I use animation as a third dimension by which to simplify experiences '"/>
-                <CardService :icon="'fa-solid fa-laptop-code'" :title="'Web Solutions'" :link="'websolutions'" :content="'content lorem insum I use animation as a third dimension by which to simplify experiences '"/>
+                <CardService :icon="'fa-solid fa-mobile'" :title="'APP'" :link="'mobile'" :content="t('_serviceAPP')" />
+                <CardService :icon="'fa-solid fa-terminal'" :title="'Developer'" :link="'developer'" :content="t('_serviceDeveloper')"/>
+                <CardService :icon="'fa-solid fa-robot'" :title="'BOT'" :link="'bots'" :content="t('_serviceBots')"/>
+                <CardService :icon="'fa-solid fa-laptop-code'" :title="'Web Solutions'" :link="'websolutions'" :content="t('_serviceWeb')"/>
      
             </div>
           </div>
@@ -101,6 +101,7 @@ onMounted(() => {
   gap: 1.5rem;
   /* padding: 0 6rem 1rem 8rem; */
   flex-wrap: wrap;
+  padding: 0 3.5rem;
   justify-content: center;
 }
 
@@ -176,6 +177,9 @@ onMounted(() => {
     visibility: collapse;
     padding: 0;
     font-size: 0;
+  }
+  .cards{
+    padding: 0;
   }
 }
 

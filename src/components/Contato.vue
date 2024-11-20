@@ -1,10 +1,9 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
-import Card from './Card.vue';
-import EditorText from './EditorText.vue';
-const about = 'Estou aguardando o seu contato. Vamos Criar juntos?'
-const title = 'Contact';
-const content = ref('');
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
+
 const handleContentUpdate = (newContent) => {
   content.value = newContent;
 };
@@ -33,22 +32,27 @@ onMounted(() => {
     <main>
       <div class="container">
         <div class="title animate">
-          <h1>{{ title }}</h1>
+          <h1>{{ t('_contactTitle') }}</h1>
         </div>
         <div class="column">
-          <div class="socials">
-            <div class="linha-vertical"></div>
+          <div class="icons">
+            <div class="column-contact">
+              <a href="https://www.linkedin.com/in/eduardojacomo/" target="_blank"><i class="devicon-linkedin-plain"></i><span>/eduardojacomo</span></a> 
+            </div>
+            <div class="column-contact">
+              <a href="https://github.com/eduardojacomo/" target="_blank"><i class="devicon-github-original"></i><span>/eduardojacomo</span></a>
+              
+            </div>
           </div>
           <div class="row">
             <div class="content animate">
-              <div class="icon">
-                <font-awesome-icon icon="fa-solid fa-handshake" />
-              </div>
-              <p>{{ about }}</p>
-              <!-- <EditorText @update="handleContentUpdate" />
-              {{ content }} -->
+  
+              <p>{{ t('_contactDescription') }}</p>
+              
             </div>
-            
+            <div class="button">
+              <button class="btn-contact">{{t('_contactButton')}}</button>
+            </div>
           </div>
         </div>
       </div>
@@ -75,7 +79,7 @@ onMounted(() => {
 }
 
 .title h1 {
-  font-size: 3rem;
+  font-size: 2rem;
   font-weight: 700;
 }
 
@@ -90,41 +94,58 @@ onMounted(() => {
   text-align: justify;
 }
 
+.btn-contact{
+  display: flex;
+  padding: 1rem;
+  border: solid 1px var(--color-border);
+  background-color: transparent;
+  cursor: pointer;
+  color: var(--color-text);
+  align-items: center;
+  justify-content: center;
+  width: 250px;
+  animation: all .5s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.btn-contact:hover{
+  background-color: var(--color-background-soft);
+}
+
 .content.animate p{
     font-size: 1.2rem;
     padding: 1rem 0 1rem 3rem;
 }
 
-.cards {
-  display: flex;
-  gap: 1.5rem;
-  padding: 0 6rem 1rem 8rem;
-  flex-wrap: wrap;
-  justify-content: center;
-}
 
-
-.column, .card-content {
+.column, .column-contact {
     display: flex;
     flex-direction: row;
+}
+
+.column-contact{
+  gap: .5rem;
+  align-items: center;
+  justify-content: center;
 }
 
 .row {
     display: flex;
     flex-direction: column;
 }
-.linha-vertical {
-  border-left: 2px solid var(--color-text);
-  height: 180px;
-  margin: 0 0 0 8px;
-}
 
-.icon{
+.icons{
     display: flex;
-    padding: 1rem 5rem;
+    flex-direction: column;
+    padding: 1rem 1rem 1rem 5rem;
     justify-content: center;
     align-items: center;
-    font-size: 7rem;
+    font-size: 1.5rem;
+    gap: .5rem;
+}
+
+.icons a{
+  text-decoration: none;
+  color: var(--color-text);
 }
 
 .category h3 {
@@ -134,25 +155,12 @@ onMounted(() => {
   /* margin-bottom: .5rem; */
 }
 
-.skills-group {
-  display: flex;
-  flex-direction: column;
-  gap: 1.0rem;
-  flex-wrap: wrap;
-  justify-content: center;
-  background-color: var(--color-background-soft);
-  border: none;
-  border-radius: 5px;
-  padding: 1rem;
-}
 
-.socials {
+.button{
   display: flex;
-  flex-direction: column;
   justify-content: flex-end;
-  gap: .5rem;
-  padding: 0 0 .5rem 1rem;
-  font-size: 1.2rem;
+  width: 100%;
+  padding: 0 7rem;
 }
 
 /* Animação ao aparecer no scroll */
@@ -165,5 +173,24 @@ onMounted(() => {
 .in-view {
   opacity: 1;
   transform: translateY(0);
+}
+
+@media screen and (max-width: 1024px) {
+  .content {
+    padding: 0 !important;
+  }
+}
+
+@media screen and (max-width: 840px) {
+
+  .column{
+    flex-direction: column !important;
+  }
+  .container{
+    padding: 70px 1rem 1rem 1rem;
+  }
+  .content.animate p, .icons{
+    padding: 1rem;
+}
 }
 </style>

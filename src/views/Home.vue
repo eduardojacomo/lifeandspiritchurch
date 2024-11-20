@@ -3,7 +3,7 @@
   import About from '../components/About.vue'
   import Portfolio from '../components/Portfolio.vue'
   import Services from '@/components/Services.vue';
-import Contato from '@/components/Contato.vue';
+  import Contato from '@/components/Contato.vue';
 </script>
 
 <template>
@@ -20,9 +20,9 @@ import Contato from '@/components/Contato.vue';
     <section id="portfolio" class="section">
       <Portfolio />
     </section>
-    <!-- <section id="contact" class="section">
+    <section id="contact" class="section">
       <Contato />
-    </section> -->
+    </section>
   </main>
 </template>
 

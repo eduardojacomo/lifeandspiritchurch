@@ -292,7 +292,7 @@ onMounted(() => {
   border: solid 1px var(--color-border);
   /* border-radius: 8px; */
   /* background-color: var(--color-background-mute); */
-  width: clamp(400px, 100%, 500px);
+  width: clamp(400px, 100%, 550px);
   gap: .5rem;
 }
 

@@ -36,9 +36,9 @@ const { t } = useI18n();
         <div class="card-content">
             <p> {{props.content}}</p>
         </div>
-        <div class="card-link">
+        <!--<div class="card-link">
             <router-link :to="`/Service/${props.link}`" class="custom-link">{{ t('_link._more') }}</router-link>
-        </div>
+        </div>-->
     </div>
 </template>
 

@@ -30,5 +30,12 @@
       "_title":"CourseAPI",
       "_description": "API RestFull utilizando as tecnologias .NET, SQL Server, Entity Framework, Swager.",
       "_details":"Esse projeto visa em fornecer uma API para cursos, contendo dados de módulos, aulas, alunos, instrutores, notas, acompanhamento das aulas etc."
-    }
+    },
+    "_contactTitle": "Contato",
+    "_contactDescription": "Precisando de ajuda para concluir um projeto, suprir alguma demanda ou criar uma ferramenta que te auxilie no dia a dia? Entre em contato comigo! Será um prazer em discutir suas ideias e encontrar a melhor solução para suas necessidades.",
+    "_contactButton": "Fale Comigo",
+    "_serviceAPP": "Criação de aplicativos móveis (iOS, Android) e aplicativos web, desde o design até a publicação.",
+    "_serviceWeb":"Criação de sites e plataformas web personalizadas, e-commerce, sistemas de gestão de conteúdo (CMS).Adaptação de sites para diferentes dispositivos (desktop, mobile, tablet). Melhoria da visibilidade do site nos resultados de pesquisa.",
+    "_serviceDeveloper": "Desenvolvimento personalizado: Criação de soluções sob medida para atender às necessidades específicas de cada cliente.",
+    "_serviceBots": "Criação de chatbots e assistentes virtuais para diversas plataformas (Facebook Messenger, WhatsApp, etc.)."
   }
