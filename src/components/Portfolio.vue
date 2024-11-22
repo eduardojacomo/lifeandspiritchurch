@@ -4,6 +4,10 @@ import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import {storeToRefs} from 'pinia';
 import {useProjects} from '@/stores/projectStore'
+import {useLanguage} from '../stores/languageStore'
+
+const uselanguage = useLanguage();
+const { currentLocaleKey} = storeToRefs(uselanguage);
 
 const router = useRouter();
 const useprojects = useProjects();
@@ -122,8 +126,12 @@ onMounted(() => {
     <main>
       <div class="container">
         <div class="title">
-          <h1>{{ t('_projectsTitle') }}</h1>
-          <h3>{{ t('_projectsDescription') }}</h3>
+          <Transition name="fade-blur" mode="out-in">
+            <h1 :key="currentLocaleKey">{{ t('_projectsTitle') }}</h1>
+          </Transition>
+          <Transition name="fade-blur" mode="out-in">
+            <h3 :key="currentLocaleKey">{{ t('_projectsDescription') }}</h3>
+          </Transition>
         </div>
 
           <!-- <div class="socials">
@@ -139,7 +147,9 @@ onMounted(() => {
               class="image-content"
               @mouseover="hoveredProjectIndex = index"
               @mouseleave="hoveredProjectIndex = null" >
-                <img :src="project.imagesNavegador[0].src" :alt="project.imagesNavegador[0].alt" class="image" />
+                <Transition name="fade-blur" mode="out-in">
+                  <img :src="project.imagesNavegador[0].src" :alt="project.imagesNavegador[0].alt" class="image"/>
+                </Transition>
                   
                 <Transition name="slide-fade">
                     <button v-if="hoveredProjectIndex === index" @click="setProjectDetail(project)">
@@ -154,9 +164,13 @@ onMounted(() => {
                  </Transition>-->
             </div>
             <div class="text">
-                      <h2><strong>{{t(`_${project.codigo}._title`)}} </strong></h2>
-                      <p>{{ t(`_${project.codigo}._description`) }}</p>
-                  </div>
+              <Transition name="fade-blur" mode="out-in">
+                <h2 :key="currentLocaleKey"><strong>{{t(`_${project.codigo}._title`)}} </strong></h2>
+              </Transition>
+              <Transition name="fade-blur" mode="out-in">
+                <p :key="currentLocaleKey">{{ t(`_${project.codigo}._description`) }}</p>
+              </Transition>
+            </div>
             <!-- <div v-else class="image-content-mobile">
                 <img :src="project.imagesNavegador[0].src" :alt="project.imagesNavegador[0].alt" class="image" />
                 <div class="mobile-details">
@@ -410,6 +424,17 @@ onMounted(() => {
 
 .text p, .text-mobile p {
   font-size: 1rem;
+}
+
+.animate {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s ease-out;
+}
+
+.in-view {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 @media screen and (max-width: 1092px){

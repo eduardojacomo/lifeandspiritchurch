@@ -2,6 +2,11 @@
 import { ref, onMounted, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import CardService from './CardService.vue';
+import {useLanguage} from '../stores/languageStore'
+import {storeToRefs} from 'pinia';
+
+const uselanguage = useLanguage();
+const { currentLocaleKey} = storeToRefs(uselanguage);
 
 const { t, locale } = useI18n();
 
@@ -30,7 +35,9 @@ onMounted(() => {
     <main>
       <div class="container">
         <div class="title animate">
-          <h1>{{t('_servicesTitle')}}</h1>
+          <Transition name="fade-blur" mode="out-in">
+            <h1 :key="currentLocaleKey">{{t('_servicesTitle')}}</h1>
+          </Transition>
         </div>
         <div class="column">
           <!-- <div class="socials">
@@ -42,11 +49,18 @@ onMounted(() => {
             </div> -->
             <font-awesome-icon icon="" />
             <div class="cards animate">
-    
-                <CardService :icon="'fa-solid fa-mobile'" :title="'APP'" :link="'mobile'" :content="t('_serviceAPP')" />
-                <CardService :icon="'fa-solid fa-terminal'" :title="'Developer'" :link="'developer'" :content="t('_serviceDeveloper')"/>
-                <CardService :icon="'fa-solid fa-robot'" :title="'BOT'" :link="'bots'" :content="t('_serviceBots')"/>
-                <CardService :icon="'fa-solid fa-laptop-code'" :title="'Web Solutions'" :link="'websolutions'" :content="t('_serviceWeb')"/>
+                <Transition name="fade-blur" mode="out-in">
+                  <CardService :icon="'fa-solid fa-mobile'" :title="'APP'" :link="'mobile'" :content="t('_serviceAPP')" :key="currentLocaleKey" />
+                </Transition> 
+                <Transition name="fade-blur" mode="out-in">
+                  <CardService :icon="'fa-solid fa-terminal'" :title="'Developer'" :link="'developer'" :content="t('_serviceDeveloper')" :key="currentLocaleKey" />
+                </Transition> 
+                <Transition name="fade-blur" mode="out-in">
+                  <CardService :icon="'fa-solid fa-robot'" :title="'BOT'" :link="'bots'" :content="t('_serviceBots')" :key="currentLocaleKey" />                  
+                </Transition> 
+                <Transition name="fade-blur" mode="out-in">
+                  <CardService :icon="'fa-solid fa-laptop-code'" :title="'Web Solutions'" :link="'websolutions'" :content="t('_serviceWeb')" :key="currentLocaleKey" />
+                </Transition> 
      
             </div>
           </div>

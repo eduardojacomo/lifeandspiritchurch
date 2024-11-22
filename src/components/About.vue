@@ -2,8 +2,8 @@
 import { ref, onMounted, computed, watch } from 'vue';
 import Card from './Card.vue';
 import { useI18n } from 'vue-i18n';
-import {useLanguage} from '../stores/languageStore'
 import {storeToRefs} from 'pinia';
+import {useLanguage} from '../stores/languageStore'
 
 const uselanguage = useLanguage();
 const { currentLocaleKey} = storeToRefs(uselanguage);
@@ -67,7 +67,7 @@ onMounted(() => {
     <main>
       <div class="container">
         <div class="title animate">
-          <Transition name="fade" mode="out-in">
+          <Transition name="fade-blur" mode="out-in">
             <h1 :key="currentLocaleKey">{{ t('_aboutTitle') }}</h1>
           </Transition>
         </div>
@@ -77,7 +77,7 @@ onMounted(() => {
                   <img src="/src/assets/about.webp" alt="Me" />
               </div>
               <div class="row">
-                <Transition name="fade" mode="out-in">
+                <Transition name="fade-blur" mode="out-in">
                   <p :key="currentLocaleKey">{{ t('_aboutDescription') }}</p>
                 </Transition>
                 <div class="title animate">
@@ -114,16 +114,6 @@ onMounted(() => {
   
 
 <style scoped>
-
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.5s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
 
 .container {
   display: flex;
@@ -195,11 +185,7 @@ onMounted(() => {
     display: flex;
     flex-direction: column;
 }
-.linha-vertical {
-  border-left: 2px solid var(--color-text);
-  height: 180px;
-  margin: 0 0 0 8px;
-}
+
 
 .image{
     display: flex;
@@ -234,15 +220,6 @@ onMounted(() => {
   border: none;
   border-radius: 5px;
   padding: 1rem;
-}
-
-.socials {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  gap: .5rem;
-  padding: 0 0 .5rem 1rem;
-  font-size: 1.2rem;
 }
 
 /* Animação ao aparecer no scroll */

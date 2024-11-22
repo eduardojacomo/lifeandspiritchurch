@@ -7,6 +7,11 @@ import {storeToRefs} from 'pinia';
 import {useProjects} from '@/stores/projectStore'
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
+import {useLanguage} from '../stores/languageStore'
+
+const uselanguage = useLanguage();
+const { currentLocaleKey} = storeToRefs(uselanguage);
+
 
 const useprojects = useProjects();
 const {projectStore} = storeToRefs(useprojects);
@@ -64,10 +69,14 @@ onMounted(()=>{
 <template>
   <div class="container">
     <div class="content">
-      <router-link to="/" class="close-button"><font-awesome-icon icon="fa-solid fa-arrow-left" /></router-link>
+      <router-link to="/#portfolio" class="close-button"><font-awesome-icon icon="fa-solid fa-arrow-left" /></router-link>
       <div class="description">
-          <h2> {{t(`_${projectStore.codigo}._title`)}} </h2>
-          <p>{{t(`_${projectStore.codigo}._details`)}}</p>
+        <Transition name="fade-blur" mode="out-in">
+          <h2 :key="currentLocaleKey"> {{t(`_${projectStore.codigo}._title`)}} </h2>
+        </Transition>
+        <Transition name="fade-blur" mode="out-in">
+          <p :key="currentLocaleKey">{{t(`_${projectStore.codigo}._details`)}}</p>
+        </Transition>
           <ul>
             <li v-for="(tag, index) in projectStore.tags" :key="index">{{ tag }}</li>
           </ul>
