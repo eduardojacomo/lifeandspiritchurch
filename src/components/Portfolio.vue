@@ -148,7 +148,7 @@ onMounted(() => {
               @mouseover="hoveredProjectIndex = index"
               @mouseleave="hoveredProjectIndex = null" >
                 <Transition name="fade-blur" mode="out-in">
-                  <img :src="project.imagesNavegador[0].src" :alt="project.imagesNavegador[0].alt" class="image"/>
+                  <img :src="project.imagesNavegador[0].src" :alt="project.imagesNavegador[0].alt" class="image" :key="currentLocaleKey"/>
                 </Transition>
                   
                 <Transition name="slide-fade">
@@ -290,6 +290,7 @@ onMounted(() => {
 .title h1 {
   font-size: 2rem;
   font-weight: 700;
+  color: var(--color-heading);
 }
 
 .projects {
