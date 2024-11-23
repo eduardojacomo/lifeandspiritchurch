@@ -74,43 +74,38 @@ onMounted(() => {
         <div class="row">
           <div class="content animate">
               <div class="image animate">
-                  <img src="/src/assets/about.webp" alt="Me" />
+                <Transition name="fade-blur" mode="out-in">
+                  <img src="/src/assets/about.webp" alt="Me" :key="currentLocaleKey" />
+                </Transition>  
               </div>
               <div class="row">
                 <Transition name="fade-blur" mode="out-in">
                   <p :key="currentLocaleKey">{{ t('_aboutDescription') }}</p>
                 </Transition>
                 <div class="title animate">
-              <h2>Skills</h2>
+                <Transition name="fade-blur" mode="out-in">
+                  <h2 :key="currentLocaleKey">Skills</h2>
+                </Transition>
             </div>
   
-            <!-- Iterar sobre os grupos de habilidades -->
             <div class="cards">
-              <!-- <div v-for="(skills, groupName) in groupedSkills" :key="groupName" class="category animate">
-                  <div class="skills-group">
-                    <h3>{{ groupName }}</h3>
-                    <div class="card-content animate">
-                        <div v-for="(skill, index) in skills" :key="index" class="animate">
-                            <Card :icon="skill.icon" :label="skill.label" />
-                        </div>
-                    </div>
-                </div>
-              </div> -->
-                <div class="card-content animate">
-                    <div v-for="(skill, index) in skills" :key="index" class="animate">
-                        <Card :icon="skill.icon" :label="skill.label" class="card-skill" />
-                    </div>
+              <div class="card-content animate">
+                  <div v-for="(skill, index) in skills" :key="index" class="animate">
+                    <Transition name="fade-blur" mode="out-in">
+                      <Card :icon="skill.icon" :label="skill.label" class="card-skill" :key="currentLocaleKey"/>
+                    </Transition>  
                   </div>
+                </div>
             </div>
-              </div>
-            </div>
+          </div>
+        </div>
             
           
-          </div>
-
       </div>
-    </main>
-  </template>
+
+    </div>
+  </main>
+</template>
   
 
 <style scoped>

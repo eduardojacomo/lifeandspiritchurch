@@ -124,10 +124,11 @@ onMounted(() => {
 .content {
   display: flex;
   flex-direction: column;
-  padding: 0 12rem;
+  padding: 0 12rem 5rem 12rem;
   justify-content: center;
   text-align: justify;
-  gap: .5rem;
+  gap: 1.5rem;
+
 }
 
 .btn-contact{
