@@ -2,6 +2,10 @@
   import { onMounted } from 'vue';
   import TextEffect from '@/components/Tools/TextEffect.vue';
   import { useI18n } from 'vue-i18n';
+  import {useLanguage} from '../stores/languageStore'
+  import {storeToRefs} from 'pinia';
+    const uselanguage = useLanguage();
+    const { currentLocaleKey} = storeToRefs(uselanguage);
 
   const { t } = useI18n();
 
@@ -47,7 +51,9 @@
        </div>
        
         <div class="vertical">
-            <a href="#about" class="botao-scroll"><span>{{ t('_homeMore') }}</span><font-awesome-icon icon="fa-solid fa-arrow-right" /></a>
+            <Transition name="fade-blur" mode="out-in">
+                <a href="#about" class="botao-scroll" :key="currentLocaleKey"><span>{{ t('_homeMore') }}</span><font-awesome-icon icon="fa-solid fa-arrow-right" /></a>
+            </Transition>
         </div>
     </div>
   </main>

@@ -77,20 +77,30 @@ onMounted(()=>{
         <Transition name="fade-blur" mode="out-in">
           <p :key="currentLocaleKey">{{t(`_${projectStore.codigo}._details`)}}</p>
         </Transition>
-          <ul>
-            <li v-for="(tag, index) in projectStore.tags" :key="index">{{ tag }}</li>
-          </ul>
-          <div class="links">
+        <Transition name="fade-blur" mode="out-in">
+          <ul :key="currentLocaleKey">
+            <li v-for="(tag, index) in projectStore.tags" :key="index">{{ tag }} </li>
+          </ul>   
+        </Transition>
+        <Transition name="fade-blur" mode="out-in">
+          <div class="links" :key="currentLocaleKey">
             <div v-for="(l,index) in projectStore.links" :key="index">
               <a :href="l.link" target="_blank" v-if="l.plataforma==='Code'"><span class="links-text"> <i class="devicon-github-original"></i> {{ l.plataforma }}</span></a>
               <a :href="l.link" target="_blank" v-else><span class="links-text"> <font-awesome-icon :icon="l.icon" />  {{ l.plataforma }}</span></a>
             </div>
-          </div>
+          </div>  
+        </Transition>
       </div>
       <div class="content-projeto" v-if="projectStore">
-        <Navegador :imageSrc = "projectStore.imagesNavegador[currentImageIndex].src" :url="projectStore.url" v-if="resolucao === 'Navegador'"/>
-        <Tablet :imageSrc = "projectStore.imagesTablet[currentImageIndex].src" :url="projectStore.url" v-if="resolucao === 'Tablet'" />
-        <Smartphone :imageSrc = "projectStore.imagesSmartphone[currentImageIndex].src" :url="projectStore.url" v-if="resolucao ==='Smartphone'"/>
+        <Transition name="fade-blur" mode="out-in">
+          <Navegador :imageSrc = "projectStore.imagesNavegador[currentImageIndex].src" :url="projectStore.url" v-if="resolucao === 'Navegador'" :key="currentLocaleKey"/>
+        </Transition>
+        <Transition name="fade-blur" mode="out-in">
+          <Tablet :imageSrc = "projectStore.imagesTablet[currentImageIndex].src" :url="projectStore.url" v-if="resolucao === 'Tablet'" :key="currentLocaleKey"/>
+        </Transition>
+        <Transition name="fade-blur" mode="out-in">
+          <Smartphone :imageSrc = "projectStore.imagesSmartphone[currentImageIndex].src" :url="projectStore.url" v-if="resolucao ==='Smartphone'" :key="currentLocaleKey"/>
+        </Transition>
      
         <!-- <img :key="currentImageIndex" :src="project.images[currentImageIndex]" alt="Imagem do Projeto" /> -->
          <div class="botoes" v-if="projectStore.imagesNavegador">

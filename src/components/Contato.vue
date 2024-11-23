@@ -115,6 +115,7 @@ onMounted(() => {
 .title h1 {
   font-size: 2rem;
   font-weight: 700;
+  color: var(--color-heading);
 }
 
 /* .content p{
@@ -193,7 +194,7 @@ onMounted(() => {
 
 .icons a{
   text-decoration: none;
-  color: var(--color-heading);
+  color: var(--color-text);
 }
 
 .button{
