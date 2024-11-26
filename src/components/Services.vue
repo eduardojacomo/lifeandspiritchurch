@@ -130,46 +130,13 @@ onMounted(() => {
     display: flex;
     flex-direction: column;
 }
-.linha-vertical {
-  border-left: 2px solid var(--color-text);
-  height: 180px;
-  margin: 0 0 0 8px;
-}
 
-.icon{
-    display: flex;
-    padding: 1rem 2rem;
-    justify-content: center;
-    align-items: center;
-    font-size: 7rem;
-}
 
 .category h3 {
   font-size: 1rem;
   font-weight: 600;
   text-align: center;
   /* margin-bottom: .5rem; */
-}
-
-.skills-group {
-  display: flex;
-  flex-direction: column;
-  gap: 1.0rem;
-  flex-wrap: wrap;
-  justify-content: center;
-  background-color: var(--color-background-soft);
-  border: none;
-  border-radius: 5px;
-  padding: 1rem;
-}
-
-.socials {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  gap: .5rem;
-  padding: 0 0 .5rem 1rem;
-  font-size: 1.2rem;
 }
 
 /* Animação ao aparecer no scroll */

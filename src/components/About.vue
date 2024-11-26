@@ -138,9 +138,9 @@ onMounted(() => {
 }
 
 .card-skill{
-  border: none;
-  border-radius: 8px;
-  background-color: var(--color-background-soft);
+  border: solid 1px var(--color-border);
+  /* border-radius: 8px; */
+  background-color: transparent;
 }
 
 .content {

@@ -48,9 +48,9 @@ const { t } = useI18n();
         display: flex;
         flex-direction: column;
         /* gap: .2rem; */
-        border: none;
-        border-radius: 8px;
-        background-color: var(--color-background-mute);
+        border: solid 1px var(--color-border);
+        /* border-radius: 8px; */
+        background-color: transparent;
         padding: 1rem 2rem;
         width: 380px;
         height: 280px;
