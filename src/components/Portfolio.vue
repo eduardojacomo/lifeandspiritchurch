@@ -40,7 +40,7 @@ const projects = ref([
     { src: new URL('/src/assets/make-burguer-pedidos-website.jpeg', import.meta.url).href, alt: 'Image 3'}],
     imagesTablet: [{ src: new URL('/src/assets/makeburguer_home.png', import.meta.url).href, alt: 'Image 1'}, 
     { src: new URL('/src/assets/make-burguer-capa-ipad.jpeg', import.meta.url).href, alt: 'Image 2'}, 
-    { src: new URL('/src/assets/make-burguer-pedido-ipad.jpeg', import.meta.url).href, alt: 'Image 3'}],
+    { src: new URL('/src/assets/make-burguer-pedidos-ipad.jpeg', import.meta.url).href, alt: 'Image 3'}],
     imagesSmartphone: [{ src: new URL('/src/assets/makeburguer_home.png', import.meta.url).href, alt: 'Image 1'}, 
     { src: new URL('/src/assets/make-burguer-capa-smartphone.jpeg', import.meta.url).href, alt: 'Image 2'}, 
     { src: new URL('/src/assets/make-burguer-pedidos-smartphone.jpeg', import.meta.url).href, alt: 'Image 3'}],

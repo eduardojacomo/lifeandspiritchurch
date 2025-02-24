@@ -63,7 +63,7 @@ onBeforeUnmount(() => {
     <nav class="navbar" ref="navbarRef">
 
       <div class="logo">
-        <a href="#">MyLogo</a>
+        <a href="#"><img src="../assets/ej.webp" alt="logo"></a>
         <button class="languageButton" @click="setLanguage">
           <font-awesome-icon icon="fa-solid fa-language" /> <span>{{ locale === 'pt' ? 'PT-BR' : 'EN' }} </span>
       </button>
@@ -146,6 +146,10 @@ onBeforeUnmount(() => {
     color: white;
     font-size: 1.5rem;
     font-weight: bold;
+  }
+
+  .logo img{
+    height: 38.40px;
   }
   
   /* Hamburger icon styles */

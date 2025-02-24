@@ -78,9 +78,9 @@ onMounted(() => {
                   <img src="/src/assets/about.webp" alt="Me" :key="currentLocaleKey" />
                 </Transition>  
               </div>
-              <div class="row">
+              <div class="row about">
                 <Transition name="fade-blur" mode="out-in">
-                  <p :key="currentLocaleKey">{{ t('_aboutDescription') }}</p>
+                  <p :key="currentLocaleKey" class="about-p">{{ t('_aboutDescription') }}</p>
                 </Transition>
                 <div class="title animate">
                 <Transition name="fade-blur" mode="out-in">
@@ -164,6 +164,9 @@ onMounted(() => {
   justify-content: center;
 }
 
+/* .about-p{
+  padding: 1rem 3rem 1rem 2rem;
+} */
 
 .column, .card-content {
     display: flex;
@@ -182,6 +185,9 @@ onMounted(() => {
     flex-direction: column;
 }
 
+/* .about{
+  padding: 0 3rem 0 0;
+} */
 
 .image{
     display: flex;
