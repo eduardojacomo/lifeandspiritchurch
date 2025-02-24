@@ -81,7 +81,7 @@ onMounted(() => {
               <h3 :key="currentLocaleKey"> {{ t('_contactSubTitle3') }} </h3>
             </Transition>
             <Transition name="fade-blur" mode="out-in">
-              <p :key="currentLocaleKey">Volta Redonda/RJ</p>
+              <p :key="currentLocaleKey">RJ</p>
             </Transition>
             <Transition name="fade-blur" mode="out-in">
               <p :key="currentLocaleKey">Brasil</p>
