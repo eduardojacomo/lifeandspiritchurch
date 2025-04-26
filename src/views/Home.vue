@@ -1,9 +1,10 @@
 <script setup>
   import Banner from '../components/Banner.vue'
   import About from '../components/About.vue'
-  import Portfolio from '../components/Portfolio.vue'
-  import Services from '@/components/Services.vue';
-  import Contato from '@/components/Contato.vue';
+  import ContentSection from '../components/ContentSection.vue'
+  import Scheadle from '@/components/Scheadle.vue';
+  import Contact from '@/components/Contact.vue';
+
 </script>
 
 <template>
@@ -11,17 +12,17 @@
     <section id="home" class="section">
       <Banner />
     </section>
-    <section id="services" class="section">
-      <Services />
-    </section>
     <section id="about" class="section">
       <About />
     </section>
-    <section id="portfolio" class="section">
-      <Portfolio />
+    <section id="scheadle" class="section">
+      <Scheadle />
+    </section>
+    <section id="content" class="section">
+      <ContentSection />
     </section>
     <section id="contact" class="section">
-      <Contato />
+      <Contact />
     </section>
   </main>
 </template>

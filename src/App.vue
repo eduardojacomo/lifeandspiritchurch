@@ -1,20 +1,20 @@
 <template>
-  <header  :style="{ visibility: navbarVisible }">
+  <header>
     <Navbar />
   </header>
   <main class="main-content">
-    <transition name="page-transition" mode="out-in" @before-enter="setNavbarBehind" 
-    @after-enter="resetNavbar">
       <router-view />
-    </transition>
   </main>
+  <footer>
+    <FooterAPP />
+  </footer>
 </template>
 
 <script setup>
 import { RouterView } from 'vue-router';
 import {ref} from 'vue';
 import Navbar from './components/Navbar.vue';
-
+import FooterAPP from './components/Footer.vue';
 const navbarVisible = ref('hidden'); 
 
 

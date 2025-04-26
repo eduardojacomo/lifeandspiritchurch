@@ -1,14 +1,17 @@
 {
     "_homeMore": "READ MORE",
     "_aboutTitle": "About",
-    "_aboutDescription": "As a Full Stack developer specializing in data-driven solutions, my mission is to transform complex information into actionable insights and create robust and optimized digital experiences. With a solid foundation in both backend and frontend, I am passionate about the entire software development process, from planning to implementation and optimization of scalable systems. Over the past 2 years, I have been working on projects ranging from building efficient and scalable APIs, to implementing intuitive user interfaces. My approach combines data analysis and automation to optimize processes and ensure that each solution is aligned with business objectives.",
-    "_servicesTitle": "Services",
-    "_servicesDescription": "As a Full Stack developer specializing in data-driven solutions, my mission is to transform complex information into actionable insights and create robust and optimized digital experiences. With a solid foundation in both backend and frontend, I am passionate about the entire software development process, from planning to implementation and optimization of scalable systems. Over the past [2 years], I have been working on projects ranging from building efficient and scalable APIs, to implementing intuitive user interfaces. My approach combines data analysis and automation to optimize processes and ensure that each solution is aligned with business objectives.",
+    "_aboutDescription": "Our purpose is to glorify God through thoughtful worship, evangelism, authentic fellowship, impactful social action, and the ongoing spiritual development of our members. Situated in an English-speaking nation, we are a multicultural church established by Brazilian immigrants, embracing people from every nation. We are committed to adhering to biblical principles, fostering inclusion and unity in love, so that together we may fulfill God's will.",
+    "_aboutPastor" : "Pr.Cristiano da Silva",
+    "_aboutPastora" : "Pra.Kauane Gomes da Mata",
+    "_aboutButton" : "Read More",
+    "_scheadleTitle": "Scheadle",
     "_nav":{
       "_home": "Home",
       "_about": "About",
-      "_services": "Services",
-      "_projects": "Projects",
+      "_scheadle": "Scheadle",
+      "_ministries": "Ministries",
+      "_content": "Content",
       "_contact": "Contact"
     },
     "_link": {
@@ -37,8 +40,16 @@
     "_contactSubTitle1": "Follow me",
     "_contactSubTitle2": "Contact me",
     "_contactSubTitle3": "Local",
-    "_serviceAPP": "Creation of mobile applications (iOS, Android) and web applications, from design to publication.",
-    "_serviceWeb":"Creation of personalized websites and web platforms, e-commerce, content management systems (CMS).Adaptation of websites for different devices (desktop, mobile, tablet). Improved website visibility in search results.",
-    "_serviceDeveloper": "Personalized development: Creation of tailored solutions to meet the specific needs of each client.",
-    "_serviceBots": "Creation of chatbots and virtual assistants for different platforms (Facebook Messenger, WhatsApp, etc.)."
+    "_day1Weekend": "Sunday",
+    "_day2Weekend": "Monday",
+    "_day3Weekend": "Tuesday",
+    "_day4Weekend": "Wednesday",
+    "_day5Weekend": "Thursday",
+    "_day6Weekend": "Friday",
+    "_day7Weekend": "Saturday",
+    "_event1": "Prayer and Bible Study Service",
+    "_event2": "Women's Prayer Meeting",
+    "_event3": "Teen Gathering",
+    "_event4": "Official Saturday Service",
+    "_event5": "Youth Meeting"
   }

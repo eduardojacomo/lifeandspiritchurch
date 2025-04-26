@@ -1,14 +1,17 @@
 {
     "_homeMore": "SAIBA MAIS",
     "_aboutTitle": "Sobre",
-    "_aboutDescription": "Como desenvolvedor Full Stack especializado em soluções baseadas em dados, minha missão é transformar informações complexas em insights acionáveis e criar experiências digitais robustas e otimizadas. Com uma sólida base tanto em backend quanto em frontend, sou apaixonado por todo o processo de desenvolvimento de software, desde o planejamento até a implementação e otimização de sistemas escaláveis. Nos últimos 2 anos, tenho trabalhado em projetos que abrangem desde a construção de APIs eficientes e escaláveis, até a implementação de interfaces de usuário intuitivas. Minha abordagem combina a análise de dados e a automação para otimizar processos e garantir que cada solução seja alinhada com os objetivos de negócio.",
-    "_servicesTitle": "Serviços",
-    "_servicesDescription": "Como desenvolvedor Full Stack especializado em soluções baseadas em dados, minha missão é transformar informações complexas em insights acionáveis e criar experiências digitais robustas e otimizadas. Com uma sólida base tanto em backend quanto em frontend, sou apaixonado por todo o processo de desenvolvimento de software, desde o planejamento até a implementação e otimização de sistemas escaláveis. Nos últimos [2 anos], tenho trabalhado em projetos que abrangem desde a construção de APIs eficientes e escaláveis, até a implementação de interfaces de usuário intuitivas. Minha abordagem combina a análise de dados e a automação para otimizar processos e garantir que cada solução seja alinhada com os objetivos de negócio.",
+    "_aboutDescription": "Existimos para glorificar a Deus através de adoração racional, evangelização, comunhão genuína, ação social transformadora e crescimento espiritual contínuo de nossos membros. Em um país de língua inglesa, somos uma igreja multicultural fundada por imigrantes brasileiros, acolhendo pessoas de todas as nações. Nosso compromisso é seguir os princípios bíblicos, promovendo inclusão e unidade em amor, para cumprir a vontade de Deus juntos.",
+    "_aboutPastor" : "Pr. Cristiano da Silva",
+    "_aboutPastora" : "Pra. Kauane Gomes da Mata",
+    "_aboutButton" : "Saiba Mais",
+    "_scheadleTitle": "Nossa Agenda",
     "_nav":{
       "_home": "Home",
       "_about": "Sobre",
-      "_services": "Serviços",
-      "_projects": "Portifólio",
+      "_scheadle": "Agenda",
+      "_ministries": "Ministérios",
+      "_content": "Conteúdo",
       "_contact": "Contato"
     },
     "_link": {
@@ -37,8 +40,17 @@
     "_contactSubTitle1": "Follow me",
     "_contactSubTitle2": "Contact me",
     "_contactSubTitle3": "Local",
-    "_serviceAPP": "Criação de aplicativos móveis (iOS, Android) e aplicativos web, desde o design até a publicação.",
-    "_serviceWeb":"Criação de sites e plataformas web personalizadas, e-commerce, sistemas de gestão de conteúdo (CMS).Adaptação de sites para diferentes dispositivos (desktop, mobile, tablet). Melhoria da visibilidade do site nos resultados de pesquisa.",
-    "_serviceDeveloper": "Desenvolvimento personalizado: Criação de soluções sob medida para atender às necessidades específicas de cada cliente.",
-    "_serviceBots": "Criação de chatbots e assistentes virtuais para diversas plataformas (Facebook Messenger, WhatsApp, etc.)."
+    "_day1Weekend": "Domingo",
+    "_day2Weekend": "Segunda-Feira",
+    "_day3Weekend": "Terça-Feira",
+    "_day4Weekend": "Quarta-Feira",
+    "_day5Weekend": "Quinta-Feira",
+    "_day6Weekend": "Sexta-Feira",
+    "_day7Weekend": "Sábado",
+    "_event1": "Culto de Oração e Estudo Bíblico",
+    "_event2": "Encontro de oração - Mulheres",
+    "_event3": "Encontro Teen",
+    "_event4": "Culto Oficial de Sábado",
+    "_event5": "Encontro de Jovens"
+
   }

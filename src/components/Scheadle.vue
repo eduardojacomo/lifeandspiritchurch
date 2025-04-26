@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
-import CardService from './CardService.vue';
+import CardScheadle from './CardScheadle.vue';
 import {useLanguage} from '../stores/languageStore'
 import {storeToRefs} from 'pinia';
 
@@ -36,7 +36,7 @@ onMounted(() => {
       <div class="container">
         <div class="title animate">
           <Transition name="fade-blur" mode="out-in">
-            <h1 :key="currentLocaleKey">{{t('_servicesTitle')}}</h1>
+            <h1 :key="currentLocaleKey">{{t('_scheadleTitle')}}</h1>
           </Transition>
         </div>
         <div class="column">
@@ -50,16 +50,20 @@ onMounted(() => {
             <font-awesome-icon icon="" />
             <div class="cards animate">
                 <Transition name="fade-blur" mode="out-in">
-                  <CardService :icon="'fa-solid fa-mobile'" :title="'APP'" :link="'mobile'" :content="t('_serviceAPP')" :key="currentLocaleKey" />
+                  <CardScheadle :icon="'fa-solid fa-mobile'" :title="t('_event1')"  
+                  :content="{day:t('_day3Weekend'), hour:'7:00 PM'}" :key="currentLocaleKey" />
                 </Transition> 
                 <Transition name="fade-blur" mode="out-in">
-                  <CardService :icon="'fa-solid fa-terminal'" :title="'Developer'" :link="'developer'" :content="t('_serviceDeveloper')" :key="currentLocaleKey" />
+                  <CardScheadle :icon="'fa-solid fa-terminal'" :title="t('_event2')" :link="'developer'" :content="{day:t('_day5Weekend'), hour:'7:30 PM'}" :key="currentLocaleKey" />
                 </Transition> 
                 <Transition name="fade-blur" mode="out-in">
-                  <CardService :icon="'fa-solid fa-robot'" :title="'BOT'" :link="'bots'" :content="t('_serviceBots')" :key="currentLocaleKey" />                  
+                  <CardScheadle :icon="'fa-solid fa-robot'" :title="t('_event3')" :link="'bots'" :content="{day:t('_day6Weekend'), hour:'6:30 PM'}" :key="currentLocaleKey" />                  
                 </Transition> 
                 <Transition name="fade-blur" mode="out-in">
-                  <CardService :icon="'fa-solid fa-laptop-code'" :title="'Web Solutions'" :link="'websolutions'" :content="t('_serviceWeb')" :key="currentLocaleKey" />
+                  <CardScheadle :icon="'fa-solid fa-laptop-code'" :title="t('_event4')" :link="'websolutions'" :content="{day:t('_day7Weekend'), hour:'7:00 PM'}" :key="currentLocaleKey" />
+                </Transition> 
+                <Transition name="fade-blur" mode="out-in">
+                  <CardScheadle :icon="'fa-solid fa-laptop-code'" :title="t('_event5')" :link="'websolutions'" :content="{day:t('_day1Weekend'), hour:'6:30 PM'}" :key="currentLocaleKey" />
                 </Transition> 
      
             </div>
@@ -71,7 +75,13 @@ onMounted(() => {
   
 
 <style scoped>
-
+main{
+  /* background-image: linear-gradient(to top, #2e3b58 0%, #28282b 100%); */
+  /* background: linear-gradient(to bottom, #181818, #283593); */
+  background: linear-gradient(135deg, #0f20278c, #203a436f, #2c53644d);
+  /* background: linear-gradient(135deg, #1e3c72, #2a5298); */
+  /* background: linear-gradient(to bottom, #031922, #0f2d37, #213f6c, #135784); */
+}
 
 .container {
   display: flex;
@@ -118,6 +128,7 @@ onMounted(() => {
   flex-wrap: wrap;
   padding: 0 3.5rem;
   justify-content: center;
+  align-items: center;
 }
 
 

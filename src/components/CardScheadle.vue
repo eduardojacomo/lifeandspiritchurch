@@ -5,36 +5,37 @@ const { t } = useI18n();
 
   const props = defineProps({
         icon: {
-        type: String,
-        required: true
+            type: String,
+            required: true
         },
         title: {
-        type: String,
-        required: true
+            type: String,
+            required: true
         },
         content: {
-        type: String,
-        required: true
+            type: Object,
+            required: true
         },
         link: {
-        type: String,
-        required: true
+            type: String,
+            required: false
         }
     });
 </script>
 
 <template>
     <div class="card-container">
-        <div class="position-icon">
+        <!-- <div class="position-icon">
             <div class="card-icon">
                 <font-awesome-icon :icon="props.icon" />
             </div>
-        </div>
+        </div> -->
         <div class="card-title">
             <h2>{{ props.title }} </h2>
         </div>
         <div class="card-content">
-            <p> {{props.content}}</p>
+            <p> {{props.content.day}}</p>
+            <p> {{props.content.hour}}</p>
         </div>
         <!--<div class="card-link">
             <router-link :to="`/Service/${props.link}`" class="custom-link">{{ t('_link._more') }}</router-link>
@@ -52,7 +53,7 @@ const { t } = useI18n();
         /* border-radius: 8px; */
         background-color: transparent;
         padding: 1rem 2rem;
-        width: 380px;
+        width: 200px;
         height: 280px;
     }
     .card-icon{
@@ -76,8 +77,10 @@ const { t } = useI18n();
 
     .card-content{
         display: flex;
+        flex-direction: column;
         flex-wrap: wrap;
         height: 120px;
+        padding: 1rem 0 0 0;
         /* flex: 1 0 380px; */
     }
     .position-icon{

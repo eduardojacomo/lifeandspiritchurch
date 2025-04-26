@@ -66,29 +66,43 @@ onMounted(() => {
 <template>
     <main>
       <div class="container">
-        <div class="title animate">
-          <Transition name="fade-blur" mode="out-in">
-            <h1 :key="currentLocaleKey">{{ t('_aboutTitle') }}</h1>
-          </Transition>
-        </div>
         <div class="row">
-          <div class="content animate">
-              <div class="image animate">
-                <Transition name="fade-blur" mode="out-in">
-                  <img src="/src/assets/about.webp" alt="Me" :key="currentLocaleKey" />
-                </Transition>  
-              </div>
-              <div class="row">
+          <div class="content-about animate">
+            <div class="image-about animate">
+              <Transition name="fade-blur" mode="out-in">
+                <img src="/src/assets/aboutpicture.jpeg" alt="Me" :key="currentLocaleKey" />
+              </Transition>
+            </div>
+            <div class="row-text">
+                <div class="title animate">
+                  <Transition name="fade-blur" mode="out-in">
+                    <h1 :key="currentLocaleKey">{{ t('_aboutTitle') }}</h1>
+                  </Transition>
+                </div>
                 <Transition name="fade-blur" mode="out-in">
                   <p :key="currentLocaleKey" >{{ t('_aboutDescription') }}</p>
                 </Transition>
-                <div class="title animate">
-                <Transition name="fade-blur" mode="out-in">
-                  <h2 :key="currentLocaleKey">Skills</h2>
-                </Transition>
-            </div>
+                
+                  <div class="row">
+                    <Transition name="fade-blur" mode="out-in">
+                      <h3 :key="currentLocaleKey">{{ t('_aboutPastor') }}</h3>
+                    </Transition>
+                    <Transition name="fade-blur" mode="out-in">
+                      <h3 :key="currentLocaleKey">{{ t('_aboutPastora') }}</h3>
+                    </Transition>
+                  </div>
+                  
+                  <div style="padding: 2rem 0 0 0">
+                    <Transition name="fade-blur" mode="out-in">
+                      <button :key="currentLocaleKey">{{ t('_aboutButton') }}</button>  
+                    </Transition>
+
+                  </div>
+                
+                
+              </div>
   
-            <div class="cards">
+            <!-- <div class="cards">
               <div class="card-content animate">
                   <div v-for="(skill, index) in skills" :key="index" class="animate">
                     <Transition name="fade-blur" mode="out-in">
@@ -96,14 +110,13 @@ onMounted(() => {
                     </Transition>  
                   </div>
                 </div>
-            </div>
-          </div>
+            </div> -->
         </div>
+      </div>
             
           
-      </div>
-
     </div>
+
   </main>
 </template>
   
@@ -116,14 +129,14 @@ onMounted(() => {
   gap: .5rem;
   min-height: 87vh;
   width: 100%;
-  padding: 70px 2rem 2rem 2rem;
+  padding: 150px 2rem 2rem 2rem;
 }
 
 .title {
   display: flex;
   width: 100%;
-  justify-content: center;
-  padding: 1rem;
+  justify-content: flex-start;
+  /* padding: 1rem; */
 }
 
 .title h1 {
@@ -143,12 +156,13 @@ onMounted(() => {
   background-color: transparent;
 }
 
-.content {
+.content-about {
   display: flex;
-  padding: 0 3rem;
+  padding: 0 10rem;
   text-align: justify;
-  align-items: flex-start;
+  /* align-items: flex-start; */
   justify-content: center;
+  gap: 3rem;
 }
 
 .content.animate p{
@@ -176,32 +190,48 @@ onMounted(() => {
   width: 100%;
 }
 
-.row {
+.row, .row-text {
     display: flex;
     flex-direction: column;
 }
 
-.image{
-    display: flex;
-    padding: 1rem 2rem;
-    justify-content: center;
-    align-items: center;
-    font-size: 7rem;
-    width: 380px;
+.row-text{
+  gap: .5rem;
 }
 
-.image img{
-  overflow: hidden;
-  width: 350px;
+.image-about{
+    display: flex;
+    padding: .5 rem;
+    justify-content: center;
+    align-items: center;
+    min-width: 380px !important;
+    height: 380px;
+    overflow: hidden;
+    
+}
+
+.image-about img{
+  /* overflow: hidden; */
+  width: 100%;
+  height: 100%;
   border: none;
   border-radius: 8px;
+  object-fit: cover;
+  object-position:top;
 }
 
 .category h3 {
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 500;
   text-align: center;
+  color: var(--color-text);
   /* margin-bottom: .5rem; */
+}
+
+h3{
+  font-size: .8rem;
+  font-weight: 500;
+  color: var(--color-heading);
 }
 
 .skills-group {
