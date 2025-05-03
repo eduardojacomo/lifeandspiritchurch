@@ -4,7 +4,7 @@
   import ContentSection from '../components/ContentSection.vue'
   import Scheadle from '@/components/Scheadle.vue';
   import Contact from '@/components/Contact.vue';
-
+  import MobileApp from '@/components/MobileApp.vue';
 </script>
 
 <template>
@@ -20,6 +20,9 @@
     </section>
     <section id="content" class="section">
       <ContentSection />
+    </section>
+    <section class="section">
+      <MobileApp />
     </section>
     <section id="contact" class="section">
       <Contact />
@@ -39,9 +42,12 @@ html {
   min-height: 100vh;
 }
 
-@media screen and (max-width: 480px){
+@media screen and (max-width: 768px){
   .section{
   min-height: auto;
+}
+main{
+  padding-top: 30px;
 }
 }
 

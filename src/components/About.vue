@@ -4,40 +4,30 @@ import Card from './Card.vue';
 import { useI18n } from 'vue-i18n';
 import {storeToRefs} from 'pinia';
 import {useLanguage} from '../stores/languageStore'
+import { useCollection } from 'vuefire'
+import { collection, addDoc } from 'firebase/firestore'
+import { useFirestore } from 'vuefire'
+const db = useFirestore()
+
+const users = useCollection(collection(db, 'users'))
+const categories = useCollection(collection(db, 'activities'))
 
 const uselanguage = useLanguage();
 const { currentLocaleKey} = storeToRefs(uselanguage);
 
 const { t, locale } = useI18n();
 
+const nova = {
+  "day": { "pt": "Domingo", "en": "Sanday" }, 
+  "hour": "6:30 PM", 
+  "active": true, 
+  "location": { "en": "Church", "pt": "Igreja" }, 
+  "title": { "en": "Youth Meeting", "pt": "Encontro de Jovens" }
+}
 
-const skills = ref([
-  { icon: 'devicon-html5-plain-wordmark colored', label: 'HTML', group:'Front-End' },
-  { icon: 'devicon-css3-plain colored', label: 'CSS' , group:'Front-End' },
-  { icon: 'devicon-javascript-plain colored', label: 'JavaScript' , group:'Front-End' },
-  { icon: 'devicon-vuejs-plain colored', label: 'Vue' , group:'Framework' },
-  { icon: 'devicon-bootstrap-plain colored', label: 'Bootstrap' , group:'Framework' },
-  { icon: 'devicon-bulma-plain colored', label: 'Bulma' , group:'Framework' },
-  { icon: 'devicon-dotnetcore-plain colored', label: '.Net' , group:'Back-End' },
-  { icon: 'devicon-python-plain colored', label: 'Python', group:'Back-End' },
-  { icon: 'devicon-nextjs-original-wordmark', label: 'Next JS', group:'Back-End' },
-  { icon: 'devicon-microsoftsqlserver-plain-wordmark colored', label: 'SQL Server' , group:'Database' },
-  { icon: 'devicon-postgresql-plain colored', label: 'Postgre SQL' , group:'Database' },
-  { icon: 'devicon-mongodb-plain colored', label: 'MongoDB' , group:'Database' }
-]);
-
-          
-const groupedSkills = computed(() => {
-  const groups = {};
-  skills.value.forEach(skill => {
-    if (!groups[skill.group]) {
-      groups[skill.group] = [];
-    }
-    groups[skill.group].push(skill);
-  });
-  return groups;
-});
-
+async function addData(){
+  await addDoc(collection(db, 'activities'), nova)
+}
 
 const observeElements = (el) => {
   const observer = new IntersectionObserver((entries) => {
@@ -101,7 +91,7 @@ onMounted(() => {
                 
                 
               </div>
-  
+             
             <!-- <div class="cards">
               <div class="card-content animate">
                   <div v-for="(skill, index) in skills" :key="index" class="animate">
@@ -113,8 +103,6 @@ onMounted(() => {
             </div> -->
         </div>
       </div>
-            
-          
     </div>
 
   </main>
@@ -259,7 +247,7 @@ h3{
 }
 
 @media screen and (max-width: 1024px) {
-  .content{
+  .content-about{
     padding: 0 2rem;
     flex-wrap: wrap;
   }

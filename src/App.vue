@@ -1,31 +1,28 @@
 <template>
-  <header>
+  <header v-if="showLayout">
     <Navbar />
   </header>
   <main class="main-content">
       <router-view />
   </main>
-  <footer>
+  <footer v-if="showLayout">
     <FooterAPP />
   </footer>
 </template>
 
 <script setup>
 import { RouterView } from 'vue-router';
-import {ref} from 'vue';
+import { useRoute } from 'vue-router'
+import {ref, computed} from 'vue';
 import Navbar from './components/Navbar.vue';
 import FooterAPP from './components/Footer.vue';
 const navbarVisible = ref('hidden'); 
+// Acessa a rota atual
+const route = useRoute()
 
+// Computa se deve mostrar o layout (navbar + footer)
+const showLayout = computed(() => route.path !== '/login')
 
-function setNavbarBehind() {
-  navbarVisible.value = 'hidden';
-}
-
-
-function resetNavbar() {
-  navbarVisible.value = 'visible';
-}
 
 </script>
 

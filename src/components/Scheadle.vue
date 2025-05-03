@@ -4,6 +4,29 @@ import { useI18n } from 'vue-i18n';
 import CardScheadle from './CardScheadle.vue';
 import {useLanguage} from '../stores/languageStore'
 import {storeToRefs} from 'pinia';
+import { useCollection } from 'vuefire'
+import { collection, query, where, getDocs } from 'firebase/firestore'
+import { useFirestore } from 'vuefire'
+const db = useFirestore()
+const error = ref('');
+// const activitiesCollection = useCollection(collection(db, 'activities'))
+const activities = ref([]);
+
+const fetchActiveActivities = async () => {
+  try {
+    const colRef = collection(db, 'activities') // ⬅️ usa diretamente a coleção
+    const q = query(colRef, where('active', '==', true))
+    const querySnapshot = await getDocs(q)
+
+    activities.value = []
+    querySnapshot.forEach((doc) => {
+      activities.value.push({ id: doc.id, ...doc.data() })
+    })
+  } catch (e) {
+    console.log('Erro ao buscar atividades ativas:', e)
+    error.value = 'Erro ao buscar as atividades ativas.'
+  }
+}
 
 const uselanguage = useLanguage();
 const { currentLocaleKey} = storeToRefs(uselanguage);
@@ -27,6 +50,7 @@ const observeElements = (el) => {
 
 onMounted(() => {
   const sections = document.querySelectorAll('.animate');
+  fetchActiveActivities();
   observeElements(sections);
 });
 </script>
@@ -49,7 +73,7 @@ onMounted(() => {
             </div> -->
             <font-awesome-icon icon="" />
             <div class="cards animate">
-                <Transition name="fade-blur" mode="out-in">
+                <!-- <Transition name="fade-blur" mode="out-in">
                   <CardScheadle :icon="'fa-solid fa-mobile'" :title="t('_event1')"  
                   :content="{day:t('_day3Weekend'), hour:'7:00 PM'}" :key="currentLocaleKey" />
                 </Transition> 
@@ -64,8 +88,11 @@ onMounted(() => {
                 </Transition> 
                 <Transition name="fade-blur" mode="out-in">
                   <CardScheadle :icon="'fa-solid fa-laptop-code'" :title="t('_event5')" :link="'websolutions'" :content="{day:t('_day1Weekend'), hour:'6:30 PM'}" :key="currentLocaleKey" />
-                </Transition> 
-     
+                </Transition>  -->
+                <Transition name="fade-blur" mode="out-in" v-for="a in activities" :key="a.id">
+                  <CardScheadle :icon="'fa-solid fa-mobile'" :title="a.title[locale]"  
+                  :content="{day:a.day[locale], hour:a.hour}" :key="currentLocaleKey" />
+                </Transition>
             </div>
           </div>
         </div>

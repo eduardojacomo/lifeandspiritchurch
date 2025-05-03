@@ -10,9 +10,17 @@
       "_home": "Home",
       "_about": "Sobre",
       "_scheadle": "Agenda",
-      "_ministries": "Ministérios",
       "_content": "Conteúdo",
       "_contact": "Contato"
+    },
+    "_about":{
+      "_about_us": "Sobre Nós",
+      "_our_pastors": "Nossos Pastores",
+      "_our_activities": "Nossas Atividades"
+    },
+    "_content":{
+      "_news": "Notícias",
+      "_content":"Palavras"
     },
     "_link": {
       "_more":"Saiba Mais"

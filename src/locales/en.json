@@ -10,9 +10,17 @@
       "_home": "Home",
       "_about": "About",
       "_scheadle": "Scheadle",
-      "_ministries": "Ministries",
       "_content": "Content",
       "_contact": "Contact"
+    },
+    "_about": {
+      "_about_us": "About Us",
+      "_our_pastors": "Our Pastors",
+      "_our_activities": "Our Activities"
+    },
+    "_content":{
+      "_news": "News",
+      "_content":"Devotions"
     },
     "_link": {
       "_more":"Read More"

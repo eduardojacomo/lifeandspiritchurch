@@ -8,19 +8,93 @@ import {storeToRefs} from 'pinia';
 const uselanguage = useLanguage();
 const { locale, currentLocaleKey} = storeToRefs(uselanguage);
 
-function setLanguage() {
-  uselanguage.setLanguage();
-  console.log(locale.value);
- }
+// function setLanguage() {
+//   uselanguage.setLanguage();
+//  }
 const { t, locale: i18nLocale } = useI18n();
  
 
 const isOpen = ref(false);
 const navbarRef = ref(null);
-// const menuitems = ref([]);
 const route = useRoute();
 const isHomePage = computed(() => route.path === '/' || route.path === '/home');
 const isTop   = ref(true);
+
+const menuItems = ref([
+  {
+    labelKey: '_nav._home',
+    route: '/'
+  },
+  {
+    labelKey: '_nav._about',
+    children: [
+      { labelKey: '_about._about_us', route: '/aboutus' },
+      { labelKey: '_about._our_pastors', route: '/pastors' },
+      { labelKey: '_about._our_activities', route: '/activities' }
+    ]
+  },
+  {
+    labelKey: '_nav._scheadle',
+    route: '/scheadle'
+  },
+  {
+    labelKey: '_nav._content',
+    children: [
+      { labelKey: '_content._news', route: '/news' },
+      { labelKey: '_content._content', route: '/content' }
+    ]
+  },
+  {
+    labelKey: '_nav._contact',
+    route: '/contact'
+  },
+]);
+
+const isSubmenuVisible = ref(menuItems.value.map(() => false));
+const submenuPositions = ref(menuItems.value.map(() => 0)); // Array para armazenar a posição left de cada submenu
+const menuItemRefs = ref([]);
+
+const showDropdown = ref(false)
+
+function toggleDropdown() {
+  showDropdown.value = !showDropdown.value
+}
+
+function closeDropdown() {
+  showDropdown.value = false
+}
+
+function setLanguage(lang) {
+  // Seu método para trocar de idioma
+  // locale.value = lang
+  uselanguage.setLanguage();
+  showDropdown.value = false
+}
+
+// Clique fora para fechar
+function handleClickOutsideLanguage(event) {
+  const dropdown = document.querySelector('.language-selector')
+  if (dropdown && !dropdown.contains(event.target)) {
+    closeDropdown()
+  }
+}
+
+
+const handleMouseEnter = (index) => {
+  isTop.value = false;
+  isSubmenuVisible.value = isSubmenuVisible.value.map((_, i) => i === index);
+  if (menuItemRefs.value[index]) {
+    const rect = menuItemRefs.value[index].getBoundingClientRect();
+    submenuPositions.value[index] = rect.left;
+  }
+};
+
+const handleMouseLeave = (index) => {
+  setTimeout(() => {
+    isSubmenuVisible.value[index] = false;
+  }, 300);
+  onScroll();
+};
 
 function onScroll() {
   isTop.value = window.scrollY === 0
@@ -54,13 +128,16 @@ watch(locale, (newLocale) => {
 
 onMounted(() => {
   document.addEventListener('click', handleClickOutside);
+  document.addEventListener('click', handleClickOutsideLanguage)
   window.addEventListener('scroll', onScroll, { passive: true });
+  menuItemRefs.value = Array(menuItems.value.length).fill(null);
   onScroll(); // inicializa
 });
 
 
 onBeforeUnmount(() => {
   document.removeEventListener('click', handleClickOutside);
+  document.removeEventListener('click', handleClickOutsideLanguage);
   window.removeEventListener('scroll', onScroll);
 });
 </script>
@@ -70,24 +147,43 @@ onBeforeUnmount(() => {
     'navbar--transparent': isHomePage && isTop,
     'navbar--solid': !(isHomePage && isTop)
   }">
-
       <div class="logo">
         <a href="#"><img src="../assets/logo.png" alt="logo"></a>
       </div>
-      <div class="menu">
-        <ul>
-          <li><a href="#home" @click="closeMenu" @click.prevent="scrollTo('home')">{{ t('_nav._home') }}</a></li>
-          <li><a href="#about" @click="closeMenu" @click.prevent="scrollTo('about')">{{ t('_nav._about') }}</a></li>
-          <li><a href="#scheadle" @click="closeMenu" @click.prevent="scrollTo('scheadle')">{{ t('_nav._scheadle') }}</a></li>
-          <li><a href="#content" @click="closeMenu" @click.prevent="scrollTo('content')">{{ t('_nav._content') }}</a></li>
-          <li><a href="#contact" @click="closeMenu" @click.prevent="scrollTo('contact')">{{ t('_nav._contact') }}</a></li>
+      <nav class="navbar-new">
+        <ul class="main-menu">
+          <li
+            v-for="(item, index) in menuItems"
+            :key="index"
+            class="menu-item"
+            @mouseenter="handleMouseEnter(index)"
+            @mouseleave="handleMouseLeave(index)"
+          >
+            <router-link v-if="item.route" :to="item.route">{{ t(item.labelKey) }}</router-link>
+            <span v-else>{{ t(item.labelKey) }} <font-awesome-icon icon="fa-solid fa-caret-down" /></span>
+          <Transition name="submenu-transition">
+            <ul v-if="item.children" class="submenu" :class="{ 'show': isSubmenuVisible[index] }">
+              <li v-for="child in item.children" :key="child.labelKey" class="submenu-item">
+                <router-link :to="child.route">{{ t(child.labelKey) }}</router-link>
+              </li>
+            </ul>
+          </Transition>
+          </li>
         </ul>
-      </div>
+      </nav>
       
       <div class="btn-actions-menu">
-        <button class="languageButton" @click="setLanguage">
-          <font-awesome-icon icon="fa-solid fa-language" /> <span>{{ locale === 'pt' ? 'PT-BR' : 'EN' }} </span>
-        </button>
+    
+          <div class="language-selector">
+            <button class="languageButton" @click="toggleDropdown">
+              <font-awesome-icon icon="fa-solid fa-language" />
+            </button>
+
+            <ul v-if="showDropdown" class="language-dropdown">
+              <li @click="setLanguage('pt')">PT-BR</li>
+              <li @click="setLanguage('en')">EN</li>
+            </ul>
+          </div>
         <div class="hamburger" @click="toggleMenu">
           <font-awesome-icon :icon="isOpen ? 'fa-solid fa-times' : 'fa-solid fa-bars'" />
         </div>
@@ -97,27 +193,25 @@ onBeforeUnmount(() => {
       <Transition name="fade" mode="out-in">
             
         <ul :class="['nav-links', { open: isOpen }]" :key="isOpen">
-          <template v-if="isHomePage">
-            <li><a href="#home" @click="closeMenu" @click.prevent="scrollTo('home')">{{ t('_nav._home') }}</a></li>
-            <li><a href="#about" @click="closeMenu" @click.prevent="scrollTo('about')">{{ t('_nav._about') }}</a></li>
-            <li><a href="#scheadle" @click="closeMenu" @click.prevent="scrollTo('scheadle')">{{ t('_nav._scheadle') }}</a></li>
-            <li><a href="#content" @click="closeMenu" @click.prevent="scrollTo('content')">{{ t('_nav._content') }}</a></li>
-            <li><a href="#contact" @click="closeMenu" @click.prevent="scrollTo('contact')">{{ t('_nav._contact') }}</a></li>
-          </template>
-  
-          <template v-else>
-            <li><router-link to="/" @click="closeMenu">{{ t('_nav._home') }}</router-link></li>
-            <li><router-link to="/#about" @click="closeMenu">{{ t('_nav._about') }}</router-link></li>
-            <li><router-link to="/#scheadle" @click="closeMenu">{{ t('_nav._scheadle') }}</router-link></li>
-            <li><router-link to="/#content" @click="closeMenu">{{ t('_nav._content') }}</router-link></li>
-            <li><router-link to="/#contact" @click="closeMenu">{{ t('_nav._contact') }}</router-link></li>
+          <template v-for="(item, index) in menuItems" :key="index">
+            <li v-if="item.route">
+              <router-link :to="item.route" @click="closeMenu">{{ t(item.labelKey) }}</router-link>
+            </li>
+            <li v-else-if="item.children">
+              <span class="submenu-label">{{ t(item.labelKey) }}</span>
+              <ul class="mobile-submenu">
+                <li v-for="child in item.children" :key="child.labelKey">
+                  <router-link :to="child.route" @click="closeMenu">{{ t(child.labelKey) }}</router-link>
+                </li>
+              </ul>
+            </li>
           </template>
         </ul>
       </Transition>    
     </nav>
-  </template>
+</template>
   
-  <style scoped>
+<style scoped>
   /* Transitions */
   .fade-enter-active,
   .fade-leave-active {
@@ -149,10 +243,10 @@ onBeforeUnmount(() => {
   justify-content: space-between;
   align-items: center;
   padding: .5rem 2rem;
-  /* background-color: var(--color-background); */
   transition: background-color .3s ease;
   color: white;
   z-index: 2000;
+  /* position:relative; */
 }
 
 .navbar--transparent {
@@ -164,6 +258,105 @@ onBeforeUnmount(() => {
   background-color: var(--color-background) !important;
 }
 
+/*novo menu */
+
+.navbar-new{
+  display: block;
+}
+
+/* Transição */
+.submenu-transition-enter-active,
+.submenu-transition-leave-active {
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+.submenu-transition-enter-from,
+.submenu-transition-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+.submenu-transition-enter-to,
+.submenu-transition-leave-from {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.main-menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  justify-content: center; /* Centraliza os itens principais */
+}
+
+.menu-item {
+  position: relative;
+  padding: 10px 20px;
+}
+
+.menu-item > a,
+.menu-item > span {
+  display: block;
+  text-decoration: none;
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.submenu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: var(--color-background-mute);
+  border:none;
+  z-index: 10;
+  display: none; /* Inicialmente escondido */
+  min-width: 100%; /* Largura mínima do submenu */
+}
+
+.submenu.show {
+  display: block; /* Mostra o submenu quando a classe 'show' é aplicada */
+}
+
+.submenu-item a, .full-width-submenu-item a {
+  display: block;
+  padding: 10px 25px 10px 15px;
+  text-decoration: none;
+  color: white;
+}
+
+.submenu-item a:hover, .full-width-submenu-item a:hover {
+  background-color: #555;
+}
+
+.submenu-label {
+  font-weight: bold;
+  color: white;
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.mobile-submenu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  /*padding-left: 1rem;
+  margin-bottom: 1rem;*/
+  background-color: #444;
+}
+
+.mobile-submenu li a {
+  font-size: .9rem;
+  color: white;
+  text-decoration: none;
+}
+
+.mobile-submenu li a:hover {
+  text-decoration: underline;
+}
+
+/*fim novo menu */
 .btn-actions-menu{
   display: flex;
   flex-direction: row;
@@ -212,6 +405,36 @@ onBeforeUnmount(() => {
 .logo img{
   height: 38.40px;
 }
+
+/* menu language */
+.language-selector {
+  position: relative;
+}
+
+.language-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: var(--color-background-soft);
+  /* border-radius: 5px; */
+  width: 100px;
+  padding: 0;
+  margin-top: 0.5rem;
+  z-index: 999;
+  list-style: none;
+}
+
+.language-dropdown li {
+  padding: 10px;
+  cursor: pointer;
+  color: var(--color-heading);
+}
+
+.language-dropdown li:hover {
+  background-color: var(--color-background-mute);
+}
+
+
 
 /* Hamburger icon styles */
 .hamburger {
@@ -281,7 +504,11 @@ onBeforeUnmount(() => {
     width: 100%;
   }
 
-  .menu {
+  .navbar--transparent {
+    background-color: var(--color-background) !important;
+  }
+
+  .navbar-new {
     display: none;
   }
 
