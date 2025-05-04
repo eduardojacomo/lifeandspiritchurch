@@ -161,13 +161,13 @@ onBeforeUnmount(() => {
           >
             <router-link v-if="item.route" :to="item.route">{{ t(item.labelKey) }}</router-link>
             <span v-else>{{ t(item.labelKey) }} <font-awesome-icon icon="fa-solid fa-caret-down" /></span>
-          <Transition name="submenu-transition">
-            <ul v-if="item.children" class="submenu" :class="{ 'show': isSubmenuVisible[index] }">
-              <li v-for="child in item.children" :key="child.labelKey" class="submenu-item">
-                <router-link :to="child.route">{{ t(child.labelKey) }}</router-link>
-              </li>
-            </ul>
-          </Transition>
+            <Transition name="submenu-transition">
+              <ul v-if="isSubmenuVisible[index]" class="submenu">
+                <li v-for="child in item.children" :key="child.labelKey" class="submenu-item">
+                  <router-link :to="child.route">{{ t(child.labelKey) }}</router-link>
+                </li>
+              </ul>
+            </Transition>
           </li>
         </ul>
       </nav>
@@ -246,7 +246,10 @@ onBeforeUnmount(() => {
   transition: background-color .3s ease;
   color: white;
   z-index: 2000;
+  /*transition: background-color 0.4s ease-in-out;*/
   /* position:relative; */
+  transition: background-color 0.4s ease-in-out, backdrop-filter 0.4s ease-in-out, box-shadow 0.4s;
+
 }
 
 .navbar--transparent {
@@ -256,6 +259,8 @@ onBeforeUnmount(() => {
 /* cor padrão em todo resto */
 .navbar--solid {
   background-color: var(--color-background) !important;
+  backdrop-filter: blur(4px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 /*novo menu */
@@ -272,7 +277,7 @@ onBeforeUnmount(() => {
 .submenu-transition-enter-from,
 .submenu-transition-leave-to {
   opacity: 0;
-  transform: translateY(-10px);
+  transform: translateY(-20px);
 }
 .submenu-transition-enter-to,
 .submenu-transition-leave-from {
@@ -311,12 +316,7 @@ onBeforeUnmount(() => {
   background-color: var(--color-background-mute);
   border:none;
   z-index: 10;
-  display: none; /* Inicialmente escondido */
   min-width: 100%; /* Largura mínima do submenu */
-}
-
-.submenu.show {
-  display: block; /* Mostra o submenu quando a classe 'show' é aplicada */
 }
 
 .submenu-item a, .full-width-submenu-item a {

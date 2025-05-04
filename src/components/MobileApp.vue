@@ -1,7 +1,7 @@
 <template>
     <section class="app-section">
       <div class="content">
-        <div class="text-area">
+        <div class="text-area animate">
           <h2>Baixe nosso aplicativo e tenha a igreja 24 horas com você.</h2>
           <div class="features">
             <div class="feature" v-for="(item, index) in features" :key="index">
@@ -18,7 +18,7 @@
           </div>
         </div>
   
-        <div class="mockup">
+        <div class="mockup animate">
           <img src="@/assets/app-mockup.png" alt="App Mockup" />
         </div>
       </div>
@@ -26,7 +26,7 @@
   </template>
   
   <script setup>
-    import {ref} from 'vue'
+    import {ref, onMounted} from 'vue'
   
     const features = ref([
         { icon: 'fa-solid fa-play', text: 'Receba conteúdos exclusivos.' },
@@ -34,6 +34,25 @@
         { icon: 'fa-solid fa-heart', text: 'Faça doações pelo aplicativo.' },
         { icon: 'fa-solid fa-clipboard-list', text: 'Faça inscrições nos eventos.' }
     ])
+
+    const observeElements = (el) => {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('in-view');
+            } else {
+                entry.target.classList.remove('in-view');
+            }
+            });
+        });
+
+        el.forEach((element) => observer.observe(element));
+        };
+
+    onMounted(() => {
+        const sections = document.querySelectorAll('.animate');
+        observeElements(sections);
+    });
   </script>
   
   <style scoped>
@@ -42,6 +61,17 @@
     color: #111;
     padding: 4rem 12rem;
   }
+
+ .animate {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.8s ease-out;
+ }
+
+ .in-view {
+    opacity: 1;
+    transform: translateY(0);
+ }
   
   .content {
     display: flex;
