@@ -4,7 +4,7 @@ import { useI18n } from 'vue-i18n';
 import CardScheadle from './CardScheadle.vue';
 import {useLanguage} from '../stores/languageStore'
 import {storeToRefs} from 'pinia';
-import { useCollection } from 'vuefire'
+
 import { collection, query, where, getDocs } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
 const db = useFirestore()
@@ -33,6 +33,12 @@ const { currentLocaleKey} = storeToRefs(uselanguage);
 
 const { t, locale } = useI18n();
 
+const onlineactivities = computed(() => {
+  return activities.value.filter(a =>
+    a.day.en?.toLowerCase() === "saturday" ||
+    a.day.pt?.toLowerCase() === "sábado"
+  );
+});
 
 const observeElements = (el) => {
   const observer = new IntersectionObserver((entries) => {
@@ -63,39 +69,43 @@ onMounted(() => {
             <h1 :key="currentLocaleKey">{{t('_scheadleTitle')}}</h1>
           </Transition>
         </div>
-        <div class="column">
-          <!-- <div class="socials">
-            <div class="linha-vertical"></div>
-          </div> -->
-          <div class="row">
-            <!-- <div class="content animate">
-              <p>{{ about }}</p>
-            </div> -->
-            <font-awesome-icon icon="" />
-            <div class="cards animate">
-                <!-- <Transition name="fade-blur" mode="out-in">
-                  <CardScheadle :icon="'fa-solid fa-mobile'" :title="t('_event1')"  
-                  :content="{day:t('_day3Weekend'), hour:'7:00 PM'}" :key="currentLocaleKey" />
-                </Transition> 
-                <Transition name="fade-blur" mode="out-in">
-                  <CardScheadle :icon="'fa-solid fa-terminal'" :title="t('_event2')" :link="'developer'" :content="{day:t('_day5Weekend'), hour:'7:30 PM'}" :key="currentLocaleKey" />
-                </Transition> 
-                <Transition name="fade-blur" mode="out-in">
-                  <CardScheadle :icon="'fa-solid fa-robot'" :title="t('_event3')" :link="'bots'" :content="{day:t('_day6Weekend'), hour:'6:30 PM'}" :key="currentLocaleKey" />                  
-                </Transition> 
-                <Transition name="fade-blur" mode="out-in">
-                  <CardScheadle :icon="'fa-solid fa-laptop-code'" :title="t('_event4')" :link="'websolutions'" :content="{day:t('_day7Weekend'), hour:'7:00 PM'}" :key="currentLocaleKey" />
-                </Transition> 
-                <Transition name="fade-blur" mode="out-in">
-                  <CardScheadle :icon="'fa-solid fa-laptop-code'" :title="t('_event5')" :link="'websolutions'" :content="{day:t('_day1Weekend'), hour:'6:30 PM'}" :key="currentLocaleKey" />
-                </Transition>  -->
-                <Transition name="fade-blur" mode="out-in" v-for="a in activities" :key="a.id">
-                  <CardScheadle :icon="'fa-solid fa-mobile'" :title="a.title[locale]"  
-                  :content="{day:a.day[locale], hour:a.hour}" :key="currentLocaleKey" />
-                </Transition>
+          <div class="scheadle-column animate">
+            <div class="image">
+              <img src="../assets/DSC00267.jpeg" alt="celebration">
+            </div>
+            <div class="row">
+              <h3>In Person</h3>
+              <ul>
+              <br>
+                <li v-for="a in activities" :key="a.id">
+                  <div class="row">
+     
+                    <span>{{a.title[locale]}} </span>
+                    <span>{{ a.day[locale] }} - {{a.hour}}</span>
+                  </div>
+                </li>
+              </ul>
             </div>
           </div>
-        </div>
+
+          <div class="scheadle-column animate">
+            <div class="image">
+              <img src="../assets/DSC00267.jpeg" alt="celebration">
+            </div>
+            <div class="row">
+              <h3>Online</h3>
+              <ul>
+              <br>
+                <li v-for="a in onlineactivities" :key="a.id">
+                  <div class="row">
+                    <span>{{a.title[locale]}} </span>
+                    <span>{{ a.day[locale] }} - {{a.hour}}</span>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
       </div>
     </main>
   </template>
@@ -153,11 +163,23 @@ main{
   gap: 1.5rem;
   /* padding: 0 6rem 1rem 8rem; */
   flex-wrap: wrap;
-  padding: 0 3.5rem;
-  justify-content: center;
+  padding: 0 5rem;
+  justify-content: space-around;
   align-items: center;
 }
 
+.image{
+  width: clamp(320px, 100%, 450px);
+  display: flex;
+  overflow: hidden;
+  border: none;
+  border-radius: 8px;
+}
+
+.image img{
+  object-fit: contain;
+  max-width: 100%;
+}
 
 .column, .card-content {
     display: flex;
@@ -169,6 +191,31 @@ main{
     flex-direction: column;
 }
 
+.row span{
+  font-size: .8rem;
+}
+
+.g-1{
+  gap: .5rem
+}
+
+ul{
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+ul li{
+  padding-bottom: .5rem;
+}
+
+.scheadle-column{
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  padding: 0 10rem 2rem 10rem;
+  gap: 2rem;
+}
 
 .category h3 {
   font-size: 1rem;
@@ -208,6 +255,11 @@ main{
     padding: 0 1rem;
   }
 
+  .scheadle-column{
+    flex-direction: column;
+    padding: 0 1rem 0 1rem;
+  }
+
   .icon {
     visibility: collapse;
     padding: 0;
@@ -218,7 +270,7 @@ main{
   }
 
   .container{
-    padding: 70px .5rem 1rem .5rem;
+    padding: 1rem .5rem;
   }
   /* .linha-vertical{
     margin: 0;

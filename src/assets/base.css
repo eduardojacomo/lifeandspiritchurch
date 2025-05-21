@@ -93,7 +93,7 @@ body {
   filter: blur(5px);
 }
 
-button{
+/* button{
   display: flex;
   padding: 1rem;
   border: solid 1px var(--color-border);
@@ -112,4 +112,4 @@ button{
 
 button:hover{
   background-color: var(--cor-azul-medio);
-}
+} */

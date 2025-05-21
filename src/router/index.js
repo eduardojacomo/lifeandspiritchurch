@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/Home.vue'
-import Projects from '@/views/Projects.vue'
+import EditVideo from '@/views/EditVideoView.vue'
 import LoginView from '@/views/LoginView.vue'
 
 const router = createRouter({
@@ -17,9 +17,9 @@ const router = createRouter({
       component: LoginView
     },
     {
-      path: '/Projects/',
-      name: 'projects',
-      component: Projects
+      path: '/editvideo/',
+      name: 'editvideo',
+      component: EditVideo
     },
   ],
   scrollBehavior(to, from, savedPosition) {

@@ -84,7 +84,7 @@ onMounted(() => {
                   
                   <div style="padding: 2rem 0 0 0">
                     <Transition name="fade-blur" mode="out-in">
-                      <button :key="currentLocaleKey">{{ t('_aboutButton') }}</button>  
+                      <button class="btn-more" :key="currentLocaleKey">{{ t('_aboutButton') }}</button>  
                     </Transition>
 
                   </div>
@@ -244,6 +244,25 @@ h3{
 .in-view {
   opacity: 1;
   transform: translateY(0);
+}
+
+.btn-more{
+  display: flex;
+  text-decoration: none;
+  padding: 1rem;
+  border: solid 1px var(--color-border);
+  background-color: transparent;
+  cursor: pointer;
+  color: var(--color-text);
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  width: 150px;
+  animation: all .5s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.btn-more:hover{
+  background-color: var(--color-background-soft);
 }
 
 @media screen and (max-width: 1024px) {

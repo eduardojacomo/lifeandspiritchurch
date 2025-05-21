@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "artful-reactor-460318-v3",
+  "private_key_id": "8ddb9a3dd3bb5f66bfc0a0023eb1725f20dc41cb",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDFzdospuuzeveD\naSPWK+REFAXCAjQtIYfUcIkI7z43x3NpjlSF606SQ0QRiY60vMqmMk/XrInRhzCT\nD4aQavfnf0XVBWWy9ndjNdlqRc+TXu9QtXoN2/bnDICtRpdyejOuSTvjeqS9BKYU\nvDQNFOtbBsovc6tGLppdgDqsjar5cShn5teuKytCh8zPq1Vj/FUA2brl8BDoxJbM\nYSeCBj+fIByZtAkKdMWKQ5xFc14FiL6SW/FXOg5jqRpH/A9CihuqwtSaBm18ZUiq\nAKGBBa27eHzkhulEmCApEBmlsLJQl7fnGst1PoG8YyAGUPflu0iSGaXn+QeJIPmb\nZGOIfb2/AgMBAAECggEAD3kLTHvgKyF+1A446et0BylDzAnNGAyr6d/FsGe6h7V3\n3zVtgi5GbqWJYQ/QFG5CMd70pOvPug6nq5FG1uwvKTIo/cFW07l43E9divUcCCyg\nbsFLY2Ml/KvbMvK3LRLHESaUYzZ4RXrkHPId5joRMQUmcrDLIInLtG2v6UiJq8pd\neAj5QtPE+v5lwc5ECdB8Xh8XMa0AWPAXkUo5I3mNFFNAe+wPmNSShPY4TFDhwDVM\nAKDQGWCxJ5TbHPUYSJ3zrYcohP686hi+B4mMCCKnvGo8KURsLMRI/4adnom+5fHM\nFzcV95oZC8awZzPMdIFj6QlBJ+xUGp7FDXCc9u6MgQKBgQDvI6Yesyg91RzPkDpZ\nQalyXCT38mhQWdYrb1Cuq9VY4nY3GQDA+zpM6/uljrQ2WhQYibnB08EnnaJXq2Dt\nCH+SPfOr32VnLQ6XCL1feNhUAFEWh7JiiMI04Q8CI9i+AU9PjAJYtqyq7Tn7BjlA\neSxEwcWr4s+wqhOF5cBNmBNRgQKBgQDTwB+ZjixPPXW88b0lYLGBj69T4QTd/727\nHkEp7U1cyxQrzgZgAm+pQTy9b02rspgeNbxKhQ5Cnka+hrku+ZYR5xy1UV/v0l1N\n3htOIej+ZL10npFKIE9gasEkCJqvcAgQBHJZl4p9tCIelsQqKcayy5nNqubfU1x3\n0Z9FhsYvPwKBgQCjWAlXPO7G1XO5f32rjANO/wutZSHFiKeWwZEtzmeLMBypY+W0\n66WV9zbLjh8gZQUHAcQlVhvAkJbcJU6uebiRzslLY+tiv08Q8UJRHT0+m3zH0+aQ\nEXP+JKBYyN16Y3CmGC9eI2Dr2+BXy5d9p4cKbAU2dFWDCZkOQ7HIDpFbgQKBgEJ7\nL3CmkoLOaQjJXPk/QnvLAOD05PJOOONmvE7Nklxv5gVayeWa3jPlp4xSRbCCgf/6\nHwPGgpOn3c4zvjBhbBxy0zCaO+Svx1uLQEdnnh9Awbq7jiIXwtQisED/8pDiO6XL\nv5shWPnedFfmPfB+7UN1aPSJk7LKGV4FElxh1BdBAoGBALN/iByOLdtP4BMLxPBK\n6OsXGMt6fQ1BvGj2ALaEajhgCooMEQy2/c88PcyMYGxnDoVBJQfQFzDiszcNgaPM\nvAL6Jj6VJshafcpGLJ3G5JGAsihF9HF02xYxPXPdkg6rfFGfjftBNiwn/ctuezKM\naQ0ZV5xbqXkTIVQLQXmV0C3T\n-----END PRIVATE KEY-----\n",
+  "client_email": "acessoyoutubeapi@artful-reactor-460318-v3.iam.gserviceaccount.com",
+  "client_id": "117736572961163661978",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/acessoyoutubeapi%40artful-reactor-460318-v3.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

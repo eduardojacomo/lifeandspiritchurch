@@ -10,77 +10,12 @@ const uselanguage = useLanguage();
 const { currentLocaleKey} = storeToRefs(uselanguage);
 
 const router = useRouter();
-const useprojects = useProjects();
-const {projectStore, setProject} = storeToRefs(useprojects);
 const resolucao = ref('');
 const { t } = useI18n();
 
-const projects = ref([
-  {
-    codigo: 'p1',
-    title: 'Site para Psicóloga Renata',
-    url: 'www.psirenatamachado.com',
-    links: [{plataforma: 'Preview', link:'https://www.psirenatamachado.com', icon:'fa-solid fa-eye'}],
-    tags:['HTML', 'CSS', 'JavaScript', 'Vue'],
-    imagesNavegador: [{ src: new URL('/src/assets/psirenatamachado.png', import.meta.url).href, alt: 'Image 1'}, { src: new URL('/src/assets/psirenatamachado _all.jpeg', import.meta.url).href, alt: 'Image 2'}],
-    imagesTablet: [{ src: new URL('/src/assets/psirenatamachado.png', import.meta.url).href, alt: 'Image 1'}, { src: new URL('/src/assets/psirenatamachado _all.jpeg', import.meta.url).href, alt: 'Image 2'}],
-    imagesSmartphone: [{ src: new URL('/src/assets/psirenatamachado.png', import.meta.url).href, alt: 'Image 1'}, { src: new URL('/src/assets/psirenatamachado _all.jpeg', import.meta.url).href, alt: 'Image 2'}],
-    legend: ['Tela inicial do site'],
-    description: 'Site moderno, responsivo, rápido e que atende as necessidades do cliente',
-    details: 'A psicóloga Renata, especialista em terapia cognitico comportamental, precisava de um website moderno e funcional para melhorar sua presença online e ampliar a captação de pacientes.'
-  },
-  {
-    codigo: 'p2',
-    title: 'Sistema de Pedidos',
-    url:'localhost',
-    links: [{plataforma: 'Code', link:'https://www.psirenatamachado.com', icon:'fa-brands fa-github'}, {plataforma: 'Preview', link:'https://www.psirenatamachado.com', icon:'fa-solid fa-eye'}],
-    tags:['HTML', 'CSS', 'JavaScript', 'Vue'],
-    imagesNavegador: [{ src: new URL('/src/assets/makeburguer_home.png', import.meta.url).href, alt: 'Image 1'}, 
-    { src: new URL('/src/assets/make-burguer-capa-website.jpeg', import.meta.url).href, alt: 'Image 2'}, 
-    { src: new URL('/src/assets/make-burguer-pedidos-website.jpeg', import.meta.url).href, alt: 'Image 3'}],
-    imagesTablet: [{ src: new URL('/src/assets/makeburguer_home.png', import.meta.url).href, alt: 'Image 1'}, 
-    { src: new URL('/src/assets/make-burguer-capa-ipad.jpeg', import.meta.url).href, alt: 'Image 2'}, 
-    { src: new URL('/src/assets/make-burguer-pedidos-ipad.jpeg', import.meta.url).href, alt: 'Image 3'}],
-    imagesSmartphone: [{ src: new URL('/src/assets/makeburguer_home.png', import.meta.url).href, alt: 'Image 1'}, 
-    { src: new URL('/src/assets/make-burguer-capa-smartphone.jpeg', import.meta.url).href, alt: 'Image 2'}, 
-    { src: new URL('/src/assets/make-burguer-pedidos-smartphone.jpeg', import.meta.url).href, alt: 'Image 3'}],
-    legend: ['Tela de gerência de pedidos', 'Tela inicial da aplicação.', 'Tela onde o burguer é montado.'],
-    description: 'Sistema gerenciador de pedidos utilizando o framework VueJS',
-    details: 'Esse projeto simula um sistema de pedidos, onde o cliente pode escolher o tipo de pão, a carne e os complementos.'
-  },
-  {
-    codigo: 'p3',
-    title: 'CourseAPI',
-    url: 'https://github.com/eduardojacomo/CoursesAPI',
-    links: [{plataforma: 'Code', link:'https://github.com/eduardojacomo/CoursesAPI' , icon:'fa-brands fa-github'}, {plataforma: 'Preview', link:'', icon:'fa-solid fa-eye'}],
-    tags:['.Net', 'SQL Server'],
-    imagesNavegador: [{ src: new URL('/src/assets/CourseAPI.png', import.meta.url).href, alt: 'Image 1'}],
-    imagesTablet: [{ src: new URL('/src/assets/apiCourseTablet.jpeg', import.meta.url).href, alt: 'Image 1'}],
-    imagesSmartphone: [{ src: new URL('/src/assets/apiCourseSmartphone.jpeg', import.meta.url).href, alt: 'Image 1'}],
-    legend: ['Tela inicial do site'],
-    description: 'API RestFull utilizando as tecnologias .NET, SQL Server, Entity Framework, Swager',
-    details: 'Esse projeto visa em fornecer uma API para cursos, contendo dados de módulos, aulas, alunos, instrutores, notas, acompanhamento das aulas etc.'
-  },
-  // Outros projetos
-]);
 
-const showModal = ref(false);
 const selectedProject = ref(null);
 const hoveredProjectIndex = ref(null);
-
-function openModal(project) {
-  selectedProject.value = project;
-  showModal.value = true;
-}
-
-function setProjectDetail(project){
-  projectStore.value = project;
-  router.push({ name: 'projects'});
-}
-
-const closeModal = () => {
-  showModal.value = false;
-};
 
 
 const observeElements = (el) => {
@@ -133,14 +68,8 @@ onMounted(() => {
             <h3 :key="currentLocaleKey">{{ t('_projectsDescription') }}</h3>
           </Transition>
         </div>
-
-          <!-- <div class="socials">
-            <div class="linha-vertical"></div>
-          </div> -->
           <div class="projects">
             <div
-              v-for="(project, index) in projects"
-              :key="index"
               class="column_portifolio animate"
             >
               <div 
@@ -148,46 +77,16 @@ onMounted(() => {
               @mouseover="hoveredProjectIndex = index"
               @mouseleave="hoveredProjectIndex = null" >
                 <Transition name="fade-blur" mode="out-in">
-                  <img :src="project.imagesNavegador[0].src" :alt="project.imagesNavegador[0].alt" class="image" :key="currentLocaleKey"/>
+                  <img src="" alt="" class="image" :key="currentLocaleKey"/>
                 </Transition>
                   
-                <Transition name="slide-fade">
-                    <button v-if="hoveredProjectIndex === index" @click="setProjectDetail(project)">
-                      <font-awesome-icon icon="fa-solid fa-external-link" />
-                    </button>
-                 </Transition>
-                 <!-- <Transition class="slide-fade">
-                     <div class="text"  v-if="hoveredProjectIndex === index">
-                      <h2><strong>{{ project.title }}</strong></h2>
-                      <p>{{ project.description }}</p>
-                    </div> 
-                 </Transition>-->
-            </div>
-            <div class="text">
-              <Transition name="fade-blur" mode="out-in">
-                <h2 :key="currentLocaleKey"><strong>{{t(`_${project.codigo}._title`)}} </strong></h2>
-              </Transition>
-              <Transition name="fade-blur" mode="out-in">
-                <p :key="currentLocaleKey">{{ t(`_${project.codigo}._description`) }}</p>
-              </Transition>
-            </div>
-            <!-- <div v-else class="image-content-mobile">
-                <img :src="project.imagesNavegador[0].src" :alt="project.imagesNavegador[0].alt" class="image" />
-                <div class="mobile-details">
-                  <div class="text-mobile">
-                    <h2><strong>{{ project.title }}</strong></h2>
-                  </div>
-                  <button @click="setProjectDetail(project)">
-                    <font-awesome-icon icon="fa-solid fa-external-link" />
-                  </button>
-
-                </div>
-            </div> -->
+                
           </div>
   
           </div>
         
       </div>
+    </div>
     </main>
   </template>
   
