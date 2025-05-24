@@ -13,6 +13,11 @@
       "_content": "Content",
       "_contact": "Contact"
     },
+    "_navadm":{
+      "_videos": "Videos",
+      "_content": "Content",
+      "_users": "Users"
+    },
     "_about": {
       "_about_us": "About Us",
       "_our_pastors": "Our Pastors",
@@ -25,23 +30,9 @@
     "_link": {
       "_more":"Read More"
     },
-    "_projectsTitle":"Projects",
-    "_projectsDescription": "This is a some projects who I do in this last year",
-    "_p1":{
-      "_title":"Website for Psychologist Renata",
-      "_description": "Modern, responsive, fast website that meets customer needs.",
-      "_details":"Psychologist Renata, a specialist in cognitive behavioral therapy, needed a modern and functional website to improve her online presence and increase patient intake."
-    },
-    "_p2":{
-      "_title":"Ordering System",
-      "_description": "Order management system using the VueJS framework",
-      "_details":"This project simulates an ordering system, where the customer can choose the type of bread, meat and complements."
-    },
-    "_p3":{
-      "_title":"CourseAPI",
-      "_description": "RestFull API using .NET, SQL Server, Entity Framework, Swager technologies",
-      "_details":"This project aims to provide an API for courses, containing data on modules, classes, students, instructors, grades, class tracking, etc."
-    },
+    "_contentTitle": "Content",
+    "_contentDescription": "See all the content we have available.",
+    "_newsTitle": "News",
     "_contactTitle": "Contact",
     "_contactDescription": "Do you need help completing a project, meeting a demand or creating a tool that helps you in your daily life?\nContact me!\nWe will be happy to discuss your ideas and find the best solution for your needs.",
     "_contactButton": "Contact Me",

@@ -3,19 +3,37 @@ import { ref, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import {storeToRefs} from 'pinia';
-import {useProjects} from '@/stores/projectStore'
 import {useLanguage} from '../stores/languageStore'
+import {
+  collection,
+  getDocs,
+  query,
+  orderBy,
+  limit,
+  startAfter,
+  updateDoc,
+  doc
+} from 'firebase/firestore';
+import { useFirestore } from 'vuefire';
+
+const db = useFirestore();
+const videos = ref([]);
 
 const uselanguage = useLanguage();
-const { currentLocaleKey} = storeToRefs(uselanguage);
+const { currentLocaleKey, locale} = storeToRefs(uselanguage);
 
 const router = useRouter();
 const resolucao = ref('');
 const { t } = useI18n();
 
+const fetchVideos = async () => {
+  // loading.value = true;
+  const q = query(collection(db, 'videos'), orderBy('publishedAt', 'desc'), limit(5));
+  const snapshot = await getDocs(q);
 
-const selectedProject = ref(null);
-const hoveredProjectIndex = ref(null);
+  videos.value = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  //loading.value = false;
+};
 
 
 const observeElements = (el) => {
@@ -32,61 +50,56 @@ const observeElements = (el) => {
   el.forEach((element) => observer.observe(element));
 };
 
-function verifyResolution(){
-  let _width = window.innerWidth;
-  if (_width <= '480'){
-    resolucao.value = 'Smartphone'
-  } else if ( _width > '480' && _width <= '780'){
-    resolucao.value = 'Tablet'
-  }else{
-    resolucao.value = 'Navegador'
-  }
-
-}
-
-onUnmounted(() => {
-      window.removeEventListener('resize', verifyResolution);
-    });
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: 'short' });
+};
 
 
 onMounted(() => {
-  const projectElements = document.querySelectorAll('.column_portifolio');
-  verifyResolution();
-  window.addEventListener('resize', verifyResolution);
-  observeElements(projectElements);
+  fetchVideos();
+  const sections = document.querySelectorAll('.animate');
+  observeElements(sections);
 });
 </script>
 
 <template>
     <main>
       <div class="container">
-        <div class="title">
+        <div class="title animate">
           <Transition name="fade-blur" mode="out-in">
-            <h1 :key="currentLocaleKey">{{ t('_projectsTitle') }}</h1>
+            <h1 :key="currentLocaleKey">{{ t('_contentTitle') }}</h1>
           </Transition>
           <Transition name="fade-blur" mode="out-in">
-            <h3 :key="currentLocaleKey">{{ t('_projectsDescription') }}</h3>
+            <h3 :key="currentLocaleKey">{{ t('_contentDescription') }}</h3>
           </Transition>
         </div>
-          <div class="projects">
-            <div
-              class="column_portifolio animate"
-            >
-              <div 
-              class="image-content"
-              @mouseover="hoveredProjectIndex = index"
-              @mouseleave="hoveredProjectIndex = null" >
-                <Transition name="fade-blur" mode="out-in">
-                  <img src="" alt="" class="image" :key="currentLocaleKey"/>
-                </Transition>
-                  
-                
+        
+        <div class="video-grid animate">
+          <div class="video-main" v-if="videos.length">
+            <img :src="videos[0].thumbnails?.high" alt="" />
+            <div class="video-info-main">
+              <span class="tag">Palavras</span>
+              <span class="date">{{ formatDate(videos[0].publishedAt) }}</span>
+              <h2>{{ videos[0].title?.[locale] }} </h2>
+            </div>
           </div>
+
+          <div class="video-side animate">
+            <div class="video-side-item" v-for="video in videos.slice(1, 3)" :key="video.id">
+              <img :src="video.thumbnails?.medium" alt="" />
+              <div class="video-info">
+                <span class="tag">Palavras</span>
+                <span class="date">{{ formatDate(video.publishedAt) }}</span>
+                <p>{{ video.title?.[locale] || 'Sem título' }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
   
-          </div>
         
       </div>
-    </div>
     </main>
   </template>
   
@@ -125,49 +138,6 @@ onMounted(() => {
   }
 }
 
-/* Modal wrapper que contém todas as animações */
-.modal-wrapper {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: transparent;
-  z-index: 9999;
-}
-
-/* Animação de fundo branco */
-.white-slide {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  background-color: white;
-  animation: slide-in-white 0.5s ease forwards;
-  z-index: 2;
-}
-
-/* Animação de fundo preto */
-.black-slide {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  background-color: black;
-  animation: slide-in-black 1s ease forwards;
-  z-index: 3;
-}
-
-/* Conteúdo do modal com transição de opacidade */
-.modal-content {
-  position: relative;
-  z-index: 3;
-  animation: fade-in 1s ease forwards;
-  animation-delay: 1.5s;
-  opacity: 0;
-}
-
 .container {
   display: flex;
   flex-direction: column;
@@ -192,140 +162,6 @@ onMounted(() => {
   color: var(--color-heading);
 }
 
-.projects {
-  display: flex;
-  gap: 1rem;
-  padding: 1rem 1rem 1rem 5rem;
-  flex-wrap: wrap;
-}
-
-.column_portifolio {
-  display: flex;
-  flex-direction: column;
-  padding: 20px;
-  border: solid 1px var(--color-border);
-  /* border-radius: 8px; */
-  /* background-color: var(--color-background-mute); */
-  width: clamp(400px, 100%, 550px);
-  gap: .5rem;
-}
-
-.image-content {
-  position: relative;
-  height: clamp(210px, 100%, 337px);
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
-  border: none;
-  border-radius: 8px;
-}
-
-.image-content img {
-  width: 100%;
-  height: 100%;
-  object-fit: fill;
-  transition: all 0.3s ease-in-out;
-}
-
-.image-content:hover img {
-  filter: brightness(10%);
-}
-
-.image-content button {
-  background-color: var(--color-heading);
-  border: none;
-  border-radius: 8px;
-  padding: 10px;
-  cursor: pointer;
-  position: absolute;
-  right: 20px;
-  bottom: 20px;
-  font-size: 1rem;
-  opacity: 0;
-  transform: translateY(20px);
-  transition: all 0.3s ease-in-out;
-}
-
-.image-content:hover button {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.text {
-  display: flex;
-  flex-direction: column;
-  padding: 0 1rem 1rem 1rem;
-  text-align: justify;
-  color: var(--color-text);
-  gap: 1rem;
-  /* position: absolute; */
-  /* bottom: 20px;
-  left: 0; */
-  /* opacity: 0;
-  transform: translateY(20px);
-  transition: all 0.3s ease-in-out; */
-}
-
-.image-content-mobile {
-  display: flex;
-  flex-direction: column;
-  height: clamp(210px, 100%, 337px);
-  justify-content: space-around;
-  align-items: center;
-  overflow: hidden;
-  color: var(--color-heading);
-}
-
-.image-content-mobile img {
-  width: 100%;
-  height: 100%;
-  object-fit: fill;
-}
-.mobile-details{
-  display: flex;
-  flex-direction: row;
-  justify-content: space-around;
-  gap:.5rem;
-  width: 100%;
-  background-color: var(--color-background-soft);
-  
-}
-
-.mobile-details button {
-  background-color: transparent;
-  border: none;
-  border-radius: 8px;
-  padding: 10px;
-  cursor: pointer;
-  font-size: 1rem;
-  color:var(--color-text);
-}
-
-
-.text-mobile {
-  display: flex;
-  flex-direction: column;
-  padding: .5rem;
-  text-align: justify;
-  align-content: center;
-  color:var(--color-text);
-}
-
-/* .image-content:hover .text {
-  opacity: 1;
-  transform: translateY(0);
-} */
-
-.text h2, .text-mobile h2 {
-  text-align: center;
-  font-size: 1.2rem;
-  font-weight: 700;
-}
-
-.text p, .text-mobile p {
-  font-size: 1rem;
-}
-
 .animate {
   opacity: 0;
   transform: translateY(30px);
@@ -337,6 +173,83 @@ onMounted(() => {
   transform: translateY(0);
 }
 
+.video-grid {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 1rem;
+  /* margin-top: 2rem; */
+  padding: 0 10rem;
+  justify-content: flex-start;
+}
+
+.video-main {
+  position: relative;
+
+  overflow: hidden;
+  width: 610px;
+  height: 390px;
+}
+
+.video-main img {
+  width: 100%;
+  border-radius: 8px;
+  height: auto;
+  object-fit: contain;
+}
+
+.video-side {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.video-side-item {
+  position: relative;
+  overflow: hidden;
+}
+
+.video-side-item img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.video-info, .video-info-main {
+  position: absolute;
+  bottom: 1rem;
+  left: 1rem;
+  color: white;
+  background: rgba(0, 0, 0, 0.628);
+  padding: 0.5rem;
+  border-radius: 8px;
+  max-width: 90%;
+}
+
+.video-info .tag, .video-info-main .tag {
+  background: white;
+  color: black;
+  padding: 2px 8px;
+  border-radius: 16px;
+  font-size: 0.7rem;
+  font-weight: bold;
+  margin-right: 8px;
+}
+
+.video-info .date, .video-info-main .date {
+  font-size: 0.75rem;
+  margin-top: 4px;
+  display: block;
+}
+
+.video-info h2, .video-info p, .video-info-main h2, .video-info-main p {
+  font-size: 1rem;
+  font-weight: bold;
+  margin-top: 0.5rem;
+}
+
+
 @media screen and (max-width: 1092px){
   .projects{
     justify-content: center;
@@ -346,6 +259,10 @@ onMounted(() => {
 @media screen and (max-width: 768px) {
   .container {
     padding: 70px 0.5rem 0.5rem 0.5rem;
+  }
+
+  .video-grid{
+    padding: 0 1rem;
   }
 
   .projects {

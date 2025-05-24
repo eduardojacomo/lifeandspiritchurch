@@ -1,29 +1,36 @@
 <template>
-  <header v-if="showLayout">
-    <Navbar />
+  <header v-if="showNavbar || showAdminNavbar">
+    <Navbar v-if="showNavbar" />
+    <NavbarAdmin v-else-if="showAdminNavbar" />
   </header>
+
   <main class="main-content">
-      <router-view />
+    <router-view />
   </main>
-  <footer v-if="showLayout">
+
+  <footer v-if="showFooter">
     <FooterAPP />
   </footer>
 </template>
 
 <script setup>
-import { RouterView } from 'vue-router';
-import { useRoute } from 'vue-router'
-import {ref, computed} from 'vue';
+import { RouterView, useRoute } from 'vue-router';
+import { ref, computed } from 'vue';
+
 import Navbar from './components/Navbar.vue';
+import NavbarAdmin from './components/NavbarAdmin.vue';
 import FooterAPP from './components/Footer.vue';
-const navbarVisible = ref('hidden'); 
-// Acessa a rota atual
-const route = useRoute()
 
-// Computa se deve mostrar o layout (navbar + footer)
-const showLayout = computed(() => route.path !== '/login')
+const route = useRoute();
 
+// Navbar comum aparece em todas as rotas, exceto login e admin
+const showNavbar = computed(() => !route.path.startsWith('/admin') && route.path !== '/login');
 
+// Navbar admin aparece nas rotas administrativas
+const showAdminNavbar = computed(() => route.path.startsWith('/admin'));
+
+// Footer só aparece fora do login e fora da área admin
+const showFooter = computed(() => route.path !== '/login' && !route.path.startsWith('/admin'));
 </script>
 
 <style scoped>

@@ -24,9 +24,6 @@
     <section class="section">
       <MobileApp />
     </section>
-    <section id="contact" class="section">
-      <Contact />
-    </section>
   </main>
 </template>
 

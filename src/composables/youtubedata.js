@@ -1,6 +1,6 @@
 const API_KEY = 'AIzaSyAJoQPTBMbDZC8Szh4EkouGYrMk_QES9dY';
 const CHANNEL_ID = 'UC1Fk9GbEVI5IPlnLckrsDEg';
-const MAX_RESULTS = 10;
+const MAX_RESULTS = 5;
 
 export const fetchYoutubeVideos = async () => {
   const url = `https://www.googleapis.com/youtube/v3/search?key=${API_KEY}&channelId=${CHANNEL_ID}&part=snippet,id&order=date&maxResults=${MAX_RESULTS}`;

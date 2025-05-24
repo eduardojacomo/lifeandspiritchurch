@@ -13,6 +13,11 @@
       "_content": "Conteúdo",
       "_contact": "Contato"
     },
+    "_navadm":{
+      "_videos": "Videos",
+      "_content": "Conteúdo",
+      "_users": "Usuários"
+    },
     "_about":{
       "_about_us": "Sobre Nós",
       "_our_pastors": "Nossos Pastores",
@@ -25,23 +30,9 @@
     "_link": {
       "_more":"Saiba Mais"
     },
-    "_projectsTitle":"Projetos",
-    "_projectsDescription": "Esses são alguns dos projetos que eu fiz no último ano",
-    "_p1":{
-      "_title":"Site para Psicóloga Renata",
-      "_description": "Site moderno, responsivo, rápido e que atende as necessidades do cliente",
-      "_details":"A psicóloga Renata, especialista em terapia cognitico comportamental, precisava de um website moderno e funcional para melhorar sua presença online e ampliar a captação de pacientes."
-    },
-    "_p2":{
-      "_title":"Sistema de Pedidos",
-      "_description": "Sistema gerenciador de pedidos utilizando o framework VueJS",
-      "_details":"Esse projeto simula um sistema de pedidos, onde o cliente pode escolher o tipo de pão, a carne e os complementos."
-    },
-    "_p3":{
-      "_title":"CourseAPI",
-      "_description": "API RestFull utilizando as tecnologias .NET, SQL Server, Entity Framework, Swager.",
-      "_details":"Esse projeto visa em fornecer uma API para cursos, contendo dados de módulos, aulas, alunos, instrutores, notas, acompanhamento das aulas etc."
-    },
+    "_contentTitle": "Conteúdo",
+    "_contentDescription": "Veja todo o conteúdo que temos disponível.",
+    "_newsTitle": "Notícias",
     "_contactTitle": "Contato",
     "_contactDescription": "Precisando de ajuda para concluir um projeto, suprir alguma demanda ou criar uma ferramenta que te auxilie no dia a dia? Entre em contato comigo! Será um prazer em discutir suas ideias e encontrar a melhor solução para suas necessidades.",
     "_contactButton": "Fale Comigo",

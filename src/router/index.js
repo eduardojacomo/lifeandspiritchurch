@@ -17,7 +17,7 @@ const router = createRouter({
       component: LoginView
     },
     {
-      path: '/editvideo/',
+      path: '/admin/videos',
       name: 'editvideo',
       component: EditVideo
     },
