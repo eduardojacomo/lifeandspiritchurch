@@ -87,7 +87,7 @@ export const fetchYoutubeVideosPaginated = async (pageToken = null) => {
         high: video.snippet.thumbnails.high.url,
       }
     }));
-
+    console.log('data youtube', data);
   return {
     videos,
     nextPageToken: data.nextPageToken || null,

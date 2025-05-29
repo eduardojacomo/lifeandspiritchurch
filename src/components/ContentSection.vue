@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import {storeToRefs} from 'pinia';
 import {useLanguage} from '../stores/languageStore'
+import { useVideoWatch } from '@/stores/videoviewStore';
 import {
   collection,
   getDocs,
@@ -21,6 +22,10 @@ const videos = ref([]);
 
 const uselanguage = useLanguage();
 const { currentLocaleKey, locale} = storeToRefs(uselanguage);
+
+const usevideowatch = useVideoWatch();
+const {setVideo} = usevideowatch;
+const {videoviewStore} = storeToRefs(usevideowatch);
 
 const router = useRouter();
 const resolucao = ref('');
@@ -55,6 +60,17 @@ const formatDate = (dateString) => {
   return date.toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: 'short' });
 };
 
+function openVideoSelected(videoData){
+  setVideo (videoData);
+  router.push({
+    name: 'videowatch',
+    params: {
+      id: videoData.youtubeId // O parâmetro que você espera na sua rota (ex: /detalhes-video/:id)
+    }
+  });
+  
+}
+
 
 onMounted(() => {
   fetchVideos();
@@ -81,7 +97,9 @@ onMounted(() => {
             <div class="video-info-main">
               <span class="tag">Palavras</span>
               <span class="date">{{ formatDate(videos[0].publishedAt) }}</span>
-              <h2>{{ videos[0].title?.[locale] }} </h2>
+              
+              <a :href="`https://www.youtube.com/watch?v=${videos[0].youtubeId}`" target="_blank"><h2>{{ videos[0].title?.[locale] }} </h2></a>
+               <button @click="openVideoSelected(videos[0])"><h2>{{ videos[0].title?.[locale] }} </h2></button>
             </div>
           </div>
 
@@ -91,7 +109,7 @@ onMounted(() => {
               <div class="video-info">
                 <span class="tag">Palavras</span>
                 <span class="date">{{ formatDate(video.publishedAt) }}</span>
-                <p>{{ video.title?.[locale] || 'Sem título' }}</p>
+                <a :href="`https://www.youtube.com/watch?v=${video.youtubeId}`" target="_blank"><p>{{ video.title?.[locale] || 'Sem título' }}</p></a>
               </div>
             </div>
           </div>
@@ -244,7 +262,7 @@ onMounted(() => {
 }
 
 .video-info h2, .video-info p, .video-info-main h2, .video-info-main p {
-  font-size: 1rem;
+  font-size: .8rem;
   font-weight: bold;
   margin-top: 0.5rem;
 }

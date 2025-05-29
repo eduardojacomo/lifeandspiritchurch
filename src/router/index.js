@@ -2,6 +2,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/Home.vue'
 import EditVideo from '@/views/EditVideoView.vue'
 import LoginView from '@/views/LoginView.vue'
+import VideoWatchView from '@/views/VideoWatchView.vue'
+//import VideoWatchView from '@views/VideoWatchView.vue' 
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -10,6 +12,12 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: Home
+    },
+    {
+      path: '/video-watch/:id',
+      name: 'videowatch',
+      component: VideoWatchView,
+      props: true
     },
     {
       path: '/login',

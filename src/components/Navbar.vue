@@ -258,7 +258,8 @@ onBeforeUnmount(() => {
 
 /* cor padrão em todo resto */
 .navbar--solid {
-  background-color: var(--color-background) !important;
+  /* background-color: var(--color-background) !important; */
+  background-color: #000 !important;
   backdrop-filter: blur(4px);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
