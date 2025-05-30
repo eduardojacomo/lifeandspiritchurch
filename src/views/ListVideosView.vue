@@ -1,25 +1,46 @@
 <script setup>
-import { ref, watch, onMounted } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { storeToRefs } from 'pinia';
 import { useVideoWatch } from '@/stores/videoviewStore';
 import { useLanguage } from '../stores/languageStore';
-import videoWatch from '@/components/videoWatch.vue';
-import SwiperVideosRelacionados from '@/components/SwiperVideosRelacionados.vue';
 import { useI18n } from 'vue-i18n';
-import {
-  collection,
-  getDocs,
-  query,
-  orderBy,
-  limit,
-  startAfter,
-  updateDoc,
-  doc
-} from 'firebase/firestore';
-import { useFirestore } from 'vuefire';
-const videos = ref([]);
-const db = useFirestore();
+import { getFirestore, collection, query, where, getDocs, orderBy, limit } from 'firebase/firestore';
+import { fetchMostViewedVideos } from '@/composables/youtubedata';
+import SwiperVideosRelacionados from '@/components/SwiperVideosRelacionados.vue';
+import SkeltonCardVideos from '@/components/Tools/SkeltonCardVideos.vue'
+
+const mostviewdVideos = ref([]);
+const recentVideos = ref([]);
+const db = getFirestore();
+
+const qtde = 4;
+const fetchVideosFromFirestoreByIds = async (ids = []) => {
+  const videosRef = collection(db, 'videos');
+
+  const chunks = [];
+  while (ids.length) {
+    const chunk = ids.splice(0, 10); // Firestore permite no máx. 10 por where-in
+    chunks.push(chunk);
+  }
+    const results = [];
+  for (const chunk of chunks) {
+    const q = query(videosRef, where('youtubeId', 'in', chunk));
+    const snapshot = await getDocs(q);
+    snapshot.forEach(doc => {
+      results.push({ id: doc.id, ...doc.data() });
+    });
+  }
+
+  return results;
+};
+
+const fetchVideos = async () => {
+  const q = query(collection(db, 'videos'), orderBy('publishedAt', 'desc'), limit(10));
+  const snapshot = await getDocs(q);
+
+  recentVideos.value = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+};
 
 const uselanguage = useLanguage();
 const { currentLocaleKey, locale } = storeToRefs(uselanguage);
@@ -28,26 +49,11 @@ const { t } = useI18n();
 const usevideowatch = useVideoWatch();
 const { videoviewStore } = storeToRefs(usevideowatch);
 
-// Pegando o parâmetro da rota
-const route = useRoute();
-const videoIdFromRoute = ref(route.params.id);
-
-
-const fetchVideos = async () => {
-  const q = query(collection(db, 'videos'), orderBy('publishedAt', 'desc'), limit(10));
-  const snapshot = await getDocs(q);
-
-  videos.value = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-};
-
-onMounted(() => {
-  fetchVideos();
-});
-
-// Atualiza quando o ID mudar
-watch(() => route.params.id, (newId) => {
-  videoIdFromRoute.value = newId;
-});
+onMounted(async ()=>{
+    const topIds = await fetchMostViewedVideos();
+    mostviewdVideos.value =  await fetchVideosFromFirestoreByIds([...topIds]);
+    await fetchVideos();
+})
 
 </script>
 
@@ -62,17 +68,14 @@ watch(() => route.params.id, (newId) => {
                 <router-link class="links" to="">Conteudo</router-link>
             </div>
         </div>
-        <div class="video-view">
-            <videoWatch :videoId="videoIdFromRoute" :key="videoIdFromRoute" :autoplay="false" />
+    
+        <div>
+            <SkeltonCardVideos v-if="mostviewdVideos.length === 0" :qtde="4"/>
+            <SwiperVideosRelacionados v-else :videos="mostviewdVideos" :title="t('_videoPopular._title')"/>
         </div>
-        <div class="video-details">
-            <h2>{{videoviewStore.title?.[locale]}}</h2>
-            
-            <p>{{videoviewStore.description?.[locale]}}</p>
-            <br>
-            <div class="video-swiper">
-                <SwiperVideosRelacionados :videos="videos" :title="t('_videoWatch._title')"/>
-            </div>
+        <div>
+            <SkeltonCardVideos v-if="recentVideos.length === 0" :qtde="4" />
+            <SwiperVideosRelacionados v-else :videos="recentVideos" :title="t('_videoRecent._title')"/>
         </div>
     </div>
   </div>
@@ -80,7 +83,7 @@ watch(() => route.params.id, (newId) => {
 
 <style scoped>
 .video-container-view{
-    padding: 100px 5rem 1rem 5rem;
+    padding: 72px 5rem 1rem 5rem;
     display: flex;
     flex-direction: column;
     justify-content: center;

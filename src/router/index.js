@@ -3,7 +3,12 @@ import Home from '../views/Home.vue'
 import EditVideo from '@/views/EditVideoView.vue'
 import LoginView from '@/views/LoginView.vue'
 import VideoWatchView from '@/views/VideoWatchView.vue'
-//import VideoWatchView from '@views/VideoWatchView.vue' 
+import ListVideosView from '@/views/ListVideosView.vue'
+import NProgress from 'nprogress'
+import 'nprogress/nprogress.css'
+
+// Configurar NProgress (opcional)
+NProgress.configure({ showSpinner: false, trickleSpeed: 200 })
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -18,6 +23,11 @@ const router = createRouter({
       name: 'videowatch',
       component: VideoWatchView,
       props: true
+    },
+    {
+      path: '/content',
+      name: 'contentvideos',
+      component: ListVideosView
     },
     {
       path: '/login',
@@ -39,6 +49,18 @@ const router = createRouter({
     }
     return savedPosition || { top: 0 };
   }
+
+  
+})
+// Mostra a barra ao começar a navegar
+router.beforeEach((to, from, next) => {
+  NProgress.start()
+  next()
+})
+
+// Finaliza a barra ao terminar a navegação
+router.afterEach(() => {
+  NProgress.done()
 })
 
 export default router

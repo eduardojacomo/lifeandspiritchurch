@@ -30,6 +30,15 @@
     "_link": {
       "_more":"Saiba Mais"
     },
+    "_videoWatch":{
+        "_title":"Vídeos Relacionados"
+    },
+    "_videoPopular":{
+        "_title":"Mais populares"
+    },
+    "_videoRecent":{
+        "_title":"Adicionados Recente"
+    },
     "_contentTitle": "Conteúdo",
     "_contentDescription": "Veja todo o conteúdo que temos disponível.",
     "_newsTitle": "Notícias",

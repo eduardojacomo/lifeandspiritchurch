@@ -1,6 +1,6 @@
 const API_KEY = 'AIzaSyAJoQPTBMbDZC8Szh4EkouGYrMk_QES9dY';
 const CHANNEL_ID = 'UC1Fk9GbEVI5IPlnLckrsDEg';
-const MAX_RESULTS = 5;
+const MAX_RESULTS = 500;
 
 export const fetchYoutubeVideos = async () => {
   const url = `https://www.googleapis.com/youtube/v3/search?key=${API_KEY}&channelId=${CHANNEL_ID}&part=snippet,id&order=date&maxResults=${MAX_RESULTS}`;
@@ -93,4 +93,13 @@ export const fetchYoutubeVideosPaginated = async (pageToken = null) => {
     nextPageToken: data.nextPageToken || null,
     prevPageToken: data.prevPageToken || null
   };
+};
+
+export const fetchMostViewedVideos = async () => {
+  const url = `https://www.googleapis.com/youtube/v3/search?key=${API_KEY}&channelId=${CHANNEL_ID}&part=snippet,id&order=viewCount&maxResults=30&type=video`;
+
+  const res = await fetch(url);
+  const data = await res.json();
+
+  return data.items.map(video => video.id.videoId);
 };

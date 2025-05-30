@@ -4,19 +4,19 @@ import {storeToRefs} from 'pinia';
 import { useRouter } from 'vue-router';
 import {useLanguage} from '../stores/languageStore'
 import { useVideoWatch } from '@/stores/videoviewStore';
-import {
-  collection,
-  getDocs,
-  query,
-  orderBy,
-  limit,
-  startAfter,
-  updateDoc,
-  doc
-} from 'firebase/firestore';
-import { useFirestore } from 'vuefire';
-const videos = ref([]);
-const db = useFirestore();
+// import {
+//   collection,
+//   getDocs,
+//   query,
+//   orderBy,
+//   limit,
+//   startAfter,
+//   updateDoc,
+//   doc
+// } from 'firebase/firestore';
+// import { useFirestore } from 'vuefire';
+// const videos = ref([]);
+// const db = useFirestore();
 
 const uselanguage = useLanguage();
 const { currentLocaleKey, locale} = storeToRefs(uselanguage);
@@ -25,19 +25,33 @@ const usevideowatch = useVideoWatch();
 const {setVideo} = usevideowatch;
 const {videoviewStore} = storeToRefs(usevideowatch);
 
-const fetchVideos = async () => {
-  const q = query(collection(db, 'videos'), orderBy('publishedAt', 'desc'), limit(10));
-  const snapshot = await getDocs(q);
+// const fetchVideos = async () => {
+//   const q = query(collection(db, 'videos'), orderBy('publishedAt', 'desc'), limit(10));
+//   const snapshot = await getDocs(q);
 
-  videos.value = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-};
+//   videos.value = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+// };
+
+
+const props = defineProps({
+  videos: {
+    type: Object,
+    required: true,
+  },
+  title: {
+    type: String,
+    required: true,
+  }
+});
 
 const router = useRouter();
 const currentIndex = ref(0);
-const visibleCount = 4;
+const visibleCount = 5;
+
+
 
 const canGoPrev = computed(() => currentIndex.value > 0);
-const canGoNext = computed(() => currentIndex.value + visibleCount < videos.length);
+const canGoNext = computed(() => currentIndex.value + visibleCount < props.videos.length);
 
 function prev() {
   if (canGoPrev.value) currentIndex.value -= 1;
@@ -60,14 +74,14 @@ function openVideoSelected(videoData){
 }
 
 
-onMounted(() => {
-  fetchVideos();
-});
+// onMounted(() => {
+//   fetchVideos();
+// });
 </script>
 
 <template>
   <section class="carousel-container">
-    <h2>Conteúdos similares</h2>
+    <h2>{{ props.title }}</h2>
     <button class="nav-button left" :disabled="!canGoPrev" @click="prev">‹</button>
     <button class="nav-button right" :disabled="!canGoNext" @click="next">›</button>
     <div class="carousel-wrapper">
@@ -79,7 +93,7 @@ onMounted(() => {
             transform: `translateX(-${currentIndex * (100 / visibleCount)}%)`
           }"
         >
-          <div class="video-card" v-for="video in videos" :key="video.id">
+          <div class="video-card" v-for="video in props.videos" :key="video.id">
             <img :src="video.thumbnails?.medium" :alt="video.title" />
             <button @click="openVideoSelected(video)"><h3>{{ video.title?.[locale] }}</h3></button>
             <!-- <p class="categories">{{ video.categories.join(', ') }}</p> -->
@@ -93,7 +107,7 @@ onMounted(() => {
 
 <style scoped>
 .carousel-container {
-  padding: 2rem 1rem;
+  padding: 0 1rem;
   background-color: transparent;
   color: #fff;
   position: relative;
@@ -102,7 +116,7 @@ onMounted(() => {
 .carousel-container h2 {
   font-size: 1rem;
   font-weight: 700;
-  margin-bottom: 1rem;
+  /* margin-bottom: 1rem; */
 }
 
 .carousel-wrapper {
