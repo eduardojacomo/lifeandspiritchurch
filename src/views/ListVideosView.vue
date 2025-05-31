@@ -61,11 +61,14 @@ onMounted(async ()=>{
   <div class="video-container-view">
       <div class="video-content">
         <div class="column space-between">
-            <router-link class="links" to="">Voltar para palavras</router-link>
-            <div class="column">
-                <router-link class="links" to="/">Home</router-link>
-                <span>/</span>
-                <router-link class="links" to="">Conteudo</router-link>
+            <h2>Palavras:</h2>
+            <router-link class="links" to="/">Home</router-link>
+        </div>
+        <div class="column padding2">
+            <div class="form-group">
+                <!-- <label for="searchVideos">Search</label> -->
+                <input type="text" id="searchVideos" placeholder="Buscar por título">
+                <button class="form-submit-btn">{{t('_btnSearch')}}</button>
             </div>
         </div>
     
@@ -83,7 +86,7 @@ onMounted(async ()=>{
 
 <style scoped>
 .video-container-view{
-    padding: 72px 5rem 1rem 5rem;
+    padding: 100px 5rem 1rem 5rem;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -93,10 +96,67 @@ onMounted(async ()=>{
     display: flex;
     flex-direction: row;
 }
+.padding2{
+    padding: 0.5rem 1rem 2rem 1rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.form-group{
+    display: flex;
+    gap: .5rem;
+    flex: 1 1 350px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: 6px;
+    font-family: inherit;
+    background-color: var(--color-background-soft);
+    border: 1px solid #ccc;
+}
+
+.form-group input::placeholder {
+    opacity: 0.5;
+  }
+
+.form-group input:focus {
+    outline: none;
+    border-color: #1778f2;
+}
+
+.form-submit-btn{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: inherit;
+    color: #fff;
+    
+    border: none;
+    width: 150px;
+    padding: 12px 16px;
+    font-size: inherit;
+    cursor: pointer;
+    border-radius: 6px;
+    box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.084), 0px 2px 3px rgba(0, 0, 0, 0.168);
+  }
+
+  .form-submit-btn{
+    background-color: var(--cor-azul-medio);
+  }
+
+  .form-submit-btn:hover{
+    background-color: var(--cor-azul-claro);
+  }
 
 .space-between{
     justify-content: space-between;
     gap: 1rem;
+    padding: 0 1rem;
 }
 
 .links{

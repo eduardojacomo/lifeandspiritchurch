@@ -97,8 +97,6 @@ onMounted(() => {
             <div class="video-info-main">
               <span class="tag">Palavras</span>
               <span class="date">{{ formatDate(videos[0].publishedAt) }}</span>
-              
-              <a :href="`https://www.youtube.com/watch?v=${videos[0].youtubeId}`" target="_blank"><h2>{{ videos[0].title?.[locale] }} </h2></a>
                <button @click="openVideoSelected(videos[0])"><h2>{{ videos[0].title?.[locale] }} </h2></button>
             </div>
           </div>
@@ -109,7 +107,7 @@ onMounted(() => {
               <div class="video-info">
                 <span class="tag">Palavras</span>
                 <span class="date">{{ formatDate(video.publishedAt) }}</span>
-                <a :href="`https://www.youtube.com/watch?v=${video.youtubeId}`" target="_blank"><p>{{ video.title?.[locale] || 'Sem título' }}</p></a>
+                <button @click="openVideoSelected(video)"><h2>{{ video.title?.[locale] }} </h2></button>
               </div>
             </div>
           </div>
@@ -203,10 +201,13 @@ onMounted(() => {
 
 .video-main {
   position: relative;
-
   overflow: hidden;
   width: 610px;
   height: 390px;
+  display: flex;
+  align-items: center;
+  border: none;
+  border-radius: 8px;
 }
 
 .video-main img {
@@ -220,6 +221,7 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  flex-wrap: wrap;
 }
 
 .video-side-item {
@@ -267,6 +269,13 @@ onMounted(() => {
   margin-top: 0.5rem;
 }
 
+.video-info button, .video-info-main button{
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--color-heading);
+  text-align: left;
+}
 
 @media screen and (max-width: 1092px){
   .projects{
@@ -276,11 +285,16 @@ onMounted(() => {
 
 @media screen and (max-width: 768px) {
   .container {
-    padding: 70px 0.5rem 0.5rem 0.5rem;
+    padding: 70px 2rem 0.5rem 2rem;
   }
 
   .video-grid{
     padding: 0 1rem;
+    justify-content: flex-end;
+  }
+
+  .video-main{
+    height: auto;
   }
 
   .projects {
@@ -297,6 +311,11 @@ onMounted(() => {
 
   .text p {
     font-size: 0.9rem;
+  }
+}
+@media screen and (max-width: 430px){
+  .container {
+    padding: 70px 0.5rem 0.5rem 0.5rem;
   }
 }
 

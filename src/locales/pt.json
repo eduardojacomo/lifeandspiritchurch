@@ -39,6 +39,10 @@
     "_videoRecent":{
         "_title":"Adicionados Recente"
     },
+    "_btnSearch": "Buscar",
+    "_btnShare": "Compartilhar",
+    "_btnCopyLink": "Copiar Link",
+    "_linkBackContnet":"Voltar para Palavras",
     "_contentTitle": "Conteúdo",
     "_contentDescription": "Veja todo o conteúdo que temos disponível.",
     "_newsTitle": "Notícias",

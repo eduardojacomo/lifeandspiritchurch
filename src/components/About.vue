@@ -64,43 +64,33 @@ onMounted(() => {
               </Transition>
             </div>
             <div class="row-text">
-                <div class="title animate">
-                  <Transition name="fade-blur" mode="out-in">
-                    <h1 :key="currentLocaleKey">{{ t('_aboutTitle') }}</h1>
-                  </Transition>
-                </div>
-                <Transition name="fade-blur" mode="out-in">
-                  <p :key="currentLocaleKey" >{{ t('_aboutDescription') }}</p>
-                </Transition>
+              <div class="title animate">
+              <Transition name="fade-blur" mode="out-in">
+                <h1 :key="currentLocaleKey">{{ t('_aboutTitle') }}</h1>
+              </Transition>
+            </div>
+            <div class="about-description">
+              <Transition name="fade-blur" mode="out-in">
+                <p :key="currentLocaleKey" >{{ t('_aboutDescription') }}</p>
+              </Transition>
+            </div>
                 
-                  <div class="row">
-                    <Transition name="fade-blur" mode="out-in">
-                      <h3 :key="currentLocaleKey">{{ t('_aboutPastor') }}</h3>
-                    </Transition>
-                    <Transition name="fade-blur" mode="out-in">
-                      <h3 :key="currentLocaleKey">{{ t('_aboutPastora') }}</h3>
-                    </Transition>
-                  </div>
+            <div class="row about-pastor">
+              <Transition name="fade-blur" mode="out-in">
+                <h3 :key="currentLocaleKey">{{ t('_aboutPastor') }}</h3>
+              </Transition>
+              <Transition name="fade-blur" mode="out-in">
+                <h3 :key="currentLocaleKey">{{ t('_aboutPastora') }}</h3>
+              </Transition>
+            </div>
                   
-                  <div style="padding: 2rem 0 0 0">
-                    <Transition name="fade-blur" mode="out-in">
-                      <button class="btn-more" :key="currentLocaleKey">{{ t('_aboutButton') }}</button>  
-                    </Transition>
+            <div style="padding: 2rem 0 0 0" class="about-button">
+              <Transition name="fade-blur" mode="out-in">
+                <button class="btn-more" :key="currentLocaleKey">{{ t('_aboutButton') }}</button>  
+              </Transition>
+            </div>
 
-                  </div>
-                
-                
-              </div>
-             
-            <!-- <div class="cards">
-              <div class="card-content animate">
-                  <div v-for="(skill, index) in skills" :key="index" class="animate">
-                    <Transition name="fade-blur" mode="out-in">
-                      <Card :icon="skill.icon" :label="skill.label" class="card-skill" :key="currentLocaleKey"/>
-                    </Transition>  
-                  </div>
-                </div>
-            </div> -->
+            </div>
         </div>
       </div>
     </div>
@@ -147,9 +137,11 @@ onMounted(() => {
 .content-about {
   display: flex;
   padding: 0 10rem;
+  flex-direction: row;
   text-align: justify;
   /* align-items: flex-start; */
   justify-content: center;
+  /* flex-wrap: wrap-reverse; */
   gap: 3rem;
 }
 
@@ -313,6 +305,26 @@ h3{
   .socials{
     padding: 0 0 0.5rem 0 !important;
   }
+  .title{
+    order: 1;
+  }
+  .image-about{
+    order:2;
+    padding: 0 1rem;
+  }
+  .about-description{
+    order: 3;
+  }
+  .about-pastor{
+    order:4;
+    text-align: left;
+    width: 100%;
+  }
+  .about-button{
+    order: 5;
+    width: 100%;
+  }
+
 }
 
 </style>

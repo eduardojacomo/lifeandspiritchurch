@@ -32,6 +32,8 @@ const { videoviewStore } = storeToRefs(usevideowatch);
 const route = useRoute();
 const videoIdFromRoute = ref(route.params.id);
 
+const show = ref(false);
+const currentUrl = window.location.href;
 
 const fetchVideos = async () => {
   const q = query(collection(db, 'videos'), orderBy('publishedAt', 'desc'), limit(10));
@@ -39,6 +41,31 @@ const fetchVideos = async () => {
 
   videos.value = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 };
+
+function toggleMenu() {
+  show.value = !show.value;
+}
+
+function shareFacebook() {
+  const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentUrl)}`;
+  window.open(url, '_blank');
+  show.value = false;
+}
+
+function shareWhatsApp() {
+  const text = `Confira esse link: ${currentUrl}`;
+  const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
+  window.open(url, '_blank');
+  show.value = false;
+}
+
+function copyLink() {
+  navigator.clipboard.writeText(currentUrl).then(() => {
+    alert('Link copiado para a área de transferência!');
+    show.value = false;
+  });
+}
+
 
 onMounted(() => {
   fetchVideos();
@@ -55,18 +82,32 @@ watch(() => route.params.id, (newId) => {
   <div class="video-container-view">
       <div class="video-content">
         <div class="column space-between">
-            <router-link class="links" to="">Voltar para palavras</router-link>
+            <router-link class="links" to="/content/">{{ t('_linkBackContnet') }}</router-link>
             <div class="column">
                 <router-link class="links" to="/">Home</router-link>
-                <span>/</span>
-                <router-link class="links" to="">Conteudo</router-link>
+                <span> | </span>
+                <router-link class="links" to="/content/">{{ t('_nav._content') }} </router-link>
             </div>
         </div>
         <div class="video-view">
             <videoWatch :videoId="videoIdFromRoute" :key="videoIdFromRoute" :autoplay="false" />
         </div>
         <div class="video-details">
-            <h2>{{videoviewStore.title?.[locale]}}</h2>
+            <div class="column space-between">
+              <h2>{{videoviewStore.title?.[locale]}}</h2>
+              <div class="share-container">
+                <button class="btn-share" @click="toggleMenu()">
+                  <font-awesome-icon icon="fa-solid fa-share-nodes" /> 
+                  <span>{{ t('_btnShare') }}</span> 
+                </button>
+
+                <div v-if="show" class="share-menu">
+                  <button @click="shareFacebook">Facebook</button>
+                  <button @click="shareWhatsApp">WhatsApp</button>
+                  <button @click="copyLink">{{ t('_btnCopyLink') }}</button>
+                </div>
+              </div>
+            </div>
             
             <p>{{videoviewStore.description?.[locale]}}</p>
             <br>
@@ -148,6 +189,62 @@ watch(() => route.params.id, (newId) => {
 .video-details p{
     font-size: .9rem;
     padding: 0 1rem;
+}
+
+.btn-share{
+  display: flex;
+  flex-direction: row;
+  width: 120px;
+  gap: .5rem;
+  background-color: var(--cor-azul-medio);
+  padding: .5rem;
+  cursor: pointer;
+  border: solid 1px var(--color-border);
+  border-radius: 5px;
+  justify-content: space-evenly;
+  align-items: center;
+  margin-right: 1rem;
+  color: var(--color-text);
+  transition: all .3s ease;
+}
+
+.btn-share span{
+  text-align: center;
+}
+
+.btn-share:hover{
+  background-color: var(--cor-azul-claro);
+}
+
+.share-container {
+  position: relative;
+  display: inline-block;
+}
+
+.share-menu {
+  position: absolute;
+  top: 35px;
+  right: 20px;
+  background: #222;
+  border: 1px solid #444;
+  border-radius: 8px;
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  z-index: 10;
+}
+
+.share-menu button {
+  background: none;
+  border: none;
+  color: white;
+  padding: 0.5rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.share-menu button:hover {
+  background: #444;
 }
 
 </style>

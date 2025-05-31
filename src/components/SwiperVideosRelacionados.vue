@@ -4,19 +4,6 @@ import {storeToRefs} from 'pinia';
 import { useRouter } from 'vue-router';
 import {useLanguage} from '../stores/languageStore'
 import { useVideoWatch } from '@/stores/videoviewStore';
-// import {
-//   collection,
-//   getDocs,
-//   query,
-//   orderBy,
-//   limit,
-//   startAfter,
-//   updateDoc,
-//   doc
-// } from 'firebase/firestore';
-// import { useFirestore } from 'vuefire';
-// const videos = ref([]);
-// const db = useFirestore();
 
 const uselanguage = useLanguage();
 const { currentLocaleKey, locale} = storeToRefs(uselanguage);
@@ -24,14 +11,6 @@ const { currentLocaleKey, locale} = storeToRefs(uselanguage);
 const usevideowatch = useVideoWatch();
 const {setVideo} = usevideowatch;
 const {videoviewStore} = storeToRefs(usevideowatch);
-
-// const fetchVideos = async () => {
-//   const q = query(collection(db, 'videos'), orderBy('publishedAt', 'desc'), limit(10));
-//   const snapshot = await getDocs(q);
-
-//   videos.value = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-// };
-
 
 const props = defineProps({
   videos: {
@@ -48,8 +27,6 @@ const router = useRouter();
 const currentIndex = ref(0);
 const visibleCount = 5;
 
-
-
 const canGoPrev = computed(() => currentIndex.value > 0);
 const canGoNext = computed(() => currentIndex.value + visibleCount < props.videos.length);
 
@@ -63,20 +40,11 @@ function next() {
 
 function openVideoSelected(videoData){
   setVideo (videoData);
-//   router.push({
-//     name: 'videowatch',
-//     params: {
-//       id: videoData.youtubeId
-//     }
-//   });
   router.push({ name: 'videowatch', params: { id: videoData.youtubeId } }).catch(() => {});
 
 }
 
 
-// onMounted(() => {
-//   fetchVideos();
-// });
 </script>
 
 <template>
@@ -145,14 +113,14 @@ function openVideoSelected(videoData){
 
 .nav-button.left{
  position: absolute;
- top: 50%;
+ top: 40%;
  left: 10px;
  z-index: 100;
 }
 
 .nav-button.right{
  position: absolute;
- top: 50%;
+ top: 40%;
  right: 10px;
  z-index: 100;
 }
@@ -170,7 +138,7 @@ function openVideoSelected(videoData){
 .carousel-track {
   display: flex;
   transition: transform 0.4s ease-in-out;
-  width: calc(100% * (5 / 4)); /* total de vídeos dividido por visíveis */
+  width: calc(100% * (5 / 4)); 
 }
 
 .video-card {
@@ -208,5 +176,16 @@ function openVideoSelected(videoData){
   font-size: 0.7rem;
   color: #ccc;
   padding: 0 0.5rem 0.5rem 0.5rem;
+}
+
+@media screen and (max-width: 768px){
+  .carousel-track{
+    width: calc(100% * (3 / 2));
+  }
+
+  .video-card{
+    flex: 0 0 calc(100% / 3);
+    max-width: calc(100% / 3);
+  }
 }
 </style>
