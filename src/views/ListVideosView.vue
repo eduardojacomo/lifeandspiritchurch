@@ -8,11 +8,17 @@ import { useI18n } from 'vue-i18n';
 import { getFirestore, collection, query, where, getDocs, orderBy, limit } from 'firebase/firestore';
 import { fetchMostViewedVideos } from '@/composables/youtubedata';
 import SwiperVideosRelacionados from '@/components/SwiperVideosRelacionados.vue';
-import SkeltonCardVideos from '@/components/Tools/SkeltonCardVideos.vue'
+import SkeltonCardVideos from '@/components/Tools/SkeltonCardVideos.vue';
+import DatePicker from '@/components/Tools/DatePicker.vue';
 
 const mostviewdVideos = ref([]);
 const recentVideos = ref([]);
 const db = getFirestore();
+
+const filterTipo = ref(false);
+const filterData = ref(false);
+
+const appSelectedDate = ref('');
 
 const qtde = 4;
 const fetchVideosFromFirestoreByIds = async (ids = []) => {
@@ -49,6 +55,11 @@ const { t } = useI18n();
 const usevideowatch = useVideoWatch();
 const { videoviewStore } = storeToRefs(usevideowatch);
 
+function handleDateSelected(date) {
+      appSelectedDate.value = date;
+      console.log(date);
+    }
+
 onMounted(async ()=>{
     const topIds = await fetchMostViewedVideos();
     mostviewdVideos.value =  await fetchVideosFromFirestoreByIds([...topIds]);
@@ -64,14 +75,31 @@ onMounted(async ()=>{
             <h2>Palavras:</h2>
             <router-link class="links" to="/">Home</router-link>
         </div>
-        <div class="column padding2">
+        <div class="column">
             <div class="form-group">
                 <!-- <label for="searchVideos">Search</label> -->
                 <input type="text" id="searchVideos" placeholder="Buscar por título">
                 <button class="form-submit-btn">{{t('_btnSearch')}}</button>
             </div>
         </div>
-    
+          
+        <div class="filters_form">
+            <button class="btn-filter" @click="filterTipo = !filterTipo" ><span> Tipo </span><font-awesome-icon icon="fa-solid fa-caret-down" />
+              <div v-if="filterTipo === true" class="options-filter">
+                <ul>
+                  <li><button>Todos</button></li>
+                  <li><button>Série</button></li>
+                  <li><button>Palavras</button></li>
+                </ul>
+              </div>
+            </button>
+
+            <button class="btn-filter" @click="filterData = !filterData"><span> Data </span><font-awesome-icon icon="fa-solid fa-caret-down" />
+              <div class="options-data" v-if="filterData === true">
+                <DatePicker @date-selected="handleDateSelected" :lang="locale" :key="locale"/>
+              </div>
+            </button>
+        </div>
         <div>
             <SkeltonCardVideos v-if="mostviewdVideos.length === 0" :qtde="4"/>
             <SwiperVideosRelacionados v-else :videos="mostviewdVideos" :title="t('_videoPopular._title')"/>
@@ -118,6 +146,7 @@ onMounted(async ()=>{
     font-family: inherit;
     background-color: var(--color-background-soft);
     border: 1px solid #ccc;
+    color: var(--color-text);
 }
 
 .form-group input::placeholder {
@@ -153,6 +182,65 @@ onMounted(async ()=>{
     background-color: var(--cor-azul-claro);
   }
 
+.filters_form{
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+}
+
+.btn-filter{
+  background-color: transparent;
+  color: var(--color-text);
+  gap: .5rem;
+  border:none;
+  min-width: 60px;
+  cursor: pointer;
+  position: relative;
+}
+
+.options-filter{
+  display: flex;
+  flex-direction: column;
+  border: solid 1px var(--color-border);
+  background-color: var(--cor-azul-medio);
+  color: var(--color-text);
+  border-radius: 8px;
+  position: absolute;
+  top: 20px;
+  left: 0;
+  z-index: 900;
+  justify-content: center;
+  padding: .5rem 0;
+}
+
+.options-data{
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 900;
+}
+
+.options-filter ul{
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  text-align: left;
+}
+
+.options-filter button{
+  background-color: transparent;
+  border: none;
+  padding: .5rem 1rem;
+  cursor: pointer;
+  transition: all .3s ease;
+  width: 100%;
+  font-size: .7rem;
+}
+
+.options-filter button:hover{
+  background-color: var(--cor-azul-claro);
+}
+
 .space-between{
     justify-content: space-between;
     gap: 1rem;
@@ -173,7 +261,7 @@ onMounted(async ()=>{
 .video-content{
     display: flex;
     flex-direction: column;
-    /* gap: .5rem; */
+    gap: .5rem;
     width: 100%;
     max-width: 800px;
     min-width: 400px;
