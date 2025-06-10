@@ -1,11 +1,11 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onBeforeUnmount, computed } from 'vue';
 import { useRoute } from 'vue-router';
-import { storeToRefs } from 'pinia';
 import { useVideoWatch } from '@/stores/videoviewStore';
+import { storeToRefs } from 'pinia';
 import { useLanguage } from '../stores/languageStore';
 import { useI18n } from 'vue-i18n';
-import { getFirestore, collection, query, where, getDocs, orderBy, limit } from 'firebase/firestore';
+import { getFirestore, collection, query, where, getDocs, orderBy, limit, startAfter } from 'firebase/firestore';
 import { fetchMostViewedVideos } from '@/composables/youtubedata';
 import SwiperVideosRelacionados from '@/components/SwiperVideosRelacionados.vue';
 import SkeltonCardVideos from '@/components/Tools/SkeltonCardVideos.vue';
@@ -17,10 +17,38 @@ const db = getFirestore();
 
 const filterTipo = ref(false);
 const filterData = ref(false);
+const dropdownWrapper = ref(null);
 
-const appSelectedDate = ref('');
+const appSelectedDate = ref(null);
+const appTipoVideo = ref('');
+const typeVideos = ref([]);
+const titleSearchVideo = ref('');
+
+const searchVideosStatus = ref(false);
+const videosSearch = ref([]);
 
 const qtde = 4;
+
+const PAGE_SIZE = 10;
+const pageCursors = ref([]); // Armazena snapshot da primeira doc de cada página
+const currentPage = ref(1);
+const totalPages = ref(1);
+const totalResults = ref(0);
+
+const uselanguage = useLanguage();
+const { currentLocaleKey, locale } = storeToRefs(uselanguage);
+const { t } = useI18n();
+
+const usevideowatch = useVideoWatch();
+const { videoviewStore } = storeToRefs(usevideowatch);
+
+async function fetchtypeVideos(){
+  const typeSnapshot = await getDocs(collection(db, 'type_videos'));
+  typeVideos.value = typeSnapshot.docs.map(doc => doc.data());
+  console.log('tipos:', typeVideos.value);
+
+}
+
 const fetchVideosFromFirestoreByIds = async (ids = []) => {
   const videosRef = collection(db, 'videos');
 
@@ -48,24 +76,114 @@ const fetchVideos = async () => {
   recentVideos.value = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 };
 
-const uselanguage = useLanguage();
-const { currentLocaleKey, locale } = storeToRefs(uselanguage);
-const { t } = useI18n();
+// serach-videos
+// begin
+async function fetchFilteredVideos(pageNumber) {
+  let q = collection(db, 'videos');
 
-const usevideowatch = useVideoWatch();
-const { videoviewStore } = storeToRefs(usevideowatch);
+  if (appTipoVideo.value && appTipoVideo.value !== 'All') {
+    q = query(q, where('type', '==', appTipoVideo.value));
+  }
+
+  if (appSelectedDate.value) {
+    const start = new Date(appSelectedDate.value);
+    start.setUTCHours(0, 0, 0, 0);
+    const end = new Date(start);
+    end.setUTCDate(end.getUTCDate() + 1);
+
+    q = query(q,
+      where('publishedAt', '>=', start.toISOString()),
+      where('publishedAt', '<', end.toISOString())
+    );
+  }
+
+  q = query(q, orderBy('publishedAt', 'desc'), limit(PAGE_SIZE));
+
+  // Se for página > 1, pegar o cursor da página anterior
+  if (pageNumber > 1 && pageCursors.value[pageNumber - 2]) {
+    q = query(q, startAfter(pageCursors.value[pageNumber - 2]));
+  }
+
+  const snapshot = await getDocs(q);
+  if (!snapshot.empty) {
+    videosSearch.value = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    currentPage.value = pageNumber;
+    pageCursors.value[pageNumber - 1] = snapshot.docs[snapshot.docs.length - 1];
+    searchVideosStatus.value = true;
+  }
+  console.log('teste video search',videosSearch.value);
+}
+
+
+//paginacao
+async function fetchTotalCount() {
+  let q = collection(db, 'videos');
+
+  if (appTipoVideo.value && appTipoVideo.value !== 'All') {
+    q = query(q, where('type', '==', appTipoVideo.value));
+  }
+
+  if (appSelectedDate.value) {
+    const start = new Date(appSelectedDate.value);
+    start.setUTCHours(0, 0, 0, 0);
+    const end = new Date(start);
+    end.setUTCDate(end.getUTCDate() + 1);
+
+    q = query(q,
+      where('publishedAt', '>=', start.toISOString()),
+      where('publishedAt', '<', end.toISOString())
+    );
+  }
+
+  const snapshot = await getDocs(q);
+  totalResults.value = snapshot.size;
+  totalPages.value = Math.ceil(snapshot.size / PAGE_SIZE);
+}
+
+
+//end
+
+
+const toggleFilter = () => {
+  filterData.value = !filterData.value;
+};
+
+function formattedSelectedDate (date) {
+  console.log(locale.value);
+    return date.toLocaleDateString(locale.value);
+};
 
 function handleDateSelected(date) {
-      appSelectedDate.value = date;
-      console.log(date);
-    }
+  //appSelectedDate.value =  formattedSelectedDate(date);
+  appSelectedDate.value =  date;
+  console.log(date);
+  filterData.value = false;
+};
+
+function clearFilters(){
+  appSelectedDate.value = null;
+  titleSearchVideo.value = '';
+  appTipoVideo.value = '';
+}
+
+const handleClickOutside = (event) => {
+  if (dropdownWrapper.value && !dropdownWrapper.value.contains(event.target)) {
+    filterData.value = false;
+  }
+};
 
 onMounted(async ()=>{
     const topIds = await fetchMostViewedVideos();
-    mostviewdVideos.value =  await fetchVideosFromFirestoreByIds([...topIds]);
+    await fetchtypeVideos()
     await fetchVideos();
-})
+    await fetchTotalCount();
+    mostviewdVideos.value =  await fetchVideosFromFirestoreByIds([...topIds]);
+    document.addEventListener('click', handleClickOutside);
+});
 
+onBeforeUnmount(() => {
+  document.removeEventListener('click', handleClickOutside);
+});
 </script>
 
 <template>
@@ -78,36 +196,73 @@ onMounted(async ()=>{
         <div class="column">
             <div class="form-group">
                 <!-- <label for="searchVideos">Search</label> -->
-                <input type="text" id="searchVideos" placeholder="Buscar por título">
-                <button class="form-submit-btn">{{t('_btnSearch')}}</button>
+                <input type="text" id="searchVideos" placeholder="Buscar por título" v-model="titleSearchVideo">
+                <button class="form-submit-btn" @click="fetchFilteredVideos(1)" >{{t('_btnSearch')}}</button>
             </div>
         </div>
           
         <div class="filters_form">
-            <button class="btn-filter" @click="filterTipo = !filterTipo" ><span> Tipo </span><font-awesome-icon icon="fa-solid fa-caret-down" />
-              <div v-if="filterTipo === true" class="options-filter">
-                <ul>
-                  <li><button>Todos</button></li>
-                  <li><button>Série</button></li>
-                  <li><button>Palavras</button></li>
-                </ul>
+          <div>
+            <div ref="dropdownWrapper" class="dropdown-wrapper">
+              <button class="btn-filter" @click="filterTipo = !filterTipo" ><span> Tipo </span><font-awesome-icon icon="fa-solid fa-caret-down" />
+                
+                <div v-if="filterTipo === true" class="options-filter">
+                  <ul>
+                    <li><button @click="appTipoVideo = 'All'">Todos</button></li>
+                    <li v-for="(t, index) in typeVideos" :key="index"><button @click="appTipoVideo = t.value">{{t.name?.[locale]}}</button></li>
+                    <!-- <li><button @click="appTipoVideo = 'Série'">Série</button></li>
+                    <li><button @click="appTipoVideo = 'Palavras'">Palavras</button></li> -->
+                  </ul>
+                </div>
+              </button>
+            </div>
+            <span v-if="appTipoVideo"> {{ appTipoVideo }} </span>
+              <div ref="dropdownWrapper" class="dropdown-wrapper">
+                <button class="btn-filter" @click="toggleFilter">
+                  <span> Data </span>
+                  <font-awesome-icon icon="fa-solid fa-caret-down" />
+                </button>
+                
+                <div class="options-data" v-if="filterData">
+                  <DatePicker @date-selected="handleDateSelected" :lang="locale" :key="locale" />
+                </div>
               </div>
-            </button>
-
-            <button class="btn-filter" @click="filterData = !filterData"><span> Data </span><font-awesome-icon icon="fa-solid fa-caret-down" />
-              <div class="options-data" v-if="filterData === true">
-                <DatePicker @date-selected="handleDateSelected" :lang="locale" :key="locale"/>
-              </div>
-            </button>
+              <span v-if="appSelectedDate">{{ formattedSelectedDate(appSelectedDate) }}</span>
+          </div>
+          <div>
+            <button class="btn-filter" @click="clearFilters()">Limpar Filtros</button>
+          </div>
         </div>
-        <div>
+        <div class="related-videos" v-if="searchVideosStatus === false">
+          <div class="carrouselrow">
             <SkeltonCardVideos v-if="mostviewdVideos.length === 0" :qtde="4"/>
             <SwiperVideosRelacionados v-else :videos="mostviewdVideos" :title="t('_videoPopular._title')"/>
-        </div>
-        <div>
             <SkeltonCardVideos v-if="recentVideos.length === 0" :qtde="4" />
             <SwiperVideosRelacionados v-else :videos="recentVideos" :title="t('_videoRecent._title')"/>
+          </div>
+          
         </div>
+        <div class="row" v-else>
+          <div class="related-videos" >
+            <div class="video-card" v-for="video in videosSearch" :key="video.youtubeId">
+              <img :src="video.thumbnails?.medium" :alt="video.title" />
+                <button @click="openVideoSelected(video)"><h3>{{ video.title?.[locale] }}</h3></button>
+            </div>
+          </div>
+          <div class="pagination">
+            <button
+              v-for="page in totalPages"
+              :key="page"
+              @click="fetchFilteredVideos(page)"
+              :class="{ active: page === currentPage }"
+            >
+              {{ page }}
+            </button>
+          </div>
+        </div>
+        
+        
+        
     </div>
   </div>
 </template>
@@ -186,6 +341,8 @@ onMounted(async ()=>{
   display: flex;
   flex-direction: row;
   gap: 1rem;
+  align-items: baseline;
+  justify-content: space-between;
 }
 
 .btn-filter{
@@ -194,8 +351,15 @@ onMounted(async ()=>{
   gap: .5rem;
   border:none;
   min-width: 60px;
-  cursor: pointer;
+  /* cursor: pointer; */
+}
+
+.dropdown-wrapper {
   position: relative;
+  display: inline-block;
+}
+.filters_form span{
+  font-size: .8rem;
 }
 
 .options-filter{
@@ -299,6 +463,90 @@ onMounted(async ()=>{
 .video-details p{
     font-size: .9rem;
     padding: 0 1rem;
+}
+
+.related-videos{
+  display: flex;
+  flex-direction: row;
+  gap: .5rem;
+  padding: 1.5rem 0;
+  flex-wrap: wrap;
+}
+
+.carrouselrow{
+  display: flex;
+  flex-direction: column;
+  max-width: 780px;
+  width: 100%;
+}
+
+.video-card {
+  flex: 0 0 calc(90% / 4);
+  max-width: calc(100% / 4);
+  box-sizing: border-box;
+  padding: 1rem .5rem;
+  background-color: transparent;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.video-card button{
+    background-color: transparent;
+    cursor: pointer;
+    border: none;
+    text-align: left;
+}
+
+.video-card img {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  height: auto;
+  display: block;
+}
+
+.video-card h3 {
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.5rem;
+  color: #fff;
+}
+
+.video-card .categories {
+  font-size: 0.7rem;
+  color: #ccc;
+  padding: 0 0.5rem 0.5rem 0.5rem;
+}
+
+.pagination{
+  display: flex;
+  flex-direction: row;
+  gap: .5rem;
+  justify-content: center;
+}
+
+.pagination button{
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 1rem;
+  font-weight: bold;
+  color: var(--color-heading);
+}
+
+.pagination button.active {
+  font-weight: italic;
+  background-color: transparent;
+  border: none;
+  cursor: auto;
+  padding: 1rem;
+  color:#727272;
+}
+
+@media screen and (max-width: 768px){
+  .video-card{
+    flex: 0 0 calc(90% / 2);
+    max-width: calc(100% / 2);
+  }
 }
 
 </style>

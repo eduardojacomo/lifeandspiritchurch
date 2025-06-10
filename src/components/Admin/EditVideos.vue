@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue';
 import {
   collection,
   getDocs,
+  where,
   query,
   orderBy,
   limit,
@@ -11,6 +12,8 @@ import {
   doc
 } from 'firebase/firestore';
 import { useFirestore } from 'vuefire';
+import { storeToRefs } from 'pinia';
+import { useLanguage } from '@/stores/languageStore';
 
 const db = useFirestore();
 const videos = ref([]);
@@ -20,6 +23,14 @@ const showModal = ref(false);
 const selectedVideo = ref(null);
 const isEditing = ref(false);
 
+const typeSelected = ref('');
+const typeVideos = ref([]);
+
+
+const uselanguage = useLanguage();
+const { currentLocaleKey, locale } = storeToRefs(uselanguage);
+
+
 const form = ref({
   title: { pt: '', en: '' },
   description: { pt: '', en: '' }
@@ -28,7 +39,7 @@ const form = ref({
 // Buscar página inicial
 const fetchVideos = async () => {
   loading.value = true;
-  const q = query(collection(db, 'videos'), orderBy('publishedAt', 'desc'), limit(5));
+  const q = query(collection(db, 'videos'), orderBy('publishedAt', 'desc'), limit(10));
   const snapshot = await getDocs(q);
 
   videos.value = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -54,12 +65,34 @@ const fetchNextPage = async () => {
   lastVisible.value = snapshot.docs[snapshot.docs.length - 1];
 };
 
+const fetchtypeVideos = async () => {
+  const q = query(collection(db, 'type_videos'));
+  const snapshot = await getDocs(q);
+
+  typeVideos.value = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+};
+
+//verify error
+// const snapshot = await getDocs(collection(db, 'videos'));
+// snapshot.docs.forEach(doc => {
+//   if (!doc.data().publishedAt) {
+//     console.log('Documento sem publishedAt:', doc.id);
+//   }
+// });
+
 const openModal = (video) => {
+  typeSelected.value = '';
   selectedVideo.value = video;
   form.value.title.pt = video.title?.pt || '';
   form.value.title.en = video.title?.en || '';
   form.value.description.pt = video.description?.pt || '';
   form.value.description.en = video.description?.en || '';
+  form.value.type = video?.type || '';
+
+  
+  
+  typeSelected.value = form.value.type
+  
   isEditing.value = true;
   showModal.value = true;
 };
@@ -76,21 +109,27 @@ const saveVideo = async () => {
   const videoRef = doc(db, 'videos', selectedVideo.value.id);
   await updateDoc(videoRef, {
     title: form.value.title,
-    description: form.value.description
+    description: form.value.description,
+    type: typeSelected.value
   });
 
-  // Atualiza localmente
   const index = videos.value.findIndex(v => v.id === selectedVideo.value.id);
   if (index !== -1) {
     videos.value[index].title = { ...form.value.title };
     videos.value[index].description = { ...form.value.description };
+    videos.value[index].type = { ...form.value.type };
   }
+
+
+  typeSelected.value = '';
 
   closeModal();
 };
 
-onMounted(() => {
-  fetchVideos();
+onMounted(async () => {
+  await fetchVideos();
+  await fetchtypeVideos();
+  // await snapshot();
 });
 </script>
 
@@ -111,7 +150,7 @@ onMounted(() => {
         </div>
       </li>
     </ul>
-
+    <!-- {{ videos }} -->
     <button v-if="!loading" class="form-submit-btn" @click="fetchNextPage">
       Carregar Mais
     </button>
@@ -145,6 +184,12 @@ onMounted(() => {
                    </div>
                 </div>
             </div>
+             <div class="row">
+                <select name="typeVideos" id="typeVideos" class="select" v-model="typeSelected">
+                  <option value="0" selected>Select the type</option>
+                  <option v-for="(t,index) in typeVideos" :key="index" :value="t.value">{{ t.name?.[locale] }}</option>
+                </select>
+              </div>
           <div class="column">
             <button @click="closeModal" class="form-cancel-btn">Cancelar</button>
             <button type="submit" class="form-submit-btn">Salvar</button>
@@ -339,6 +384,25 @@ onMounted(() => {
     background-color: #212121;
     opacity: 0.1;
   }
+
+  .select { /* Adicionei o select aqui */
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 6px;
+  font-family: inherit;
+  border: 1px solid #ccc;
+  
+  -webkit-appearance: none; 
+  -moz-appearance: none;    
+  appearance: none;         
+  background-color: #fff;   
+  cursor: pointer;          
+}
+
+.select:focus { /* Adicionei o select aqui */
+  outline: none;
+  border-color: #1778f2;
+}
 
 @media (max-width: 768px) {
   

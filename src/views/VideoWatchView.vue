@@ -10,6 +10,8 @@ import { useI18n } from 'vue-i18n';
 import {
   collection,
   getDocs,
+  getDoc,
+  where,
   query,
   orderBy,
   limit,
@@ -36,8 +38,25 @@ const show = ref(false);
 const currentUrl = window.location.href;
 
 const fetchVideos = async () => {
-  const q = query(collection(db, 'videos'), orderBy('publishedAt', 'desc'), limit(10));
+  
+  const t = query(
+    collection(db, 'videos'),
+    where('youtubeId', '==', videoIdFromRoute.value)
+  );
+
+  const typetemp = await getDocs(t);
+  const temp = typetemp.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  const currentType = temp[0].type;
+
+  const q = query(
+    collection(db, 'videos'),
+    where('type', '==', currentType),
+    where('youtubeId', '!=', videoIdFromRoute.value),
+    orderBy('publishedAt', 'desc'),
+    limit(10)
+  );
   const snapshot = await getDocs(q);
+  console.log('snapshot', snapshot)
 
   videos.value = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 };

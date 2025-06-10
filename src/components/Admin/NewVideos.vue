@@ -1,21 +1,37 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useYoutubeVideos } from '@/composables/useYoutubeVideos';
-import { addDoc, collection } from 'firebase/firestore';
+import { storeToRefs } from 'pinia';
+import { useLanguage } from '@/stores/languageStore';
 import { useFirestore } from 'vuefire'
+import { addDoc, collection,
+  getDocs,
+  query,
+  orderBy,
+  limit,
+  startAfter,
+  updateDoc,
+  doc } from 'firebase/firestore';
 
 const db = useFirestore()
 
 const videos = ref([]);
 const nextPageToken = ref(null);
 
-
+const typeSelected = ref('');
+const typeVideos = ref([]);
 const selectedVideo = ref(null);
 const form = ref({
   title: { pt: '', en: '' },
   description: { pt: '', en: '' }
 });
 const showModal = ref(false);
+
+
+
+const uselanguage = useLanguage();
+const { currentLocaleKey, locale } = storeToRefs(uselanguage);
+
 
 const openModal = (video) => {
   selectedVideo.value = video;
@@ -29,12 +45,20 @@ const closeModal = () => {
   selectedVideo.value = null;
 };
 
+const fetchtypeVideos = async () => {
+  const q = query(collection(db, 'type_videos'));
+  const snapshot = await getDocs(q);
+
+  typeVideos.value = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+};
+
 const saveVideo = async () => {
   await addDoc(collection(db, 'videos'), {
     youtubeId: selectedVideo.value.youtubeId,
     title: form.value.title,
     description: form.value.description,
     publishedAt: selectedVideo.value.publishedAt,
+    type: typeSelected.value,
     thumbnails: selectedVideo.value.thumbnails
   });
 
@@ -48,6 +72,7 @@ onMounted(async () => {
   const result = await useYoutubeVideos();
   videos.value = result.videos;
   nextPageToken.value = result.nextPageToken;
+  await fetchtypeVideos();
 });
 </script>
 
@@ -95,7 +120,13 @@ onMounted(async () => {
                       <textarea required="" placeholder="Enter your email" name="descriptionEN" id="descriptionEN" v-model="form.description.en"> </textarea>
                    </div>
                 </div>
-            </div>
+              </div>
+              <div class="row">
+                <select name="typeVideos" id="typeVideos" class="select" v-model="typeSelected">
+                  <option value="0" selected>Select the type</option>
+                  <option v-for="(t,index) in typeVideos" :key="index" :value="t.value">{{ t.name?.[locale] }}</option>
+                </select>
+              </div>
                     <!-- <button type="submit" class="form-submit-btn" @click="login">Sign In</button> -->
             <div class="column">
                 <button @click="closeModal" class="form-cancel-btn">Cancelar</button>
@@ -283,16 +314,35 @@ onMounted(async () => {
     font-weight: 400;
   }
 
-  .modal-content .link:hover {
-    text-decoration: underline;
-  }
+.modal-content .link:hover {
+  text-decoration: underline;
+}
 
-  .modal-content .line {
-    width: 100%;
-    height: 1px;
-    background-color: #212121;
-    opacity: 0.1;
-  }
+.modal-content .line {
+  width: 100%;
+  height: 1px;
+  background-color: #212121;
+  opacity: 0.1;
+}
+
+.select { /* Adicionei o select aqui */
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 6px;
+  font-family: inherit;
+  border: 1px solid #ccc;
+  
+  -webkit-appearance: none; 
+  -moz-appearance: none;    
+  appearance: none;         
+  background-color: #fff;   
+  cursor: pointer;          
+}
+
+.select:focus { /* Adicionei o select aqui */
+  outline: none;
+  border-color: #1778f2;
+}
 
 @media (max-width: 768px) {
   

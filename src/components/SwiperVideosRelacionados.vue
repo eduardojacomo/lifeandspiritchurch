@@ -132,7 +132,7 @@ function openVideoSelected(videoData){
 .carousel-viewport {
   overflow: hidden;
   width: 100%;
-  max-width: 960px;
+  /* flex: 0 1 780px; */
 }
 
 .carousel-track {
