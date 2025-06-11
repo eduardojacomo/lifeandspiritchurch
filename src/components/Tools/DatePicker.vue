@@ -110,17 +110,25 @@ const formattedSelectedDate = computed(() => {
   return '';
 });
 
-const prevMonth = () => {
+function prevMonth() {
+  const currentSystemYear = new Date().getFullYear();
   if (currentCalendarView.value === 'day') {
     currentViewDate.value = new Date(currentViewDate.value.getFullYear(), currentViewDate.value.getMonth() - 1, 1);
   } else if (currentCalendarView.value === 'month') {
     currentViewDate.value = new Date(currentViewDate.value.getFullYear() - 1, currentViewDate.value.getMonth(), 1);
   } else if (currentCalendarView.value === 'year') {
-    yearsBlockStartYear.value += numberOfYearsToShow;
+    const backBlockPotentialStartYear = yearsBlockStartYear.value - numberOfYearsToShow;
+    console.log(backBlockPotentialStartYear);
+    if (backBlockPotentialStartYear <= (currentSystemYear - numberOfYearsToShow + 1)) {
+        yearsBlockStartYear.value = backBlockPotentialStartYear;
+    } else {
+        yearsBlockStartYear.value = currentSystemYear;
+    }
+    // yearsBlockStartYear.value += numberOfYearsToShow;
   }
 };
 
-const nextMonth = () => {
+function nextMonth (){
   const currentSystemYear = new Date().getFullYear();
   if (currentCalendarView.value === 'day') {
     currentViewDate.value = new Date(currentViewDate.value.getFullYear(), currentViewDate.value.getMonth() + 1, 1);
@@ -179,8 +187,8 @@ watch(() => props.initialDate, (newDate) => {
   currentViewDate.value = new Date(newDate.getFullYear(), newDate.getMonth(), 1);
   selectedDate.value = null;
   selectedDateISO.value = null;
-  currentCalendarView.value = 'day'; // Garante que volta para a view de dias
-  yearsBlockStartYear.value = new Date().getFullYear(); // Reseta o ano de início do bloco
+  currentCalendarView.value = 'day'; 
+  yearsBlockStartYear.value = new Date().getFullYear();
 }, { immediate: true });
 </script>
 
