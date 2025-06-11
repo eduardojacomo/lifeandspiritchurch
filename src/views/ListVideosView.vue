@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount, computed } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRouter } from 'vue-router';
 import { useVideoWatch } from '@/stores/videoviewStore';
 import { storeToRefs } from 'pinia';
 import { useLanguage } from '../stores/languageStore';
@@ -14,6 +14,7 @@ import DatePicker from '@/components/Tools/DatePicker.vue';
 const mostviewdVideos = ref([]);
 const recentVideos = ref([]);
 const db = getFirestore();
+const router = useRouter();
 
 const filterTipo = ref(false);
 const filterData = ref(false);
@@ -41,6 +42,8 @@ const { t } = useI18n();
 
 const usevideowatch = useVideoWatch();
 const { videoviewStore } = storeToRefs(usevideowatch);
+const {setVideo} = usevideowatch;
+
 
 async function fetchtypeVideos(){
   const typeSnapshot = await getDocs(collection(db, 'type_videos'));
@@ -170,6 +173,12 @@ const handleClickOutside = (event) => {
   if (dropdownWrapper.value && !dropdownWrapper.value.contains(event.target)) {
     filterData.value = false;
   }
+};
+
+function openVideoSelected(videoData){
+  setVideo (videoData);
+  router.push({ name: 'videowatch', params: { id: videoData.youtubeId } }).catch(() => {});
+
 };
 
 onMounted(async ()=>{
