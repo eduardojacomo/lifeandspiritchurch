@@ -199,7 +199,7 @@ onBeforeUnmount(() => {
   <div class="video-container-view">
       <div class="video-content">
         <div class="column space-between">
-            <h2>Palavras:</h2>
+            <h2>{{ t('_titleListVideosYoutube') }}:</h2>
             <router-link class="links" to="/">Home</router-link>
         </div>
         <div class="column">
@@ -213,7 +213,7 @@ onBeforeUnmount(() => {
         <div class="filters_form">
           <div>
             <div ref="dropdownWrapper" class="dropdown-wrapper">
-              <button class="btn-filter" @click="filterTipo = !filterTipo" ><span> Tipo </span><font-awesome-icon icon="fa-solid fa-caret-down" />
+              <button class="btn-filter" @click="filterTipo = !filterTipo" ><span> {{ t('_btnTypeVideos') }} </span><font-awesome-icon icon="fa-solid fa-caret-down" />
                 
                 <div v-if="filterTipo === true" class="options-filter">
                   <ul>
@@ -228,7 +228,7 @@ onBeforeUnmount(() => {
             <span v-if="appTipoVideo"> {{ appTipoVideo }} </span>
               <div ref="dropdownWrapper" class="dropdown-wrapper">
                 <button class="btn-filter" @click="toggleFilter">
-                  <span> Data </span>
+                  <span> {{ t('_btnDateVideos') }} </span>
                   <font-awesome-icon icon="fa-solid fa-caret-down" />
                 </button>
                 
@@ -239,7 +239,7 @@ onBeforeUnmount(() => {
               <span v-if="appSelectedDate">{{ formattedSelectedDate(appSelectedDate) }}</span>
           </div>
           <div>
-            <button class="btn-filter" @click="clearFilters()">Limpar Filtros</button>
+            <button class="btn-filter" @click="clearFilters()">{{ t('_btnClearFilter') }}</button>
           </div>
         </div>
         <div class="related-videos" v-if="searchVideosStatus === false">

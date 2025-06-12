@@ -40,7 +40,7 @@ const menuItems = ref([
 ]);
 
 const isSubmenuVisible = ref(menuItems.value.map(() => false));
-const submenuPositions = ref(menuItems.value.map(() => 0)); // Array para armazenar a posição left de cada submenu
+const submenuPositions = ref(menuItems.value.map(() => 0)); 
 const menuItemRefs = ref([]);
 
 const showDropdown = ref(false)
@@ -54,13 +54,10 @@ function closeDropdown() {
 }
 
 function setLanguage(lang) {
-  // Seu método para trocar de idioma
-  // locale.value = lang
-  uselanguage.setLanguage();
+  uselanguage.setLanguage(lang);
   showDropdown.value = false
 }
 
-// Clique fora para fechar
 function handleClickOutsideLanguage(event) {
   const dropdown = document.querySelector('.language-selector')
   if (dropdown && !dropdown.contains(event.target)) {

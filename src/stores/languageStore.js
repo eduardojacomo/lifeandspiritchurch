@@ -11,8 +11,8 @@ export const useLanguage = defineStore("language", ()=>{
   // function setProject(_project){
   //     projectStore.value = _project;
   // }
-  const setLanguage = (() => {
-    locale.value = locale.value === 'pt' ? 'en' : 'pt';
+  const setLanguage = ((language) => {
+    locale.value = language;
     currentLocaleKey.value++; 
   })
   

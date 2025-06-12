@@ -1,5 +1,12 @@
 <script setup>
 import { ref, computed, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
+import { storeToRefs } from 'pinia';
+import { useLanguage } from '@/stores/languageStore';
+
+const { t } = useI18n();
+const uselanguage = useLanguage();
+const { currentLocaleKey, locale } = storeToRefs(uselanguage);
 
 const allWeekdays = {
   'pt': ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'],
@@ -262,8 +269,8 @@ watch(() => props.initialDate, (newDate) => {
     </div>
 
     <div class="selection-info">
-      <p v-if="selectedDate">Data selecionada: {{ formattedSelectedDate }}</p>
-      <p v-else>Nenhuma data selecionada.</p>
+      <p v-if="selectedDate">{{ t('_dateSelectedText') }} {{ formattedSelectedDate }}</p>
+      <p v-else>{{ t('_noDateSelectedText') }}</p>
       <button @click.stop="confirmDate()" v-if="selectedDate">Ok</button>
     </div>
   </div>
@@ -434,8 +441,9 @@ watch(() => props.initialDate, (newDate) => {
 
 .selection-info p {
   margin: 0;
-  color: var(--cor-azul-claro); /* Variável de cor azul claro */
+  color: var(--cor-azul-claro); 
   font-weight: bold;
-  flex-grow: 1; /* Permite que o parágrafo ocupe o espaço disponível */
+  flex-grow: 1; 
+  font-size: .8rem;
 }
 </style>

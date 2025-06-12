@@ -20,7 +20,7 @@ const route = useRoute();
                         <ul>
                             <li><router-link class="nav_menu" to="/" @click="closeMenu">{{ t('_nav._home') }}</router-link></li>
                             <li><router-link class="nav_menu" to="/#about" @click="closeMenu">{{ t('_nav._about') }}</router-link></li>
-                            <li><router-link class="nav_menu" to="/#services" @click="closeMenu">{{ t('_nav._ministries') }}</router-link></li>
+                            <!-- <li><router-link class="nav_menu" to="/#services" @click="closeMenu">{{ t('_nav._ministries') }}</router-link></li> -->
                             <li><router-link class="nav_menu" to="/#portfolio" @click="closeMenu">{{ t('_nav._scheadle') }}</router-link></li>
                             <li><router-link class="nav_menu" to="/#contact" @click="closeMenu">{{ t('_nav._contact') }}</router-link></li>
                         </ul>
