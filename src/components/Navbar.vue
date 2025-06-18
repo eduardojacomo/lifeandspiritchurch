@@ -28,7 +28,7 @@ const menuItems = ref([
   {
     labelKey: '_nav._about',
     children: [
-      { labelKey: '_about._about_us', route: '/aboutus' },
+      { labelKey: '_about._about_us', route: '/about' },
       { labelKey: '_about._our_pastors', route: '/pastors' },
       { labelKey: '_about._our_activities', route: '/activities' }
     ]

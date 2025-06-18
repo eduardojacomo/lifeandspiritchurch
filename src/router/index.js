@@ -4,6 +4,7 @@ import EditVideo from '@/views/EditVideoView.vue'
 import LoginView from '@/views/LoginView.vue'
 import VideoWatchView from '@/views/VideoWatchView.vue'
 import ListVideosView from '@/views/ListVideosView.vue'
+import AboutView from '@/views/AboutView.vue'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 
@@ -23,6 +24,11 @@ const router = createRouter({
       name: 'videowatch',
       component: VideoWatchView,
       props: true
+    },
+    {
+      path: '/about',
+      name: 'aboutview',
+      component: AboutView
     },
     {
       path: '/content',
