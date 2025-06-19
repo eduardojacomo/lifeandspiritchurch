@@ -308,7 +308,7 @@ onMounted(() => {
                   <div class="cards">
                     <div class="title animate">
                     <Transition name="fade-blur" mode="out-in">
-                      <h1 :key="currentLocaleKey">{{ Vision.title?.[locale] }} - {{ locale }} </h1>
+                      <h1 :key="currentLocaleKey">{{ Vision.title?.[locale] }}</h1>
                     </Transition>
                   </div>
                   <div class="about-description">
@@ -371,7 +371,7 @@ onMounted(() => {
   gap: .5rem;
   min-height: 87vh;
   width: 100%;
-  padding: 150px 0 2rem 0;
+  padding: 100px 0 2rem 0;
 }
 
 .title {
@@ -598,7 +598,17 @@ h3{
     padding: 0 2rem;
     flex-wrap: wrap;
   }
-  
+  .image-about{
+    top: 280px;
+  }
+  .bg-blue{
+    padding-top: 450px !important;
+    padding-bottom: 2rem !important;
+    margin-top: -500px;
+  }
+  .scrolling-text-container {
+    padding-top:550px;
+  }
 }
 
 @media screen and (max-width: 768px) {
