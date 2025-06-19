@@ -269,7 +269,7 @@ watch(locale, () => {
 
 onMounted(() => {
   const sections = document.querySelectorAll('.animate');
-  observeElements(sections);
+  // observeElements(sections);
 });
 </script>
 
@@ -297,60 +297,65 @@ onMounted(() => {
             </div>
             </div>
           </div>
-          <div class="content-about animate">
-           
-               <div class="row-text">
-                  <div class="column">
-                   <div class="cards">
-                     <div class="title animate">
+          <div class="scrolling-text-container">
+            <div class="scrolling-text">
+              <span>MISSION & VISION</span>
+            </div>
+          </div>          
+          <div class="content-about animate bg-blue">
+            <div class="row-text">
+                <div class="column">
+                  <div class="cards">
+                    <div class="title animate">
+                    <Transition name="fade-blur" mode="out-in">
+                      <h1 :key="currentLocaleKey">{{ Vision.title?.[locale] }} - {{ locale }} </h1>
+                    </Transition>
+                  </div>
+                  <div class="about-description">
+                    <Transition name="fade-blur" mode="out-in">
+                      <p :key="currentLocaleKey" >{{ Vision.content?.[locale] }}</p>
+                    </Transition>
+                  </div>
+                  </div>
+                  <div class="cards">
+                    <div class="title animate">
                       <Transition name="fade-blur" mode="out-in">
-                        <h1 :key="currentLocaleKey">{{ Vision.title?.[locale] }} - {{ locale }} </h1>
+                        <h1 :key="currentLocaleKey"> {{ Mission.title?.[locale] }} </h1>
                       </Transition>
                     </div>
                     <div class="about-description">
                       <Transition name="fade-blur" mode="out-in">
-                        <p :key="currentLocaleKey" >{{ Vision.content?.[locale] }}</p>
+                        <p :key="currentLocaleKey" >{{ Mission.content?.[locale] }}</p>
                       </Transition>
                     </div>
-                   </div>
-                   <div class="cards">
-                     <div class="title animate">
-                       <Transition name="fade-blur" mode="out-in">
-                         <h1 :key="currentLocaleKey"> {{ Mission.title?.[locale] }} </h1>
-                       </Transition>
-                     </div>
-                     <div class="about-description">
-                       <Transition name="fade-blur" mode="out-in">
-                         <p :key="currentLocaleKey" >{{ Mission.content?.[locale] }}</p>
-                       </Transition>
-                     </div>
-                   </div>
                   </div>
-                   <div class="title animate" style="margin-top: 2rem;">
-                    <Transition name="fade-blur" mode="out-in">
-                      <h1 :key="currentLocaleKey">{{ Values.title?.[locale] }} </h1>
-                    </Transition>
-                  </div>
-                  <div class="column">              
-                        <div v-for="v in Values.content" :key="v.order" class="card-values">
-                          <Transition name="fade-blur" mode="out-in">
-                              <p>{{ v.text?.[locale] }}</p> 
-                          </Transition>
-                        </div>
-                  </div>
-                  <div class="title animate" style="margin-top: 2rem;">
-                       <Transition name="fade-blur" mode="out-in">
-                         <h1 :key="currentLocaleKey"> {{ OurBeliefs.title?.[locale] }} </h1>
-                       </Transition>
-                     </div>
-                     <div class="about-description" v-for="o in OurBeliefs.sections" :key="o">
-                       <Transition name="fade-blur" mode="out-in">
-                         <p :key="currentLocaleKey" ><span style="font-style: oblique; font-weight: 800;"> {{ o.heading?.[locale] }}</span> <span>{{ o.content?.[locale] }}</span></p>
-                       </Transition>
-                     </div>
-                </div>
-            
+                </div> 
+            </div>
+        </div>
+        <div class="content-about">
+          <div class="title animate" style="margin-top: 2rem;">
+            <Transition name="fade-blur" mode="out-in">
+              <h1 :key="currentLocaleKey">{{ Values.title?.[locale] }} </h1>
+            </Transition>
           </div>
+          <div class="column">              
+              <div v-for="v in Values.content" :key="v.order" class="card-values">
+                <Transition name="fade-blur" mode="out-in">
+                    <p>{{ v.text?.[locale] }}</p> 
+                </Transition>
+              </div>
+            </div>           
+          <div class="title animate" style="margin-top: 2rem;">
+            <Transition name="fade-blur" mode="out-in">
+              <h1 :key="currentLocaleKey"> {{ OurBeliefs.title?.[locale] }} </h1>
+            </Transition>
+          </div>
+          <div class="about-description" v-for="o in OurBeliefs.sections" :key="o">
+            <Transition name="fade-blur" mode="out-in">
+              <p :key="currentLocaleKey" ><span style="font-style: oblique; font-weight: 800;"> {{ o.heading?.[locale] }}</span> <span>{{ o.content?.[locale] }}</span></p>
+            </Transition>
+          </div>
+        </div>
         </div>
       </div>
 
@@ -366,7 +371,7 @@ onMounted(() => {
   gap: .5rem;
   min-height: 87vh;
   width: 100%;
-  padding: 150px 2rem 2rem 2rem;
+  padding: 150px 0 2rem 0;
 }
 
 .title {
@@ -396,12 +401,13 @@ onMounted(() => {
 .content-about {
   display: flex;
   padding: 0 10rem;
-  flex-direction: row;
+  flex-direction: column;
   text-align: justify;
   /* align-items: flex-start; */
   justify-content: center;
   /* flex-wrap: wrap-reverse; */
   gap: 3rem;
+  position: relative;
 }
 
 .content.animate p{
@@ -434,6 +440,8 @@ onMounted(() => {
 .row, .row-text {
     display: flex;
     flex-direction: column;
+    z-index: 100;
+    position: relative;
 }
 
 .row {
@@ -450,9 +458,12 @@ onMounted(() => {
     justify-content: center;
     align-items: center;
     min-width: 380px !important;
-    height: 380px;
+    height: 550px;
     overflow: hidden;
-    
+    z-index: 9999;
+    position: absolute;
+    top:260px;
+    left:-170px;
 }
 
 .image-about img{
@@ -508,8 +519,15 @@ h3{
   border-radius: 5px;
 }
 
+.bg-blue{
+  background-color: var(--cor-azul-escuro);
+  padding-top: 450px;
+  margin-top: -450px;
+  padding-bottom: 2rem;
+}
+
 /* Animação ao aparecer no scroll */
-.animate {
+/* .animate {
   opacity: 0;
   transform: translateY(30px);
   transition: all 0.8s ease-out;
@@ -518,7 +536,7 @@ h3{
 .in-view {
   opacity: 1;
   transform: translateY(0);
-}
+} */
 
 .btn-more{
   display: flex;
@@ -537,6 +555,42 @@ h3{
 
 .btn-more:hover{
   background-color: var(--color-background-soft);
+}
+
+.scrolling-text-container {
+  /* position: absolute; */
+  width: 100%;
+  overflow: hidden; /* Garante que o texto fora da visualização seja cortado */
+  white-space: nowrap; /* Impede que o texto quebre linha */
+  box-sizing: border-box;
+  /* Opcional: Adicione padding ou altura se necessário */
+  padding: 500px 0 0 0;
+  z-index:100;
+}
+
+.scrolling-text {
+  display: inline-block;
+  width: 100%;
+  font-size: 78px;
+  animation: scroll-x 15s linear infinite; 
+  opacity: .4;
+}
+
+.scrolling-text span {
+  display: inline-block; /* Garante que os spans se comportem como blocos para a animação */
+  margin-right: 50px; /* Espaçamento entre as repetições do texto */
+  font-size: 2em;
+  font-weight: bold;
+  color: #333;
+}
+
+@keyframes scroll-x {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%); /* Move metade do conteúdo para a esquerda */
+  }
 }
 
 @media screen and (max-width: 1024px) {
@@ -559,12 +613,20 @@ h3{
   .container{
     padding: 70px .5rem 1rem .5rem;
   }
-  /* .linha-vertical{
-    margin: 0;
+
+  .image-about{
+    top: 310px;
   }
-  .socials{
-    padding: 0 0 .5rem 0;
-  } */
+
+  .bg-blue{
+    padding-top: 450px !important;
+    padding-bottom: 2rem !important;
+  }
+
+  .scrolling-text{
+    display: none;
+  }
+  
 }
 
 @media screen and (max-width: 480px) {
@@ -581,6 +643,10 @@ h3{
     gap: 0.5rem;
   }
 
+   .image-about{
+    top: 510px;
+  }
+
   .card-values{
     width: 170px;
   }
@@ -591,7 +657,12 @@ h3{
   .content-about{
     padding: 0 1rem;
   }
-  
+   .bg-blue{
+    margin-top: -300px;
+    padding-top: 300px !important;
+    padding-bottom: 2rem !important;
+  }
+
 
 }
 
