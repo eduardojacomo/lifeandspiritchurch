@@ -297,11 +297,28 @@ onMounted(() => {
             </div>
             </div>
           </div>
+          <!-- <div class="scrolling-text-container">
+            <div class="scrolling-text">
+              <span>MISSION & VISION - </span>
+              <span>MISSION & VISION - </span>
+            </div>
+          </div>           -->
           <div class="scrolling-text-container">
             <div class="scrolling-text">
-              <span>MISSION & VISION</span>
+              <div class="scrolling-text-content">
+                <span>MISSION & VISION - </span>
+                <span>MISSION & VISION - </span>
+                <!-- <span>MISSION & VISION - </span>
+                <span>MISSION & VISION - </span> -->
+              </div>
+              <div class="scrolling-text-content">
+                <span>MISSION & VISION - </span>
+                <span>MISSION & VISION - </span>
+                <!-- <span>MISSION & VISION - </span>
+                <span>MISSION & VISION - </span> -->
+              </div>
             </div>
-          </div>          
+          </div>
           <div class="content-about animate bg-blue">
             <div class="row-text">
                 <div class="column">
@@ -521,9 +538,9 @@ h3{
 
 .bg-blue{
   background-color: var(--cor-azul-escuro);
-  padding-top: 450px;
+  padding-top: 400px;
   margin-top: -450px;
-  padding-bottom: 2rem;
+  padding-bottom: 3rem;
 }
 
 /* Animação ao aparecer no scroll */
@@ -557,13 +574,12 @@ h3{
   background-color: var(--color-background-soft);
 }
 
-.scrolling-text-container {
-  /* position: absolute; */
+/* .scrolling-text-container {
+
   width: 100%;
-  overflow: hidden; /* Garante que o texto fora da visualização seja cortado */
-  white-space: nowrap; /* Impede que o texto quebre linha */
+  overflow: hidden; 
+  white-space: nowrap; 
   box-sizing: border-box;
-  /* Opcional: Adicione padding ou altura se necessário */
   padding: 500px 0 0 0;
   z-index:100;
 }
@@ -577,8 +593,8 @@ h3{
 }
 
 .scrolling-text span {
-  display: inline-block; /* Garante que os spans se comportem como blocos para a animação */
-  margin-right: 50px; /* Espaçamento entre as repetições do texto */
+  display: inline-block; 
+  margin-right: 50px; 
   font-size: 2em;
   font-weight: bold;
   color: #333;
@@ -586,10 +602,49 @@ h3{
 
 @keyframes scroll-x {
   0% {
-    transform: translateX(100%);
+    transform: translateX(0%);
   }
   100% {
-    transform: translateX(-100%); /* Move metade do conteúdo para a esquerda */
+    transform: translateX(-50%);
+  }
+} */
+
+.scrolling-text-container {
+  width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+  padding: 500px 0 0 0;
+  z-index: 100;
+  position: relative;
+}
+
+.scrolling-text {
+  display: flex;
+  width: max-content;
+  animation: scroll-x 20s linear infinite;
+  font-size: 72px;
+}
+
+.scrolling-text-content {
+  display: flex;
+}
+
+.scrolling-text span {
+  display: inline-block;
+  margin-right: 50px;
+  font-size: 2em;
+  font-weight: bold;
+  color: var(--color-text);
+  opacity: 0.1;
+}
+
+/* Scroll contínuo */
+@keyframes scroll-x {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
   }
 }
 

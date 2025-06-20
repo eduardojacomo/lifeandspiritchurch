@@ -64,6 +64,22 @@ onMounted(() => {
 <template>
     <main>
       <div class="container">
+        <div class="scrolling-text-container">
+            <div class="scrolling-text">
+              <div class="scrolling-text-content">
+                <span>CELEBRATIONS - </span>
+                <span>CELEBRATIONS - </span>
+                <!-- <span>MISSION & VISION - </span>
+                <span>MISSION & VISION - </span> -->
+              </div>
+              <div class="scrolling-text-content">
+                <span>CELEBRATIONS - </span>
+                <span>CELEBRATIONS - </span>
+                <!-- <span>MISSION & VISION - </span>
+                <span>MISSION & VISION - </span> -->
+              </div>
+            </div>
+          </div>
         <div class="title animate">
           <Transition name="fade-blur" mode="out-in">
             <h1 :key="currentLocaleKey">{{t('_scheadleTitle')}}</h1>
@@ -74,13 +90,12 @@ onMounted(() => {
               <img src="../assets/DSC00267.jpeg" alt="celebration">
             </div>
             <div class="row">
-              <h3>In Person</h3>
               <ul>
               <br>
                 <li v-for="a in activities" :key="a.id">
-                  <div class="row">
+                  <div class="row-buttom">
      
-                    <span>{{a.title[locale]}} </span>
+                    <h2>{{a.title[locale]}} </h2>
                     <span>{{ a.day[locale] }} - {{a.hour}}</span>
                   </div>
                 </li>
@@ -88,7 +103,7 @@ onMounted(() => {
             </div>
           </div>
 
-          <div class="scheadle-column animate">
+          <!-- <div class="scheadle-column animate">
             <div class="image">
               <img src="../assets/DSC00267.jpeg" alt="celebration">
             </div>
@@ -104,7 +119,7 @@ onMounted(() => {
                 </li>
               </ul>
             </div>
-          </div>
+          </div> -->
 
       </div>
     </main>
@@ -127,6 +142,7 @@ main{
   min-height: 87vh;
   width: 100%;
   padding: 70px 2rem 2rem 2rem;
+  position: relative;
 }
 
 .title {
@@ -191,6 +207,29 @@ main{
     flex-direction: column;
 }
 
+.row-buttom{
+  display: flex;
+  flex-direction: column;
+  /* border-top: solid 1px var(--color-border);
+  border-bottom:  solid 1px var(--color-border); */
+  padding: .5rem 0;
+}
+
+.row-buttom h2{
+  font-weight: 600;
+  font-size: 1.2rem;
+  text-transform: uppercase;
+}
+
+li {
+  padding: 0.5rem 3rem 0.5rem 1rem;
+  border-top: 1px solid var(--color-border);
+}
+
+li:last-child {
+  border-bottom: 1px solid var(--color-border);
+}
+
 .row span{
   font-size: .8rem;
 }
@@ -234,6 +273,47 @@ ul li{
 .in-view {
   opacity: 1;
   transform: translateY(0);
+}
+
+.scrolling-text-container {
+  width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+  /* padding: 500px 0 0 0;
+  z-index: 100; */
+  bottom: 50px;
+  left:0;
+  position: absolute;
+}
+
+.scrolling-text {
+  display: flex;
+  width: max-content;
+  animation: scroll-x 20s linear infinite;
+  font-size: 72px;
+}
+
+.scrolling-text-content {
+  display: flex;
+}
+
+.scrolling-text span {
+  display: inline-block;
+  margin-right: 50px;
+  font-size: 2em;
+  font-weight: bold;
+  color: var(--color-text);
+  opacity: 0.1;
+}
+
+/* Scroll contínuo */
+@keyframes scroll-x {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
 }
 
 @media screen and (max-width: 1024px) {
