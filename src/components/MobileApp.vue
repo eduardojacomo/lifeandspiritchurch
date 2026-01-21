@@ -152,7 +152,7 @@
         color: #111;
         padding: 4rem 1rem;
     }
-    .content{
+    .card__container{
         flex-direction: column;
     }
   }

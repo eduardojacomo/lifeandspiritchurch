@@ -149,6 +149,7 @@ onMounted(() => {
   justify-content: center;
   /* flex-wrap: wrap-reverse; */
   gap: 3rem;
+  width: 100%;
 }
 
 .content.animate p{

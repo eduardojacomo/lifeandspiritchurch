@@ -208,7 +208,7 @@ onMounted(() => {
 .video-main {
   position: relative;
   overflow: hidden;
-  width: 610px;
+  max-width: 610px;
   height: 390px;
   display: flex;
   align-items: center;
