@@ -5,6 +5,9 @@ import LoginView from '@/views/LoginView.vue'
 import VideoWatchView from '@/views/VideoWatchView.vue'
 import ListVideosView from '@/views/ListVideosView.vue'
 import AboutView from '@/views/AboutView.vue'
+import OurTeamView from '@/views/OurTeamView.vue'
+import OurActivitiesView from '@/views/OurActivitiesView.vue'
+import ImageManagement from '@/components/Admin/ImageManagement.vue'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 
@@ -31,6 +34,16 @@ const router = createRouter({
       component: AboutView
     },
     {
+      path: '/our_team',
+      name: 'ourteam',
+      component: OurTeamView
+    },
+    {
+      path: '/activities',
+      name: 'activities',
+      component: OurActivitiesView
+    },
+    {
       path: '/content',
       name: 'contentvideos',
       component: ListVideosView
@@ -44,6 +57,11 @@ const router = createRouter({
       path: '/admin/videos',
       name: 'editvideo',
       component: EditVideo
+    },
+    {
+      path: '/admin/content/images',
+      name: 'imageManagement',
+      component: ImageManagement
     },
   ],
   scrollBehavior(to, from, savedPosition) {

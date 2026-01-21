@@ -27,14 +27,16 @@ const AboutUs = {
     }
 };
 
+console.log('Objeto Sobre Nós:', AboutUs);
+
 const Mission = {
     title: {
         pt: "Nossa Missão",
         en: "Our Mission"
     },
     content: {
-        pt: "Buscar a glória de Deus, por meio da adoração racional, evangelização de pessoas, comunhão, ação social e crescimento espiritual dos seus membros. Somos uma Igreja em um país que fala a língua inglesa e somos uma igreja multicultural, pois os pastores fundadores são imigrantes Brasileiros e recebemos pessoas de várias outras nacionalidades.",
-        en: "To seek the glory of God through rational worship, evangelism, fellowship, social action, and the spiritual growth of its members. We are a Church in an English-speaking country and a multicultural church, as the founding pastors are Brazilian immigrants and we welcome people of various other nationalities."
+        pt: "Buscar a glória de Deus, por meio da adoração racional, evangelização de pessoas, comunhão, ação social e crescimento espiritual dos seus membros. Somos uma Igreja em um país que fala a língua inglesa e somos uma igreja multicultural, pois os pastores fundadores são imigrantes Brasileiros e recebemos pessoas de várias outras nacionalidades. Então, trabalhamos da melhor forma possível para seguirmos os padrões bíblicos que Deus nos deixou, incluindo todos, independente de qual seja sua nacionalidade ou qual seja o ministério que está vindo, pois nosso dever é seguir em amor, fazendo a vontade de Deus e trazendo unidade entre todos.",
+        en: "To seek the glory of God through rational worship, evangelism, fellowship, social action, and the spiritual growth of its members. We are a Church in an English-speaking country and a multicultural church, as the founding pastors are Brazilian immigrants and we welcome people of various other nationalities. Therefore, we work in the best possible way to follow the biblical standards that God has given us, including everyone, regardless of their nationality or the ministry they come from, because our duty is to follow in love, doing God's will and bringing unity among all."
     }
 };
 
@@ -55,16 +57,76 @@ const Values = {
         en: "Our Values"
     },
     content: [
-        { order: 1, text: { pt: 'Vida de Fé', en: 'Life of Faith' } },
-        { order: 2, text: { pt: 'Unidade e Amor', en: 'Unity and Love' } },
-        { order: 3, text: { pt: 'Integridade', en: 'Integrity' } },
-        { order: 4, text: { pt: 'Alegria e Paz', en: 'Joy and Peace' } },
-        { order: 5, text: { pt: 'Firmeza doutrinária', en: 'Doctrinal Steadfastness' } },
-        { order: 6, text: { pt: 'Fervor do Espírito', en: 'Fervor of the Spirit' } },
-        { order: 7, text: { pt: 'Coração para Servir', en: 'Heart for Service' } },
-        { order: 8, text: { pt: 'Edificação de pessoas', en: 'Edification of People' } },
-        { order: 9, text: { pt: 'Excelência', en: 'Excellence' } },
-        { order: 10, text: { pt: 'Vida abundante', en: 'Abundant Life' } }
+        {
+            order: 1,
+            text: {
+                pt: 'Vida de Fé',
+                en: 'Life of Faith'
+            }
+        },
+        {
+            order: 2,
+            text: {
+                pt: 'Unidade e Amor',
+                en: 'Unity and Love'
+            }
+        },
+        {
+            order: 3,
+            text: {
+                pt: 'Integridade',
+                en: 'Integrity'
+            }
+        },
+        {
+            order: 4,
+            text: {
+                pt: 'Alegria e Paz',
+                en: 'Joy and Peace'
+            }
+        },
+        {
+            order: 5,
+            text: {
+                pt: 'Firmeza doutrinária',
+                en: 'Doctrinal Steadfastness'
+            }
+        },
+        {
+            order: 6,
+            text: {
+                pt: 'Fervor do Espírito',
+                en: 'Fervor of the Spirit'
+            }
+        },
+        {
+            order: 7,
+            text: {
+                pt: 'Coração para Servir',
+                en: 'Heart for Service'
+            }
+        },
+        {
+            order: 8,
+            text: {
+                pt: 'Edificação de pessoas',
+                en: 'Edification of People'
+            }
+        },
+        {
+            order: 9,
+            text: {
+                pt: 'Excelência',
+                en: 'Excellence'
+            }
+        },
+        {
+            order: 10,
+            text: {
+                pt: 'Vida abundante',
+                en: 'Abundant Life'
+            }
+        }
     ]
 };
 
@@ -187,261 +249,374 @@ const OurBeliefs = {
     ]
 };
 
+const observeElements = (el) => {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in-view');
+      } else {
+        entry.target.classList.remove('in-view');
+      }
+    });
+  });
 
-watch(locale, () => {});
+  el.forEach((element) => observer.observe(element));
+};
+
+watch(locale, () => {
+  // Isso forçará a atualização do conteúdo quando o idioma mudar
+});
 
 onMounted(() => {
   const sections = document.querySelectorAll('.animate');
+  // observeElements(sections);
 });
 </script>
 
 <template>
     <main>
-      <!-- Hero Section -->
-      <section class="hero-section">
-        <div class="hero-overlay"></div>
-        <div class="hero-content">
-          <Transition name="fade-blur" mode="out-in">
-            <h1 :key="currentLocaleKey" class="hero-title">{{ AboutUs.title?.[locale] }}</h1>
-          </Transition>
-        </div>
-      </section>
-
-      <!-- About Content Section -->
-      <section class="about-section">
-        <div class="container">
-          <div class="about-content-grid">
-            <!-- Church Image -->
-            <div class="church-image">
+      <div class="container">
+        <div class="row">
+          <div class="content-about animate">
+           
+            <div class="row-text">
+              <div class="title animate">
+                <Transition name="fade-blur" mode="out-in">
+                  <h1 :key="currentLocaleKey"> {{ AboutUs.title?.[locale] }} </h1>
+                </Transition>
+              </div>
+              <div class="about-description">
+                <Transition name="fade-blur" mode="out-in">
+                  <p :key="currentLocaleKey" >{{ AboutUs.content?.[locale] }}</p>
+                </Transition>
+              </div>
+              <div class="image-about animate px1">
               <Transition name="fade-blur" mode="out-in">
-                <div :key="currentLocaleKey" class="image-wrapper">
-                  <img src="/src/assets/IMG_20241029_150219_681.jpg" alt="Life & Spirit Church" />
-                </div>
+                <img src="/src/assets/IMG_20241029_150219_681.jpg" alt="Me" :key="currentLocaleKey" />
               </Transition>
             </div>
-
-            <!-- Text Content -->
-            <div class="about-text">
-              <Transition name="fade-blur" mode="out-in">
-                <div :key="currentLocaleKey" class="text-content">
-                  <p v-for="(paragraph, index) in AboutUs.content?.[locale].split('\n\n')" :key="index">
-                    {{ paragraph }}
-                  </p>
-                </div>
-              </Transition>
             </div>
           </div>
-        </div>
-      </section>
 
-
-      
-      <div class="content-about animate bg-blue">
-              <!-- Mission & Vision Section (mantido do código original) -->
-      
-        <div class="row-text">
-          <div class="column">
-            <div class="cards">
-              <div class="title animate">
-                <Transition name="fade-blur" mode="out-in">
-                  <h1 :key="currentLocaleKey">{{ Vision.title?.[locale] }}</h1>
-                </Transition>
-              </div>
-              <div class="about-description">
-                <Transition name="fade-blur" mode="out-in">
-                  <p :key="currentLocaleKey">{{ Vision.content?.[locale] }}</p>
-                </Transition>
-              </div>
-            </div>
-            <div class="cards">
-              <div class="title animate">
-                <Transition name="fade-blur" mode="out-in">
-                  <h1 :key="currentLocaleKey">{{ Mission.title?.[locale] }}</h1>
-                </Transition>
-              </div>
-              <div class="about-description">
-                <Transition name="fade-blur" mode="out-in">
-                  <p :key="currentLocaleKey">{{ Mission.content?.[locale] }}</p>
-                </Transition>
-              </div>
-            </div>
-          </div> 
-        </div>
           <div class="scrolling-text-container">
-          <div class="scrolling-text">
-            <div class="scrolling-text-content">
-              <span>MISSION & VISION - </span>
-              <span>MISSION & VISION - </span>
-            </div>
-            <div class="scrolling-text-content">
-              <span>MISSION & VISION - </span>
-              <span>MISSION & VISION - </span>
+            <div class="scrolling-text">
+              <div class="scrolling-text-content">
+                <span>MISSION & VISION - </span>
+                <span>MISSION & VISION - </span>
+                <!-- <span>MISSION & VISION - </span>
+                <span>MISSION & VISION - </span> -->
+              </div>
+              <div class="scrolling-text-content">
+                <span>MISSION & VISION - </span>
+                <span>MISSION & VISION - </span>
+                <!-- <span>MISSION & VISION - </span>
+                <span>MISSION & VISION - </span> -->
+              </div>
             </div>
           </div>
+          <div class="content-about animate bg-blue">
+            <div class="row-text">
+                <div class="column">
+                  <div class="cards">
+                    <div class="title animate">
+                    <Transition name="fade-blur" mode="out-in">
+                      <h1 :key="currentLocaleKey">{{ Vision.title?.[locale] }}</h1>
+                    </Transition>
+                  </div>
+                  <div class="about-description">
+                    <Transition name="fade-blur" mode="out-in">
+                      <p :key="currentLocaleKey" >{{ Vision.content?.[locale] }}</p>
+                    </Transition>
+                  </div>
+                  </div>
+                  <div class="cards">
+                    <div class="title animate">
+                      <Transition name="fade-blur" mode="out-in">
+                        <h1 :key="currentLocaleKey"> {{ Mission.title?.[locale] }} </h1>
+                      </Transition>
+                    </div>
+                    <div class="about-description">
+                      <Transition name="fade-blur" mode="out-in">
+                        <p :key="currentLocaleKey" >{{ Mission.content?.[locale] }}</p>
+                      </Transition>
+                    </div>
+                  </div>
+                </div> 
+            </div>
+        </div>
+        
+        <div class="content-about">
+          <div class="card__container">
+            <div class="title animate" style="margin-top: 2rem;">
+              <Transition name="fade-blur" mode="out-in">
+                <h1 :key="currentLocaleKey">{{ Values.title?.[locale] }} </h1>
+              </Transition>
+            </div>
+            <div class="column">              
+                <div v-for="v in Values.content" :key="v.order" class="card-values">
+                  <Transition name="fade-blur" mode="out-in">
+                      <p>{{ v.text?.[locale] }}</p> 
+                  </Transition>
+                </div>
+              </div>           
+            <div class="title animate" style="margin-top: 2rem;">
+              <Transition name="fade-blur" mode="out-in">
+                <h1 :key="currentLocaleKey"> {{ OurBeliefs.title?.[locale] }} </h1>
+              </Transition>
+            </div>
+            <div class="about-description" v-for="o in OurBeliefs.sections" :key="o">
+              <Transition name="fade-blur" mode="out-in">
+                <p :key="currentLocaleKey" ><span style="font-style: oblique; font-weight: 800;"> {{ o.heading?.[locale] }}</span> <span>{{ o.content?.[locale] }}</span></p>
+              </Transition>
+            </div>
+          </div>
+        </div>
         </div>
       </div>
 
-      <!-- Values Section -->
-      <section class="values-section">
-        <div class="container">
-          <div class="section-header">
-            <Transition name="fade-blur" mode="out-in">
-              <h2 :key="currentLocaleKey">{{ Values.title?.[locale] }}</h2>
-            </Transition>
-            <div class="divider"></div>
-          </div>
-
-          <div class="values-grid">
-            <div v-for="v in Values.content" :key="v.order" class="value-card">
-              <div class="value-number">{{ String(v.order).padStart(2, '0') }}</div>
-              <Transition name="fade-blur" mode="out-in">
-                <p :key="currentLocaleKey">{{ v.text?.[locale] }}</p>
-              </Transition>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Beliefs Section -->
-      <section class="beliefs-section">
-        <div class="container">
-          <div class="section-header">
-            <Transition name="fade-blur" mode="out-in">
-              <h2 :key="currentLocaleKey">{{ OurBeliefs.title?.[locale] }}</h2>
-            </Transition>
-            <div class="divider"></div>
-          </div>
-
-          <div class="beliefs-list">
-            <div v-for="(belief, index) in OurBeliefs.sections" :key="index" class="belief-item">
-              <Transition name="fade-blur" mode="out-in">
-                <div :key="currentLocaleKey">
-                  <h3>{{ belief.heading?.[locale] }}</h3>
-                  <p>{{ belief.content?.[locale] }}</p>
-                </div>
-              </Transition>
-            </div>
-          </div>
-        </div>
-      </section>
-    </main>
+  </main>
 </template>
+  
 
 <style scoped>
-/* Hero Section */
-.hero-section {
-  position: relative;
-  /* height: 50vh;*/
-  min-height: 400px; 
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-  /* margin-bottom: 4rem; */
-}
-
-.hero-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: radial-gradient(circle at 30% 50%, rgba(255, 255, 255, 0.03) 0%, transparent 50%);
-}
-
-.hero-content {
-  position: relative;
-  z-index: 2;
-  text-align: center;
-  /* padding: 2rem; */
-}
-
-.hero-title {
-  font-size: clamp(1.5rem, 8vw, 4rem);
-  font-weight: 900;
-  letter-spacing: -2px;
-  text-transform: uppercase;
-  color: var(--color-heading);
-  margin: 0;
-}
-
-/* About Section */
-.about-section {
-  padding: 4rem 0;
-  background: var(--color-background);
-}
 
 .container {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 0 2rem;
-}
-
-.about-content-grid {
-  display: grid;
-  grid-template-columns: 450px 1fr;
-  gap: 4rem;
-  align-items: start;
-}
-
-.church-image {
-  position: sticky;
-  top: 100px;
-  height: fit-content;
-}
-
-.image-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+  min-height: 87vh;
   width: 100%;
-  height: 550px;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  transition: all 0.4s ease;
+  padding: 100px 0 2rem 0;
 }
 
-.image-wrapper:hover {
-  transform: scale(1.02) translateY(-5px);
-  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.4);
+.title {
+  display: flex;
+  width: 100%;
+  justify-content: flex-start;
+  /* padding: 1rem; */
 }
 
-.image-wrapper img {
+.title h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-heading);
+}
+
+.title h2{
+    font-size: 1.5rem;
+  font-weight: 500;
+}
+
+.card-skill{
+  border: solid 1px var(--color-border);
+  /* border-radius: 8px; */
+  background-color: transparent;
+}
+
+.content-about {
+  display: flex;
+  padding: 0 10rem;
+  flex-direction: column;
+  text-align: justify;
+  align-items: center;
+  justify-content: center;
+  /* flex-wrap: wrap-reverse; */
+  gap: 3rem;
+  position: relative;
+}
+
+.card__container{
+  max-width: 1280px;
+}
+
+.content.animate p{
+    font-size: 1rem;
+    padding: 1rem 0 1rem 2rem;
+}
+
+.cards {
+  /* display: flex;
+  gap: 1.5rem; */
+  padding: 0 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: clamp(350px, 100%, 475px);
+}
+
+.column, .card-content {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+.card-content{
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.row, .row-text {
+    display: flex;
+    flex-direction: column;
+    z-index: 100;
+    position: relative;
+}
+
+.row {
+  gap: 2rem;
+}
+
+.row-text{
+  gap: .5rem;
+  max-width: 1280px;
+}
+
+.image-about{
+    display: flex;
+    padding: .5 rem;
+    justify-content: center;
+    align-items: center;
+    min-width: 380px !important;
+    height: 550px;
+    overflow: hidden;
+    z-index: 9999;
+    position: absolute;
+    top:260px;
+    left:-170px;
+}
+
+.image-about img{
+  /* overflow: hidden; */
   width: 100%;
   height: 100%;
+  border: none;
+  border-radius: 8px;
   object-fit: cover;
-  object-position: top;
-  transition: transform 0.4s ease;
+  object-position:top;
 }
 
-.image-wrapper:hover img {
-  transform: scale(1.05);
-}
-
-.about-text {
-  display: flex;
-  flex-direction: column;
-}
-
-.text-content {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.text-content p {
-  font-size: 1.1rem;
-  line-height: 2;
+.category h3 {
+  font-size: 1rem;
+  font-weight: 500;
+  text-align: center;
   color: var(--color-text);
-  text-align: justify;
-  opacity: 0.9;
+  /* margin-bottom: .5rem; */
 }
 
-/* Mission & Vision Section (código original mantido) */
+h3{
+  font-size: .8rem;
+  font-weight: 500;
+  color: var(--color-heading);
+}
+
+.about-description ul{
+  list-style:none;
+  margin: 0;
+  padding: 0;
+}
+
+.px1{
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+.py1{
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.card-values{
+  display: flex;
+  flex-direction: column;
+  width: 175px;
+  padding: 1rem .5rem;
+  border: solid 1px var(--color-border);
+  background-color: var(--color-background-soft);
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+  border-radius: 5px;
+}
+
+.bg-blue{
+  background-color: var(--cor-azul-escuro);
+  padding-top: 400px;
+  margin-top: -450px;
+  padding-bottom: 3rem;
+}
+
+/* Animação ao aparecer no scroll */
+/* .animate {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s ease-out;
+}
+
+.in-view {
+  opacity: 1;
+  transform: translateY(0);
+} */
+
+.btn-more{
+  display: flex;
+  text-decoration: none;
+  padding: 1rem;
+  border: solid 1px var(--color-border);
+  background-color: transparent;
+  cursor: pointer;
+  color: var(--color-text);
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  width: 150px;
+  animation: all .5s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.btn-more:hover{
+  background-color: var(--color-background-soft);
+}
+
+/* .scrolling-text-container {
+
+  width: 100%;
+  overflow: hidden; 
+  white-space: nowrap; 
+  box-sizing: border-box;
+  padding: 500px 0 0 0;
+  z-index:100;
+}
+
+.scrolling-text {
+  display: inline-block;
+  width: 100%;
+  font-size: 78px;
+  animation: scroll-x 15s linear infinite; 
+  opacity: .4;
+}
+
+.scrolling-text span {
+  display: inline-block; 
+  margin-right: 50px; 
+  font-size: 2em;
+  font-weight: bold;
+  color: #333;
+}
+
+@keyframes scroll-x {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+} */
+
 .scrolling-text-container {
   width: 100%;
   overflow: hidden;
   box-sizing: border-box;
-  padding: 8rem 0 0 0;
+  padding: 500px 0 0 0;
   z-index: 100;
   position: relative;
 }
@@ -450,6 +625,7 @@ onMounted(() => {
   display: flex;
   width: max-content;
   animation: scroll-x 20s linear infinite;
+  font-size: 72px;
 }
 
 .scrolling-text-content {
@@ -459,280 +635,103 @@ onMounted(() => {
 .scrolling-text span {
   display: inline-block;
   margin-right: 50px;
-  font-size: clamp(3rem, 8vw, 8rem);
+  font-size: 2em;
   font-weight: bold;
   color: var(--color-text);
   opacity: 0.1;
 }
 
+/* Scroll contínuo */
 @keyframes scroll-x {
-  0% { transform: translateX(0%); }
-  100% { transform: translateX(-50%); }
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
 }
 
-.content-about {
-  display: flex;
-  padding: 0 2rem;
-  flex-direction: column;
-  text-align: justify;
-  align-items: center;
-  justify-content: center;
-  gap: 3rem;
-  position: relative;
-}
-
-.bg-blue {
-  background-color: var(--cor-azul-escuro);
-  padding: 8rem 0 6rem 0;
-}
-
-.row-text {
-  display: flex;
-  flex-direction: column;
-  z-index: 100;
-  position: relative;
-  gap: 0.5rem;
-  max-width: 1280px;
-}
-
-.column {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  gap: 3rem;
-  justify-content: center;
-}
-
-.cards {
-  flex-wrap: wrap;
-  justify-content: center;
-  width: clamp(350px, 100%, 550px);
-}
-
-.title {
-  display: flex;
-  width: 100%;
-  justify-content: flex-start;
-  margin-bottom: 1rem;
-}
-
-.title h1 {
-  font-size: 2rem;
-  font-weight: 700;
-  color: var(--color-heading);
-}
-
-.about-description p {
-  font-size: 1.05rem;
-  line-height: 1.8;
-  color: var(--color-text);
-  opacity: 0.9;
-}
-
-/* Values Section */
-.values-section {
-  padding: 6rem 0;
-  background: var(--color-background-soft);
-}
-
-.section-header {
-  text-align: center;
-  margin-bottom: 4rem;
-}
-
-.section-header h2 {
-  font-size: clamp(2rem, 5vw, 3rem);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--color-heading);
-  margin-bottom: 1rem;
-}
-
-.divider {
-  width: 80px;
-  height: 4px;
-  background: var(--color-heading);
-  margin: 0 auto;
-}
-
-.values-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 2rem;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.value-card {
-  background: var(--color-background);
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  padding: 2rem 1.5rem;
-  text-align: center;
-  transition: all 0.3s ease;
-}
-
-.value-card:hover {
-  transform: translateY(-5px);
-  border-color: var(--color-heading);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-}
-
-.value-number {
-  font-size: 2.5rem;
-  font-weight: 900;
-  color: var(--color-heading);
-  opacity: 0.3;
-  margin-bottom: 0.5rem;
-}
-
-.value-card p {
-  font-size: 1rem;
-  font-weight: 500;
-  color: var(--color-text);
-}
-
-/* Beliefs Section */
-.beliefs-section {
-  padding: 6rem 0;
-  background: var(--color-background);
-}
-
-.beliefs-list {
-  display: flex;
-  flex-direction: column;
-  gap: 3rem;
-  max-width: 900px;
-  margin: 0 auto;
-}
-
-.belief-item h3 {
-  font-size: 1.3rem;
-  font-weight: 700;
-  color: var(--color-heading);
-  margin-bottom: 1rem;
-  font-style: italic;
-}
-
-.belief-item p {
-  font-size: 1.05rem;
-  line-height: 1.9;
-  color: var(--color-text);
-  text-align: justify;
-  opacity: 0.9;
-}
-
-/* Transitions */
-.fade-blur-enter-active,
-.fade-blur-leave-active {
-  transition: all 0.5s ease;
-}
-
-.fade-blur-enter-from {
-  opacity: 0;
-  filter: blur(10px);
-  transform: translateY(20px);
-}
-
-.fade-blur-leave-to {
-  opacity: 0;
-  filter: blur(10px);
-  transform: translateY(-20px);
-}
-
-/* Responsive */
 @media screen and (max-width: 1024px) {
-  .about-content-grid {
-    grid-template-columns: 1fr;
-    gap: 3rem;
+  .content-about{
+    padding: 0 2rem;
+    flex-wrap: wrap;
   }
-
-  .church-image {
-    position: relative;
-    top: 0;
-    max-width: 600px;
-    margin: 0 auto;
+  .image-about{
+    top: 280px;
   }
-
-  .image-wrapper {
-    height: 450px;
+  .bg-blue{
+    padding-top: 450px !important;
+    padding-bottom: 2rem !important;
+    margin-top: -500px;
   }
-
-  .column {
-    flex-direction: column;
-    align-items: center;
+  .scrolling-text-container {
+    padding-top:550px;
   }
 }
 
 @media screen and (max-width: 768px) {
-  .container {
-    padding: 0 1.5rem;
-  }
-
-  .hero-section {
-    height: 35vh;
-    min-height: 300px;
-    margin-bottom: 3rem;
-  }
-
-  .about-section {
-    padding: 3rem 0;
-  }
-
-  .image-wrapper {
-    height: 400px;
-  }
-
-  .text-content p {
-    font-size: 1rem;
-    line-height: 1.8;
-  }
-
-  .scrolling-text {
-    display: none;
-  }
-
-  .bg-blue {
-    padding: 4rem 0 3rem 0;
-  }
-
-  .values-grid {
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 1.5rem;
-  }
-
-  .values-section,
-  .beliefs-section {
-    padding: 4rem 0;
-  }
-}
-
-@media screen and (max-width: 480px) {
-  .container {
+  .content {
     padding: 0 1rem;
   }
 
-  .hero-title {
-    font-size: 2.5rem;
+  .content.animate p{
+    padding: 0;
   }
 
-  .image-wrapper {
-    height: 350px;
+  .container{
+    padding: 70px .5rem 1rem .5rem;
   }
 
-  .text-content p,
-  .belief-item p {
-    font-size: 0.95rem;
-    line-height: 1.7;
+  .image-about{
+    top: 310px;
   }
 
-  .values-grid {
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  .bg-blue{
+    padding-top: 450px !important;
+    padding-bottom: 2rem !important;
   }
 
-  .value-card {
-    padding: 1.5rem 1rem;
+  .scrolling-text{
+    display: none;
   }
+  
 }
+
+@media screen and (max-width: 480px) {
+  .title h1 {
+    font-size: 1.8rem;
+  }
+
+  .content.animate p {
+    font-size: 1rem;
+  }
+
+  .cards {
+    padding: 0.5rem;
+    gap: 0.5rem;
+  }
+
+   .image-about{
+    top: 510px;
+  }
+
+  .card-values{
+    width: 170px;
+  }
+  .content {
+    padding: 0 1rem;
+  }
+
+  .content-about{
+    padding: 0 1rem;
+  }
+   .bg-blue{
+    margin-top: -300px;
+    padding-top: 300px !important;
+    padding-bottom: 2rem !important;
+  }
+
+
+}
+
 </style>

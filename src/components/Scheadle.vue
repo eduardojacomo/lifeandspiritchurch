@@ -80,11 +80,12 @@ onMounted(() => {
               </div>
             </div>
           </div>
-        <div class="title animate">
-          <Transition name="fade-blur" mode="out-in">
-            <h1 :key="currentLocaleKey">{{t('_scheadleTitle')}}</h1>
-          </Transition>
-        </div>
+        <div class="card__container">
+          <div class="title animate">
+            <Transition name="fade-blur" mode="out-in">
+              <h1 :key="currentLocaleKey">{{t('_scheadleTitle')}}</h1>
+            </Transition>
+          </div>
           <div class="scheadle-column animate">
             <div class="image">
               <img src="../assets/DSC00267.jpeg" alt="celebration">
@@ -94,7 +95,7 @@ onMounted(() => {
               <br>
                 <li v-for="a in activities" :key="a.id">
                   <div class="row-buttom">
-     
+      
                     <h2>{{a.title[locale]}} </h2>
                     <span>{{ a.day[locale] }} - {{a.hour}}</span>
                   </div>
@@ -102,6 +103,7 @@ onMounted(() => {
               </ul>
             </div>
           </div>
+        </div>
 
           <!-- <div class="scheadle-column animate">
             <div class="image">
@@ -143,6 +145,11 @@ main{
   width: 100%;
   padding: 70px 2rem 2rem 2rem;
   position: relative;
+  align-items: center;
+}
+
+.card__container{
+  max-width: 1280px;
 }
 
 .title {

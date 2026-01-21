@@ -29,14 +29,14 @@ const menuItems = ref([
     labelKey: '_nav._about',
     children: [
       { labelKey: '_about._about_us', route: '/about' },
-      { labelKey: '_about._our_pastors', route: '/pastors' },
+      { labelKey: '_about._our_pastors', route: '/our_team' },
       { labelKey: '_about._our_activities', route: '/activities' }
     ]
   },
-  {
-    labelKey: '_nav._scheadle',
-    route: '/scheadle'
-  },
+  // {
+  //   labelKey: '_nav._scheadle',
+  //   route: '/scheadle'
+  // },
   {
     labelKey: '_nav._content',
     children: [

@@ -82,38 +82,39 @@ onMounted(() => {
 <template>
     <main>
       <div class="container">
-        <div class="title animate">
-          <Transition name="fade-blur" mode="out-in">
-            <h1 :key="currentLocaleKey">{{ t('_contentTitle') }}</h1>
-          </Transition>
-          <Transition name="fade-blur" mode="out-in">
-            <h3 :key="currentLocaleKey">{{ t('_contentDescription') }}</h3>
-          </Transition>
-        </div>
-        
-        <div class="video-grid animate">
-          <div class="video-main" v-if="videos.length">
-            <img :src="videos[0].thumbnails?.high" alt="" />
-            <div class="video-info-main">
-              <span class="tag">Palavras</span>
-              <span class="date">{{ formatDate(videos[0].publishedAt) }}</span>
-               <button @click="openVideoSelected(videos[0])"><h2>{{ videos[0].title?.[locale] }} </h2></button>
-            </div>
+        <div class="card__container">
+          <div class="title animate">
+            <Transition name="fade-blur" mode="out-in">
+              <h1 :key="currentLocaleKey">{{ t('_contentTitle') }}</h1>
+            </Transition>
+            <Transition name="fade-blur" mode="out-in">
+              <h3 :key="currentLocaleKey">{{ t('_contentDescription') }}</h3>
+            </Transition>
           </div>
-
-          <div class="video-side animate">
-            <div class="video-side-item" v-for="video in videos.slice(1, 3)" :key="video.id">
-              <img :src="video.thumbnails?.medium" alt="" />
-              <div class="video-info">
+          
+          <div class="video-grid animate">
+            <div class="video-main" v-if="videos.length">
+              <img :src="videos[0].thumbnails?.high" alt="" />
+              <div class="video-info-main">
                 <span class="tag">Palavras</span>
-                <span class="date">{{ formatDate(video.publishedAt) }}</span>
-                <button @click="openVideoSelected(video)"><h2>{{ video.title?.[locale] }} </h2></button>
+                <span class="date">{{ formatDate(videos[0].publishedAt) }}</span>
+                 <button @click="openVideoSelected(videos[0])"><h2>{{ videos[0].title?.[locale] }} </h2></button>
+              </div>
+            </div>
+  
+            <div class="video-side animate">
+              <div class="video-side-item" v-for="video in videos.slice(1, 3)" :key="video.id">
+                <img :src="video.thumbnails?.medium" alt="" />
+                <div class="video-info">
+                  <span class="tag">Palavras</span>
+                  <span class="date">{{ formatDate(video.publishedAt) }}</span>
+                  <button @click="openVideoSelected(video)"><h2>{{ video.title?.[locale] }} </h2></button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-
   
+        </div>
         
       </div>
     </main>
@@ -161,6 +162,11 @@ onMounted(() => {
   min-height: 87vh;
   width: 100%;
   padding: 70px 2rem 0.5rem 2rem;
+  align-items: center;
+}
+
+.card__container{
+  max-width: 1280px;
 }
 
 .title {

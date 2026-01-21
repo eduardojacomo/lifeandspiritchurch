@@ -56,7 +56,7 @@ onMounted(() => {
 <template>
     <main>
       <div class="container">
-        <div class="row">
+        <div class="row card-content">
           <div class="content-about animate">
             <div class="image-about animate">
               <Transition name="fade-blur" mode="out-in">
@@ -108,6 +108,12 @@ onMounted(() => {
   min-height: 87vh;
   width: 100%;
   padding: 150px 2rem 2rem 2rem;
+    align-items: center;
+}
+
+.card-content{
+
+  max-width: 1280px;
 }
 
 .title {

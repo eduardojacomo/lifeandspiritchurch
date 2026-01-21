@@ -1,25 +1,28 @@
 <template>
     <section class="app-section">
       <div class="content">
-        <div class="text-area animate">
-          <h2>Baixe nosso aplicativo e tenha a igreja 24 horas com você.</h2>
-          <div class="features">
-            <div class="feature" v-for="(item, index) in features" :key="index">
-              <font-awesome-icon :icon="item.icon"></font-awesome-icon>
-              <div>
-                <p>{{ item.text }}</p>
-                <div class="divider"></div>
+        <div class="card__container">
+          <div class="text-area animate">
+            <h2>Baixe nosso aplicativo e tenha a igreja 24 horas com você.</h2>
+            <div class="features">
+              <div class="feature" v-for="(item, index) in features" :key="index">
+                <font-awesome-icon :icon="item.icon"></font-awesome-icon>
+                <div>
+                  <p>{{ item.text }}</p>
+                  <div class="divider"></div>
+                </div>
               </div>
             </div>
+            <div class="store-buttons">
+              <img src="@/assets/GooglePlayEN.png" alt="Google Play" />
+              <img src="@/assets/ApleStoreEN.svg" alt="App Store" />
+            </div>
           </div>
-          <div class="store-buttons">
-            <img src="@/assets/GooglePlayEN.png" alt="Google Play" />
-            <img src="@/assets/ApleStoreEN.svg" alt="App Store" />
+    
+          <div class="mockup animate">
+            <img src="@/assets/app-mockup.png" alt="App Mockup" />
           </div>
-        </div>
-  
-        <div class="mockup animate">
-          <img src="@/assets/app-mockup.png" alt="App Mockup" />
+
         </div>
       </div>
     </section>
@@ -79,9 +82,14 @@
     max-width: 1200px;
     margin: 0 auto;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
   }
   
+  .card__container{
+    max-width: 1280px;
+    display: flex;
+  }
+
   .text-area {
     flex: 1;
     min-width: 300px;

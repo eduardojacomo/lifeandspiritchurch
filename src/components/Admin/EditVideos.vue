@@ -137,25 +137,43 @@ onMounted(async () => {
 <template>
   <div class="newvideos-content">
     <h2>Vídeos Cadastrados</h2>
-    <ul>
-      <li v-for="video in videos" :key="video.id">
-        <div class="list">
-          <div class="list-content">
-            <img :src="video.thumbnails?.default" />
-            <p>{{ video.title?.en || 'Sem título' }}</p>    
+
+    <ul class="videos-list">
+      <li
+        v-for="video in videos"
+        :key="video.id"
+        class="video-card"
+      >
+        <div class="video-left">
+          <img
+            :src="video.thumbnails?.default"
+            alt="Thumbnail"
+          />
+
+          <div class="video-info">
+            <p class="video-title">
+              {{ video.title?.en || 'Sem título' }}
+            </p>
           </div>
-          <div class="list-button">
-            <button class="insert-btn" @click="openModal(video)">Editar</button>
-          </div>
+        </div>
+
+        <div class="video-actions">
+          <button class="insert-btn" @click="openModal(video)">
+            Editar
+          </button>
         </div>
       </li>
     </ul>
-    <!-- {{ videos }} -->
-    <button v-if="!loading" class="form-submit-btn" @click="fetchNextPage">
+
+    <button
+      v-if="!loading"
+      class="form-submit-btn"
+      @click="fetchNextPage"
+    >
       Carregar Mais
     </button>
-    <p v-else>Carregando...</p>
 
+    <p v-else>Carregando...</p>
     <div v-if="showModal" class="modal">
       <div class="modal-content">
         <h3>Editar Vídeo</h3>
@@ -428,5 +446,123 @@ onMounted(async () => {
     font-size: 1rem;
   }
 }
+.newvideos-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1rem 2rem;
+}
 
+.newvideos-content h2 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* ===== Lista ===== */
+.videos-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* ===== Card ===== */
+.video-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 1rem;
+  border-radius: 12px;
+
+  background: linear-gradient(
+    180deg,
+    rgba(255,255,255,0.02),
+    rgba(255,255,255,0.01)
+  );
+
+  border: 1px solid var(--color-border);
+  transition: all 0.25s ease;
+}
+
+.video-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255,255,255,0.25);
+  background: rgba(255,255,255,0.04);
+}
+
+/* ===== Lado esquerdo ===== */
+.video-left {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  min-width: 0;
+}
+
+/* Thumbnail */
+.video-left img {
+  width: 140px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+/* ===== Info ===== */
+.video-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  max-width: 500px;
+}
+
+.video-title {
+  font-size: 0.95rem;
+  font-weight: 500;
+  line-height: 1.4;
+
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ===== Ações ===== */
+.video-actions {
+  display: flex;
+  align-items: center;
+}
+
+.video-actions .insert-btn {
+  width: 110px;
+  margin: 0;
+}
+
+/* ===== Mobile ===== */
+@media (max-width: 768px) {
+  .video-card {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+
+  .video-left {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .video-left img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+  }
+
+  .video-actions {
+    justify-content: flex-end;
+  }
+}
 </style>

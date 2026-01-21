@@ -34,6 +34,8 @@ const showFooter = computed(() => route.path !== '/login' && !route.path.startsW
 </script>
 
 <style scoped>
+
+  
 header {
    z-index: 1000;
   position: fixed;
@@ -116,5 +118,6 @@ header {
 .page-transition-enter-active {
   animation: fade-in 1.2s ease 1s forwards; /* Atraso para o conteúdo aparecer após os quadros */
 }
+
 </style>
 
