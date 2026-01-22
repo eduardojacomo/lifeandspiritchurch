@@ -65,30 +65,22 @@ onMounted(() => {
       <section class="hero-section">
         <div class="hero-overlay"></div>
         <div class="hero-content">
-          <Transition name="fade-blur" mode="out-in">
-            <h1 :key="currentLocaleKey" class="hero-title">{{ Pastors.title?.[locale] }}</h1>
-          </Transition>
+          <img src="/src/assets/aboutphotoedited.png" alt="Pastor Cristiano & Pastora Kauane" />
         </div>
       </section>
-
+      
       <!-- About Pastors Section -->
       <section class="about-section">
         <div class="container">
-          <div class="about-content-grid">
+          <div class="about-content-flex">
             <!-- Images Section -->
-            <div class="pastors-images">
+            <div style="width: 100%;">
               <Transition name="fade-blur" mode="out-in">
-                <div :key="currentLocaleKey" class="images-wrapper">
-                  <div class="image-card image-1">
-                    <img src="/src/assets/pastor.jpeg" alt="Pastor Cristiano" />
-                  </div>
-                  <div class="image-card image-2">
-                    <img src="/src/assets/pastora.jpeg" alt="Pastora Kauane" />
-                  </div>
-                </div>
+                <h1 :key="currentLocaleKey" class="hero-title">{{ Pastors.title?.[locale] }}</h1>
               </Transition>
+              
             </div>
-
+            <div class="divider"></div>
             <!-- Text Content -->
             <div class="pastors-text">
               <Transition name="fade-blur" mode="out-in">
@@ -110,7 +102,7 @@ onMounted(() => {
 .hero-section {
   position: relative;
   /* height: 50vh; */
-  min-height: 400px;
+  height: 400px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -132,11 +124,33 @@ onMounted(() => {
   position: relative;
   z-index: 2;
   text-align: center;
+  aspect-ratio: 810 / 455;
+  border-radius: 18px;
+  overflow: hidden;
   /* padding: 2rem; */
+}
+
+.hero-content img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+  display: block;
+  padding: 15rem 15rem 0 15rem;
 }
 
 .hero-title {
   font-size: clamp(1.5rem, 8vw, 4rem);
+  font-weight: 900;
+  letter-spacing: -2px;
+  text-transform: uppercase;
+  color: var(--color-heading);
+  margin: 0;
+  text-align: center;
+}
+
+.about-tittle{
+    font-size: clamp(1.5rem, 8vw, 4rem);
   font-weight: 900;
   letter-spacing: -2px;
   text-transform: uppercase;
@@ -161,6 +175,14 @@ onMounted(() => {
   grid-template-columns: 500px 1fr;
   gap: 4rem;
   align-items: start;
+}
+
+.about-content-flex {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  align-items: center;
+  
 }
 
 /* Pastors Images */
@@ -217,11 +239,18 @@ onMounted(() => {
 .image-card:hover img {
   transform: scale(1.05);
 }
-
+.divider {
+  width: 60px;
+  height: 4px;
+  background: var(--color-heading);
+  margin: -1rem auto 0 auto ;
+ 
+}
 /* Pastors Text */
 .pastors-text {
   display: flex;
   flex-direction: column;
+  max-width: 900px;
 }
 
 .text-content {

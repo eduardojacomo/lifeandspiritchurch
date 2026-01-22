@@ -49,11 +49,29 @@ function openVideoSelected(videoData){
 
 <template>
   <section class="carousel-container">
-    <h2>{{ props.title }}</h2>
-    <button class="nav-button left" :disabled="!canGoPrev" @click="prev">‹</button>
-    <button class="nav-button right" :disabled="!canGoNext" @click="next">›</button>
-    <div class="carousel-wrapper">
+    <div class="carousel-header">
+      <h2>{{ props.title }}</h2>
+      <div class="carousel-nav">
+        <button 
+          class="nav-button" 
+          :class="{ disabled: !canGoPrev }" 
+          :disabled="!canGoPrev" 
+          @click="prev"
+        >
+          ‹
+        </button>
+        <button 
+          class="nav-button" 
+          :class="{ disabled: !canGoNext }" 
+          :disabled="!canGoNext" 
+          @click="next"
+        >
+          ›
+        </button>
+      </div>
+    </div>
 
+    <div class="carousel-wrapper">
       <div class="carousel-viewport">
         <div
           class="carousel-track"
@@ -61,131 +79,267 @@ function openVideoSelected(videoData){
             transform: `translateX(-${currentIndex * (100 / visibleCount)}%)`
           }"
         >
-          <div class="video-card" v-for="video in props.videos" :key="video.id">
-            <img :src="video.thumbnails?.medium" :alt="video.title" />
-            <button @click="openVideoSelected(video)"><h3>{{ video.title?.[locale] }}</h3></button>
-            <!-- <p class="categories">{{ video.categories.join(', ') }}</p> -->
+          <div 
+            class="video-card" 
+            v-for="video in props.videos" 
+            :key="video.id"
+            @click="openVideoSelected(video)"
+          >
+            <div class="video-thumbnail">
+              <img :src="video.thumbnails?.medium" :alt="video.title" />
+              <div class="video-overlay">
+                <div class="play-icon">▶</div>
+              </div>
+            </div>
+            <div class="video-info">
+              <h3>{{ video.title?.[locale] }}</h3>
+            </div>
           </div>
         </div>
       </div>
-
     </div>
   </section>
 </template>
 
 <style scoped>
 .carousel-container {
-  padding: 0 1rem;
-  background-color: transparent;
-  color: #fff;
+  width: 100%;
   position: relative;
 }
 
-.carousel-container h2 {
+.carousel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.carousel-header h2 {
   font-size: 1rem;
   font-weight: 700;
-  /* margin-bottom: 1rem; */
+  color: var(--color-heading);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.carousel-nav {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.nav-button {
+  width: 35px;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-background-soft);
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+  color: var(--color-text);
+  font-size: 1.5rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.nav-button:hover:not(.disabled) {
+  background: var(--color-heading);
+  color: #000;
+  border-color: var(--color-heading);
+  transform: scale(1.1);
+}
+
+.nav-button.disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
 }
 
 .carousel-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-
-.nav-button {
-  background-color: #333;
-  border: none;
-  color: white;
-  font-size: 1.5rem;
-  width: 30px;
-  height: 30px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  /* padding: 0.5rem .8rem; */
-  font-weight: 700;
-  cursor: pointer;
-  border-radius: 50%;
-  transition: all 0.3s;
-}
-
-.nav-button.left{
- position: absolute;
- top: 40%;
- left: 10px;
- z-index: 100;
-}
-
-.nav-button.right{
- position: absolute;
- top: 40%;
- right: 10px;
- z-index: 100;
-}
-
-.nav-button:disabled {
-  opacity: 0.3;
+  width: 100%;
 }
 
 .carousel-viewport {
   overflow: hidden;
   width: 100%;
-  /* flex: 0 1 780px; */
 }
 
 .carousel-track {
   display: flex;
-  transition: transform 0.4s ease-in-out;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   width: calc(100% * (5 / 4)); 
 }
 
 .video-card {
   flex: 0 0 calc(100% / 5);
   max-width: calc(100% / 5);
-  box-sizing: border-box;
-  padding: 1rem .5rem;
-  background-color: transparent;
-  border-radius: 8px;
-  overflow: hidden;
+  padding: 0 0.75rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-.video-card button{
-    background-color: transparent;
-    cursor: pointer;
-    border: none;
-    text-align: left;
+.video-card:hover {
+  transform: translateY(-8px);
 }
 
-.video-card img {
+.video-thumbnail {
+  position: relative;
   width: 100%;
   aspect-ratio: 16 / 9;
-  height: auto;
-  display: block;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #000;
+  margin-bottom: 1rem;
 }
 
-.video-card h3 {
-  font-size: 0.8rem;
+.video-thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: all 0.3s ease;
+}
+
+.video-card:hover .video-thumbnail img {
+  transform: scale(1.05);
+}
+
+.video-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.7) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+.video-card:hover .video-overlay {
+  opacity: 1;
+}
+
+.play-icon {
+  width: 60px;
+  height: 60px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: #000;
+  transform: scale(0.8);
+  transition: all 0.3s ease;
+}
+
+.video-card:hover .play-icon {
+  transform: scale(1);
+}
+
+.video-info {
+  padding: 0 0.5rem;
+}
+
+.video-info h3 {
+  font-size: 0.95rem;
   font-weight: 600;
-  padding: 0.5rem;
-  color: #fff;
+  color: var(--color-text);
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: all 0.3s ease;
 }
 
-.video-card .categories {
-  font-size: 0.7rem;
-  color: #ccc;
-  padding: 0 0.5rem 0.5rem 0.5rem;
+.video-card:hover .video-info h3 {
+  color: var(--color-heading);
 }
 
-@media screen and (max-width: 768px){
-  .carousel-track{
+/* Responsive */
+@media screen and (max-width: 1200px) {
+  .carousel-track {
+    width: calc(100% * (4 / 3));
+  }
+
+  .video-card {
+    flex: 0 0 calc(100% / 4);
+    max-width: calc(100% / 4);
+  }
+}
+
+@media screen and (max-width: 968px) {
+  .carousel-track {
     width: calc(100% * (3 / 2));
   }
 
-  .video-card{
+  .video-card {
     flex: 0 0 calc(100% / 3);
     max-width: calc(100% / 3);
+  }
+
+  .carousel-header h2 {
+    font-size: 1.3rem;
+  }
+
+  .nav-button {
+    width: 40px;
+    height: 40px;
+    font-size: 1.3rem;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .carousel-track {
+    width: calc(100% * (2 / 1));
+  }
+
+  .video-card {
+    flex: 0 0 calc(100% / 2);
+    max-width: calc(100% / 2);
+  }
+
+  .carousel-header {
+    margin-bottom: 1.5rem;
+  }
+
+  .carousel-header h2 {
+    font-size: 1.2rem;
+  }
+
+  .video-info h3 {
+    font-size: 0.85rem;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .video-card {
+    padding: 0 0.5rem;
+  }
+
+  .video-thumbnail {
+    border-radius: 8px;
+    margin-bottom: 0.75rem;
+  }
+
+  .carousel-header h2 {
+    font-size: 1.1rem;
+  }
+
+  .nav-button {
+    width: 35px;
+    height: 35px;
+    font-size: 1.2rem;
+  }
+
+  .play-icon {
+    width: 50px;
+    height: 50px;
+    font-size: 1.2rem;
   }
 }
 </style>

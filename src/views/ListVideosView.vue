@@ -146,6 +146,10 @@ async function fetchTotalCount() {
 
 //end
 
+function selectType(type) {
+  appTipoVideo.value = type;
+  filterTipo.value = false;
+};
 
 const toggleFilter = () => {
   filterData.value = !filterData.value;
@@ -195,70 +199,150 @@ onBeforeUnmount(() => {
 });
 </script>
 
+
 <template>
-  <div class="video-container-view">
-      <div class="video-content">
-        <div class="column space-between">
-            <h2>{{ t('_titleListVideosYoutube') }}:</h2>
-            <router-link class="links" to="/">Home</router-link>
+  <div class="videos-page">
+    <!-- Header Section -->
+    <section class="page-header">
+      <div class="container">
+        <div class="header-content">
+          <h1>{{ t('_titleListVideosYoutube') }}</h1>
+          <router-link class="btn-home" to="/">
+            <font-awesome-icon icon="fa-solid fa-home" />
+            Home
+          </router-link>
         </div>
-        <div class="column">
-            <div class="form-group">
-                <!-- <label for="searchVideos">Search</label> -->
-                <input type="text" id="searchVideos" placeholder="Buscar por título" v-model="titleSearchVideo">
-                <button class="form-submit-btn" @click="fetchFilteredVideos(1)" >{{t('_btnSearch')}}</button>
-            </div>
-        </div>
-          
-        <div class="filters_form">
-          <div>
-            <div ref="dropdownWrapper" class="dropdown-wrapper">
-              <button class="btn-filter" @click="filterTipo = !filterTipo" ><span> {{ t('_btnTypeVideos') }} </span><font-awesome-icon icon="fa-solid fa-caret-down" />
-                
-                <div v-if="filterTipo === true" class="options-filter">
-                  <ul>
-                    <li><button @click="appTipoVideo = 'All'">Todos</button></li>
-                    <li v-for="(t, index) in typeVideos" :key="index"><button @click="appTipoVideo = t.value">{{t.name?.[locale]}}</button></li>
-                    <!-- <li><button @click="appTipoVideo = 'Série'">Série</button></li>
-                    <li><button @click="appTipoVideo = 'Palavras'">Palavras</button></li> -->
-                  </ul>
-                </div>
+      </div>
+    </section>
+
+    <!-- Filters Section -->
+    <section class="filters-section">
+      <div class="container">
+        <div class="filters-wrapper">
+          <!-- Search -->
+          <div class="search-group">
+            <input 
+              type="text" 
+              :placeholder="t('_searchVideosPlaceholder') || 'Buscar por título'" 
+              v-model="titleSearchVideo"
+              @keyup.enter="fetchFilteredVideos(1)"
+            >
+            <button class="btn-search" @click="fetchFilteredVideos(1)">
+              {{ t('_btnSearch') }}
+            </button>
+          </div>
+
+          <!-- Filters -->
+          <div class="filters-controls">
+            <!-- Type Filter -->
+            <div class="filter-item">
+              <button class="btn-filter" @click="filterTipo = !filterTipo">
+                {{ t('_btnTypeVideos') }}
+                <font-awesome-icon icon="fa-solid fa-caret-down" />
               </button>
+              <span v-if="appTipoVideo && appTipoVideo !== 'All'" class="filter-badge">
+                {{ appTipoVideo }}
+              </span>
+              
+              <Transition name="dropdown">
+                <div v-if="filterTipo === true" class="dropdown-menu">
+                  <button 
+                    class="dropdown-item" 
+                    @click="selectType('All')"
+                    :class="{ active: appTipoVideo === 'All' }"
+                  >
+                    Todos
+                  </button>
+                  <button 
+                    v-for="(t, index) in typeVideos" 
+                    :key="index"
+                    class="dropdown-item"
+                    @click="selectType(t.value)"
+                    :class="{ active: appTipoVideo === t.value }"
+                  >
+                    {{ t.name?.[locale] }}
+                  </button>
+                </div>
+              </Transition>
             </div>
-            <span v-if="appTipoVideo"> {{ appTipoVideo }} </span>
-              <div ref="dropdownWrapper" class="dropdown-wrapper">
-                <button class="btn-filter" @click="toggleFilter">
-                  <span> {{ t('_btnDateVideos') }} </span>
-                  <font-awesome-icon icon="fa-solid fa-caret-down" />
-                </button>
-                
-                <div class="options-data" v-if="filterData">
+
+            <!-- Date Filter -->
+            <div class="filter-item">
+              <button class="btn-filter" @click="toggleFilter">
+                {{ t('_btnDateVideos') }}
+                <font-awesome-icon icon="fa-solid fa-caret-down" />
+              </button>
+              <span v-if="appSelectedDate" class="filter-badge">
+                {{ formattedSelectedDate(appSelectedDate) }}
+              </span>
+              
+              <Transition name="dropdown">
+                <div class="dropdown-date" v-if="filterData">
                   <DatePicker @date-selected="handleDateSelected" :lang="locale" :key="locale" />
                 </div>
-              </div>
-              <span v-if="appSelectedDate">{{ formattedSelectedDate(appSelectedDate) }}</span>
-          </div>
-          <div>
-            <button class="btn-filter" @click="clearFilters()">{{ t('_btnClearFilter') }}</button>
+              </Transition>
+            </div>
+
+            <!-- Clear Filters -->
+            <button class="btn-clear" @click="clearFilters()">
+              {{ t('_btnClearFilter') }}
+            </button>
           </div>
         </div>
-        <div class="related-videos" v-if="searchVideosStatus === false">
-          <div class="carrouselrow">
-            <SkeltonCardVideos v-if="mostviewdVideos.length === 0" :qtde="4"/>
-            <SwiperVideosRelacionados v-else :videos="mostviewdVideos" :title="t('_videoPopular._title')"/>
-            <SkeltonCardVideos v-if="recentVideos.length === 0" :qtde="4" />
-            <SwiperVideosRelacionados v-else :videos="recentVideos" :title="t('_videoRecent._title')"/>
+      </div>
+    </section>
+
+    <!-- Content Section -->
+    <section class="content-section">
+      <div class="container">
+        <!-- Carousel View (No Search) -->
+        <div v-if="searchVideosStatus === false" class="carousel-view">
+          <div v-if="mostviewdVideos.length === 0">
+            <SkeltonCardVideos :qtde="4"/>
           </div>
+          <SwiperVideosRelacionados 
+            v-else 
+            :videos="mostviewdVideos" 
+            :title="t('_videoPopular._title')"
+          />
           
+          <div v-if="recentVideos.length === 0">
+            <SkeltonCardVideos :qtde="4" />
+          </div>
+          <SwiperVideosRelacionados 
+            v-else 
+            :videos="recentVideos" 
+            :title="t('_videoRecent._title')"
+          />
         </div>
-        <div class="row" v-else>
-          <div class="related-videos" >
-            <div class="video-card" v-for="video in videosSearch" :key="video.youtubeId">
-              <img :src="video.thumbnails?.medium" :alt="video.title" />
-                <button @click="openVideoSelected(video)"><h3>{{ video.title?.[locale] }}</h3></button>
+
+        <!-- Grid View (Search Results) -->
+        <div v-else class="search-results">
+          <div class="results-info">
+            <span>{{ videosSearch.length }} vídeos encontrados</span>
+          </div>
+
+          <div class="videos-grid">
+            <div 
+              v-for="video in videosSearch" 
+              :key="video.youtubeId"
+              class="video-card"
+              @click="openVideoSelected(video)"
+            >
+              <div class="video-thumbnail">
+                <img :src="video.thumbnails?.medium" :alt="video.title" />
+                <div class="video-overlay">
+                  <div class="play-icon">▶</div>
+                </div>
+              </div>
+              <div class="video-info">
+                <h3>{{ video.title?.[locale] }}</h3>
+              </div>
             </div>
           </div>
-          <div class="pagination">
+
+          <!-- Pagination -->
+          <div class="pagination" v-if="totalPages > 1">
             <button
               v-for="page in totalPages"
               :key="page"
@@ -269,293 +353,463 @@ onBeforeUnmount(() => {
             </button>
           </div>
         </div>
-        
-        
-        
-    </div>
+      </div>
+    </section>
   </div>
 </template>
 
 <style scoped>
-.video-container-view{
-    padding: 100px 5rem 1rem 5rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-.column{
-    display: flex;
-    flex-direction: row;
-}
-.padding2{
-    padding: 0.5rem 1rem 2rem 1rem;
+.videos-page {
+  min-height: 100vh;
+  background: var(--color-background);
+  padding-top: 80px;
 }
 
-.form-group label {
-    display: block;
-    margin-bottom: 5px;
+/* Container */
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem;
 }
 
-.form-group{
-    display: flex;
-    gap: .5rem;
-    flex: 1 1 350px;
+/* Page Header */
+.page-header {
+  padding: 2rem 0 1.5rem 0;
+  border-bottom: 1px solid var(--color-border);
 }
 
-.form-group input {
-    width: 100%;
-    padding: 12px 16px;
-    border-radius: 6px;
-    font-family: inherit;
-    background-color: var(--color-background-soft);
-    border: 1px solid #ccc;
-    color: var(--color-text);
-}
-
-.form-group input::placeholder {
-    opacity: 0.5;
-  }
-
-.form-group input:focus {
-    outline: none;
-    border-color: #1778f2;
-}
-
-.form-submit-btn{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-family: inherit;
-    color: #fff;
-    
-    border: none;
-    width: 150px;
-    padding: 12px 16px;
-    font-size: inherit;
-    cursor: pointer;
-    border-radius: 6px;
-    box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.084), 0px 2px 3px rgba(0, 0, 0, 0.168);
-  }
-
-  .form-submit-btn{
-    background-color: var(--cor-azul-medio);
-  }
-
-  .form-submit-btn:hover{
-    background-color: var(--cor-azul-claro);
-  }
-
-.filters_form{
+.header-content {
   display: flex;
-  flex-direction: row;
-  gap: 1rem;
-  align-items: baseline;
   justify-content: space-between;
+  align-items: center;
 }
 
-.btn-filter{
-  background-color: transparent;
-  color: var(--color-text);
-  gap: .5rem;
-  border:none;
-  min-width: 60px;
-  /* cursor: pointer; */
-}
-
-.dropdown-wrapper {
-  position: relative;
-  display: inline-block;
-}
-.filters_form span{
-  font-size: .8rem;
-}
-
-.options-filter{
-  display: flex;
-  flex-direction: column;
-  border: solid 1px var(--color-border);
-  background-color: var(--cor-azul-medio);
-  color: var(--color-text);
-  border-radius: 8px;
-  position: absolute;
-  top: 20px;
-  left: 0;
-  z-index: 900;
-  justify-content: center;
-  padding: .5rem 0;
-}
-
-.options-data{
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 900;
-}
-
-.options-filter ul{
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  text-align: left;
-}
-
-.options-filter button{
-  background-color: transparent;
-  border: none;
-  padding: .5rem 1rem;
-  cursor: pointer;
-  transition: all .3s ease;
-  width: 100%;
-  font-size: .7rem;
-}
-
-.options-filter button:hover{
-  background-color: var(--cor-azul-claro);
-}
-
-.space-between{
-    justify-content: space-between;
-    gap: 1rem;
-    padding: 0 1rem;
-}
-
-.links{
-    text-decoration: none;
-    font-size: .8rem;
-    color: var(--color-text);
-    font-weight: 700;
-}
-
-.links span{
-    font-size: .8rem;
-}
-
-.video-content{
-    display: flex;
-    flex-direction: column;
-    gap: .5rem;
-    width: 100%;
-    max-width: 800px;
-    min-width: 400px;
-}
-.video-details{
-    display: flex;
-    flex-direction: column;
-    gap: .5rem;
-    padding: 1rem 0;
-    background-color: var(--color-background-soft);
-}
-
-.video-view {
-  width: 100%;
-  /* max-width: 600px;
-  min-width: 380px; */
-  aspect-ratio: 16 / 9;
-  position: relative;
-}
-
-.video-view iframe {
-  width: 100%;
-  height: 100%;
-  border: none;
-}
-
-.video-details h2{
-    font-size: 1.1rem;
-    color: var(--color-heading);
-    font-weight: 700;
-    margin-bottom: 10px;
-    padding: 0 1rem;
-}
-
-.video-details p{
-    font-size: .9rem;
-    padding: 0 1rem;
-}
-
-.related-videos{
-  display: flex;
-  flex-direction: row;
-  gap: .5rem;
-  padding: 1.5rem 0;
-  flex-wrap: wrap;
-}
-
-.carrouselrow{
-  display: flex;
-  flex-direction: column;
-  max-width: 780px;
-  width: 100%;
-}
-
-.video-card {
-  flex: 0 0 calc(90% / 4);
-  max-width: calc(100% / 4);
-  box-sizing: border-box;
-  padding: 1rem .5rem;
-  background-color: transparent;
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.video-card button{
-    background-color: transparent;
-    cursor: pointer;
-    border: none;
-    text-align: left;
-}
-
-.video-card img {
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  height: auto;
-  display: block;
-}
-
-.video-card h3 {
-  font-size: 0.8rem;
-  font-weight: 600;
-  padding: 0.5rem;
-  color: #fff;
-}
-
-.video-card .categories {
-  font-size: 0.7rem;
-  color: #ccc;
-  padding: 0 0.5rem 0.5rem 0.5rem;
-}
-
-.pagination{
-  display: flex;
-  flex-direction: row;
-  gap: .5rem;
-  justify-content: center;
-}
-
-.pagination button{
-  background-color: transparent;
-  border: none;
-  cursor: pointer;
-  padding: 1rem;
-  font-weight: bold;
+.header-content h1 {
+  font-size: 2rem;
+  font-weight: 700;
   color: var(--color-heading);
 }
 
-.pagination button.active {
-  font-weight: italic;
-  background-color: transparent;
-  border: none;
-  cursor: auto;
-  padding: 1rem;
-  color:#727272;
+.btn-home {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  background: var(--color-background-soft);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
 }
 
-@media screen and (max-width: 768px){
-  .video-card{
-    flex: 0 0 calc(90% / 2);
-    max-width: calc(100% / 2);
+.btn-home:hover {
+  background: var(--color-heading);
+  color: #000;
+  border-color: var(--color-heading);
+}
+
+/* Filters Section */
+.filters-section {
+  padding: 1.5rem 0;
+  background: var(--color-background-soft);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.filters-wrapper {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.search-group {
+  display: flex;
+  gap: 0.75rem;
+  flex: 1;
+  max-width: 500px;
+}
+
+.search-group input {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+  background: var(--color-background);
+  color: var(--color-text);
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+}
+
+.search-group input:focus {
+  outline: none;
+  border-color: var(--color-heading);
+}
+
+.search-group input::placeholder {
+  opacity: 0.5;
+}
+
+.btn-search {
+  padding: 0.75rem 1.5rem;
+  background: var(--color-heading);
+  color: #000;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  font-size: 0.95rem;
+}
+
+.btn-search:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.filters-controls {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.filter-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-filter {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: var(--color-background);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.btn-filter:hover {
+  border-color: var(--color-heading);
+}
+
+.filter-badge {
+  padding: 0.375rem 0.75rem;
+  background: var(--color-heading);
+  color: #000;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.dropdown-menu,
+.dropdown-date {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 0;
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 0.5rem;
+  min-width: 180px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  z-index: 100;
+}
+
+.dropdown-item {
+  width: 100%;
+  padding: 0.625rem 0.875rem;
+  background: transparent;
+  border: none;
+  color: var(--color-text);
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.dropdown-item:hover {
+  background: var(--color-background-soft);
+}
+
+.dropdown-item.active {
+  background: var(--color-heading);
+  color: #000;
+  font-weight: 600;
+}
+
+.btn-clear {
+  padding: 0.75rem 1rem;
+  background: transparent;
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.btn-clear:hover {
+  background: rgba(255, 68, 68, 0.1);
+  border-color: #ff4444;
+  color: #ff4444;
+}
+
+/* Content Section */
+.content-section {
+  padding: 3rem 0 5rem 0;
+}
+
+.carousel-view {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+/* Search Results */
+.results-info {
+  margin-bottom: 1.5rem;
+  color: var(--color-text);
+  opacity: 0.7;
+  font-size: 0.95rem;
+}
+
+.videos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.video-card {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.video-card:hover {
+  transform: translateY(-5px);
+}
+
+.video-thumbnail {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #000;
+  margin-bottom: 0.75rem;
+}
+
+.video-thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: all 0.3s ease;
+}
+
+.video-card:hover .video-thumbnail img {
+  transform: scale(1.05);
+}
+
+.video-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.6) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+.video-card:hover .video-overlay {
+  opacity: 1;
+}
+
+.play-icon {
+  width: 50px;
+  height: 50px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  color: #000;
+  transform: scale(0.8);
+  transition: all 0.3s ease;
+}
+
+.video-card:hover .play-icon {
+  transform: scale(1);
+}
+
+.video-info h3 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-text);
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: all 0.3s ease;
+}
+
+.video-card:hover .video-info h3 {
+  color: var(--color-heading);
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 2rem;
+}
+
+.pagination button {
+  min-width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-background-soft);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  color: var(--color-text);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+}
+
+.pagination button:hover:not(.active) {
+  background: var(--color-heading);
+  color: #000;
+  border-color: var(--color-heading);
+}
+
+.pagination button.active {
+  background: var(--color-heading);
+  color: #000;
+  border-color: var(--color-heading);
+  cursor: default;
+}
+
+/* Transitions */
+.dropdown-enter-active,
+.dropdown-leave-active {
+  transition: all 0.2s ease;
+}
+
+.dropdown-enter-from,
+.dropdown-leave-to {
+  opacity: 0;
+  transform: translateY(-8px);
+}
+
+/* Responsive */
+@media screen and (max-width: 1024px) {
+  .filters-wrapper {
+    flex-wrap: wrap;
+  }
+
+  .search-group {
+    max-width: 100%;
+  }
+
+  .videos-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   }
 }
 
+@media screen and (max-width: 768px) {
+  .container {
+    padding: 0 1.5rem;
+  }
+
+  .videos-page {
+    padding-top: 70px;
+  }
+
+  .page-header {
+    padding: 1.5rem 0 1rem 0;
+  }
+
+  .header-content {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .filters-wrapper {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-group {
+    max-width: 100%;
+  }
+
+  .filters-controls {
+    flex-wrap: wrap;
+  }
+
+  .videos-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .content-section {
+    padding: 2rem 0 3rem 0;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .container {
+    padding: 0 1rem;
+  }
+
+  .header-content h1 {
+    font-size: 1.5rem;
+  }
+
+  .search-group {
+    flex-direction: column;
+  }
+
+  .btn-search {
+    width: 100%;
+  }
+
+  .filters-controls {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .filter-item,
+  .btn-filter,
+  .btn-clear {
+    width: 100%;
+  }
+
+  .videos-grid {
+    grid-template-columns: 1fr;
+  }
+}
 </style>

@@ -18,7 +18,7 @@ const db = useFirestore()
 const videos = ref([]);
 const nextPageToken = ref(null);
 
-const typeSelected = ref('');
+const typeSelected = ref('0');
 const typeVideos = ref([]);
 const selectedVideo = ref(null);
 const form = ref({

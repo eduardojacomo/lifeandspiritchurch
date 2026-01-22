@@ -1,5 +1,6 @@
 <script setup>
-import { ref, computed, onMounted, nextTick } from 'vue'
+import { ref, reactive, computed, onMounted, nextTick } from 'vue'
+import CustomSelect from '../Forms/CustomSelect.vue'
 
 // State
 const activeTab = ref('upload')
@@ -33,6 +34,28 @@ let isDragging = false
 let lastX = 0
 let lastY = 0
 const moveStep = 5
+const uploadedSection = ref(null)
+
+
+const pageOptions = [
+  { value: 'all', label: 'Todas' },
+  { value: 'home', label: 'Home' },
+  { value: 'sobre', label: 'Sobre' },
+  { value: 'agenda', label: 'Agenda' },
+  { value: 'conteudo', label: 'Conteúdo' }
+]
+
+const deviceOptions = [
+  { value: 'all', label: 'Todos' },
+  { value: 'desktop', label: 'Desktop' },
+  { value: 'mobile', label: 'Mobile' }
+]
+
+const statusOptions = [
+  { value: 'all', label: 'Todos' },
+  { value: 'active', label: 'Ativas' },
+  { value: 'expired', label: 'Expiradas' }
+]
 
 
 // Computed
@@ -296,19 +319,26 @@ const endDrag = () => {
 }
 
 
-const saveEditedImage = () => {
+const saveEditedImage = async () => {
   const canvas = canvasEditor.value
   const editedPreview = canvas.toDataURL('image/jpeg', 0.9)
 
   uploadedImages.value.push({
     id: Date.now(),
     preview: editedPreview,
+    page: '',
     name: selectedImage.value.name,
     desktop: selectedType.value === 'desktop',
     mobile: selectedType.value === 'mobile'
   })
 
   showEditModal.value = false
+  await nextTick()
+  const section = document.getElementById('edit-image-section')
+  section?.scrollIntoView({
+    behavior: 'smooth',
+    block: 'start'
+  })
 }
 
 const zoomIn = () => {
@@ -423,136 +453,129 @@ onMounted(() => {
 
     <!-- Upload Tab -->
     <div v-show="activeTab === 'upload'" class="tab-content active">
-      <div class="upload-card">
-        <div 
-          class="upload-area" 
-          :class="{ dragover: isDragOver }"
-          @dragenter.prevent="isDragOver = true"
-          @dragover.prevent="isDragOver = true"
-          @dragleave.prevent="isDragOver = false"
-          @drop.prevent="handleDrop"
-        >
-          <div class="upload-icon">📷</div>
-          <h3>Arraste suas imagens aqui</h3>
-          <p style="color: rgba(255, 255, 255, 0.6); margin: 1rem 0;">ou</p>
-          <button class="upload-btn" @click="$refs.fileInput.click()">
-            Selecionar Imagens
-          </button>
-          <input 
-            ref="fileInput"
-            type="file" 
-            accept="image/*" 
-            multiple
-            style="display: none"
-            @change="handleFileSelect"
-          >
-          <p style="color: rgba(255, 255, 255, 0.5); margin-top: 1rem; font-size: 0.9rem;">
-            Formatos aceitos: JPG, PNG, GIF (máx. 10MB)
-          </p>
-        </div>
-      </div>
-
-      <!-- Configuration Section -->
-      <div v-if="uploadedImages.length > 0" class="config-section active">
-        <h2 style="margin-bottom: 2rem; font-size: 1.8rem;">Configure as Imagens</h2>
-        <div class="config-grid">
-          <div 
-            v-for="(img, index) in uploadedImages" 
-            :key="img.id" 
-            class="image-config-item"
-          >
-            <div>
-              <div class="config-preview">
-                <img :src="img.preview" :alt="img.name">
-              </div>
-              <p style="margin-top: 0.5rem; font-size: 0.85rem; color: rgba(255, 255, 255, 0.6);">
-                {{ img.name }}
+    <section id="upload-section">
+        <div class="upload-card">
+            <div 
+              class="upload-area" 
+              :class="{ dragover: isDragOver }"
+              @dragenter.prevent="isDragOver = true"
+              @dragover.prevent="isDragOver = true"
+              @dragleave.prevent="isDragOver = false"
+              @drop.prevent="handleDrop"
+            >
+              <div class="upload-icon">📷</div>
+              <h3>Arraste suas imagens aqui</h3>
+              <p style="color: rgba(255, 255, 255, 0.6); margin: 1rem 0;">ou</p>
+              <button class="upload-btn" @click="$refs.fileInput.click()">
+                Selecionar Imagens
+              </button>
+              <input 
+                ref="fileInput"
+                type="file" 
+                accept="image/*" 
+                multiple
+                style="display: none"
+                @change="handleFileSelect"
+              >
+              <p style="color: rgba(255, 255, 255, 0.5); margin-top: 1rem; font-size: 0.9rem;">
+                Formatos aceitos: JPG, PNG, GIF (máx. 10MB)
               </p>
             </div>
-            
-            
-            <div class="config-form">
-                <div class="form-group">      
-                    <label>Descrição</label>
-                    <input type="text" v-model="filters.description" placeholder="Descrição da imagem">
+          </div>
+
+    </section>  
+    <section id="edit-image-section">
+        <!-- Configuration Section -->
+        <div v-if="uploadedImages.length > 0" class="config-section active">
+          <h2 style="margin-bottom: 2rem; font-size: 1.8rem;">Configure as Imagens</h2>
+          <div class="config-grid">
+            <div 
+              v-for="(img, index) in uploadedImages" 
+              :key="img.id" 
+              class="image-config-item"
+            >
+              <div>
+                <div class="config-preview">
+                  <img :src="img.preview" :alt="img.name">
                 </div>
-              <div class="form-group">
-                <label>Página de Exibição</label>
-                <select v-model="img.page">
-                  <option value="home">Home</option>
-                  <option value="sobre">Sobre</option>
-                  <option value="agenda">Agenda</option>
-                  <option value="conteudo">Conteúdo</option>
-                </select>
+                <p style="margin-top: 0.5rem; font-size: 0.85rem; color: rgba(255, 255, 255, 0.6);">
+                  {{ img.name }}
+                </p>
               </div>
               
-              <div class="form-group">
-                <label>Dispositivos</label>
-                <div class="device-toggle">
-                  <label :class="['device-option', { selected: img.desktop }]">
-                    <input type="checkbox" v-model="img.desktop">
-                    🖥️ Desktop
-                  </label>
-                  <label :class="['device-option', { selected: img.mobile }]">
-                    <input type="checkbox" v-model="img.mobile">
-                    📱 Mobile
-                  </label>
+              
+              <div class="config-form">
+                  <div class="form-group">      
+                      <label>Descrição</label>
+                      <input type="text" v-model="filters.description" placeholder="Descrição da imagem">
+                  </div>
+                <div class="form-group">
+                  <label>Exibição da imagem</label>
+                  <select v-model="img.page">
+                    <option value="" selected disabled>Selecione o destino da imagem</option>  
+                    <option value="home">Home</option>
+                    <option value="sobre">Sobre</option>
+                    <option value="agenda">Agenda</option>
+                    <option value="conteudo">Conteúdo</option>
+                  </select>
                 </div>
-              </div>
-
-              <div class="form-group">
-                <label>Data de Expiração (opcional)</label>
-                <input 
-                  type="date" 
-                  v-model="img.expirationDate"
-                  :min="minDate"
-                >
-              </div>
-
-              <div class="action-buttons">
-                <button class="btn-remove" @click="removeUploadedImage(index)">
-                  Remover
-                </button>
+                
+                <div class="form-group">
+                  <label>Dispositivos</label>
+                  <div class="device-toggle">
+                    <label :class="['device-option', { selected: img.desktop }]">
+                      <input type="checkbox" v-model="img.desktop">
+                      🖥️ Desktop
+                    </label>
+                    <label :class="['device-option', { selected: img.mobile }]">
+                      <input type="checkbox" v-model="img.mobile">
+                      📱 Mobile
+                    </label>
+                  </div>
+                </div>
+  
+                <div class="form-group">
+                  <label>Data de Expiração (opcional)</label>
+                  <input 
+                    type="date" 
+                    v-model="img.expirationDate"
+                    :min="minDate"
+                  >
+                </div>
+  
+                <div class="action-buttons">
+                  <button class="btn-remove" @click="removeUploadedImage(index)">
+                    Remover
+                  </button>
+                </div>
               </div>
             </div>
           </div>
+          <button class="upload-btn" style="width: 100%; margin-top: 2rem;" @click="saveAllImages">
+            Salvar Todas as Imagens
+          </button>
         </div>
-        <button class="upload-btn" style="width: 100%; margin-top: 2rem;" @click="saveAllImages">
-          Salvar Todas as Imagens
-        </button>
-      </div>
+    </section>
     </div>
 
     <!-- Gallery Tab -->
     <div v-show="activeTab === 'gallery'" class="tab-content active">
       <div class="gallery-filters">
- 
+
         <div class="filter-group">
-          <label>Página:</label>
-          <select v-model="filters.page">
-            <option value="all">Todas</option>
-            <option value="home">Home</option>
-            <option value="sobre">Sobre</option>
-            <option value="agenda">Agenda</option>
-            <option value="conteudo">Conteúdo</option>
-          </select>
-        </div>
-        <div class="filter-group">
-          <label>Dispositivo:</label>
-          <select v-model="filters.device">
-            <option value="all">Todos</option>
-            <option value="desktop">Desktop</option>
-            <option value="mobile">Mobile</option>
-          </select>
-        </div>
-        <div class="filter-group">
-          <label>Status:</label>
-          <select v-model="filters.status">
-            <option value="all">Todos</option>
-            <option value="active">Ativas</option>
-            <option value="expired">Expiradas</option>
-          </select>
-        </div>
+              <label>Página</label>
+              <CustomSelect v-model="filters.page" :options="pageOptions" />
+          </div>
+  
+          <div class="filter-group">
+              <label>Dispositivo</label>
+              <CustomSelect v-model="filters.device" :options="deviceOptions" />
+          </div>
+  
+          <div class="filter-group">
+              <label>Status</label>
+              <CustomSelect v-model="filters.status" :options="statusOptions" />
+          </div>
       </div>
 
       <div v-if="filteredImages.length > 0" class="gallery-grid">
@@ -789,7 +812,6 @@ h1 {
   color: rgba(255, 255, 255, 0.8);
 }
 
-.form-group select,
 .form-group input {
   padding: 0.5rem;
   background: rgba(255, 255, 255, 0.05);
@@ -801,15 +823,42 @@ h1 {
   transition: all 0.3s ease;
 }
 
-.form-group select:focus,
 .form-group input:focus {
   outline: none;
   border-color: rgba(255, 255, 255, 0.3);
   background: rgba(255, 255, 255, 0.08);
 }
 
+.form-group select {
+  padding: 0.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-size: 1rem;
+  font-family: inherit;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+  color-scheme: dark;
+}
+
+.form-group select:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.08);
+}
+
 .form-group select option {
-  background: #111;
+  background-color: #111;
+  color: #fff;
+}
+
+.form-group select option:checked {
+  background-color: #222;
   color: #fff;
 }
 
@@ -868,9 +917,9 @@ h1 {
 /* Image Gallery */
 .gallery-filters {
   background: #0a0a0a;
-  padding: 1.5rem;
+  padding: 1rem;
   border-radius: 12px;
-  margin-bottom: 2rem;
+  /* margin-bottom: 2rem; */
   display: flex;
   gap: 1rem;
   flex-wrap: wrap;

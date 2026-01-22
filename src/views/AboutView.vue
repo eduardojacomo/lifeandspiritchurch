@@ -239,7 +239,7 @@ onMounted(() => {
       <div class="content-about animate bg-blue">
               <!-- Mission & Vision Section (mantido do código original) -->
       
-        <div class="row-text">
+        <div class="row-text vision-mission">
           <div class="column">
             <div class="cards">
               <div class="title animate">
@@ -710,6 +710,10 @@ onMounted(() => {
 
 @media screen and (max-width: 480px) {
   .container {
+    padding: 0 1rem;
+  }
+
+  .vision-mission{
     padding: 0 1rem;
   }
 
