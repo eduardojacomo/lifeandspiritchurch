@@ -127,6 +127,7 @@ onMounted(() => {
   aspect-ratio: 810 / 455;
   border-radius: 18px;
   overflow: hidden;
+  padding: 12rem 15rem 0 15rem;
   /* padding: 2rem; */
 }
 
@@ -136,8 +137,8 @@ onMounted(() => {
   object-fit: cover;
   object-position: top;
   display: block;
-  padding: 15rem 15rem 0 15rem;
-}
+  /* padding: 15rem 15rem 0 15rem;*/
+} 
 
 .hero-title {
   font-size: clamp(1.5rem, 8vw, 4rem);
@@ -331,12 +332,27 @@ onMounted(() => {
     padding: 0 1.5rem;
   }
 
-  .hero-section {
+  /* .hero-section {
     height: 35vh;
     min-height: 300px;
     margin-bottom: 3rem;
+  } */
+
+   .hero-section {
+    height: 500px;
   }
 
+  .hero-content {
+    padding: 0;
+    height: 100%;
+    padding: 4rem 0 0 2rem;
+  }
+
+  .hero-content img {
+    border-radius: 0;
+    object-fit: cover;
+    object-position: center top;
+  }
   .about-section {
     padding: 3rem 0 4rem 0;
   }
