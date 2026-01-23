@@ -79,109 +79,111 @@ onMounted(() => {
 });
 </script>
 
+
 <template>
-    <main>
-      <div class="container">
-        <div class="card__container">
-          <div class="title animate">
-            <Transition name="fade-blur" mode="out-in">
-              <h1 :key="currentLocaleKey">{{ t('_contentTitle') }}</h1>
+  <main>
+    <!-- Featured Content Section -->
+    <section class="content-section">
+      <div class="hero-content animate">
+         <Transition name="fade-blur" mode="out-in">
+              <h1 :key="currentLocaleKey" class="hero-title">{{ t('_contentTitle') }}</h1>
             </Transition>
-            <Transition name="fade-blur" mode="out-in">
+            <div class="divider"></div>
+            <!-- <Transition name="fade-blur" mode="out-in">
               <h3 :key="currentLocaleKey">{{ t('_contentDescription') }}</h3>
-            </Transition>
-          </div>
-          
-          <div class="video-grid animate">
-            <div class="video-main" v-if="videos.length">
-              <img :src="videos[0].thumbnails?.high" alt="" />
-              <div class="video-info-main">
-                <span class="tag">Palavras</span>
-                <span class="date">{{ formatDate(videos[0].publishedAt) }}</span>
-                 <button @click="openVideoSelected(videos[0])"><h2>{{ videos[0].title?.[locale] }} </h2></button>
+            </Transition> -->
+
+        </div>
+
+      <div class="container">
+        <div class="content-grid" v-if="videos.length">
+          <!-- Main Featured Video -->
+          <div class="video-featured" @click="openVideoSelected(videos[0])">
+            <div class="video-thumbnail">
+              <img :src="videos[0].thumbnails?.high" :alt="videos[0].title?.[locale]" />
+              <div class="video-overlay">
+                <div class="play-icon">▶</div>
               </div>
             </div>
-  
-            <div class="video-side animate">
-              <div class="video-side-item" v-for="video in videos.slice(1, 3)" :key="video.id">
-                <img :src="video.thumbnails?.medium" alt="" />
-                <div class="video-info">
-                  <span class="tag">Palavras</span>
-                  <span class="date">{{ formatDate(video.publishedAt) }}</span>
-                  <button @click="openVideoSelected(video)"><h2>{{ video.title?.[locale] }} </h2></button>
+            <div class="video-details">
+              <div class="video-meta">
+                <span class="video-tag">Palavras</span>
+                <span class="video-date">{{ formatDate(videos[0].publishedAt) }}</span>
+              </div>
+              <h2 class="video-title">{{ videos[0].title?.[locale] }}</h2>
+            </div>
+          </div>
+
+          <!-- Secondary Videos -->
+          <div class="videos-secondary">
+            <div 
+              v-for="video in videos.slice(1, 3)" 
+              :key="video.id"
+              class="video-secondary"
+              @click="openVideoSelected(video)"
+            >
+              <div class="video-thumbnail">
+                <img :src="video.thumbnails?.medium" :alt="video.title?.[locale]" />
+                <div class="video-overlay">
+                  <div class="play-icon">▶</div>
                 </div>
               </div>
+              <div class="video-details">
+                <div class="video-meta">
+                  <span class="video-tag">Palavras</span>
+                  <span class="video-date">{{ formatDate(video.publishedAt) }}</span>
+                </div>
+                <h3 class="video-title">{{ video.title?.[locale] }}</h3>
+              </div>
             </div>
           </div>
-  
         </div>
-        
+
+        <!-- View All Button -->
+        <div class="view-all-wrapper">
+          <router-link to="/content" class="btn-view-all">
+           {{ t('_contentDescription') }}
+            <font-awesome-icon icon="fa-solid fa-arrow-right" />
+          </router-link>
+        </div>
       </div>
-    </main>
-  </template>
-  
+    </section>
+  </main>
+</template>
 
 <style scoped>
 
-/* Estilos para as animações do modal com translateX */
-@keyframes slide-in-white {
-  0% {
-    transform: translateX(100%);
-  }
-  100% {
-    transform: translateX(0);
-  }
+/* Content Section */
+.content-section {
+  padding: 4rem 0 6rem 0;
+  background: var(--color-background);
 }
-
-@keyframes slide-in-black {
-  0% {
-    transform: translateX(100%);
-  }
-  50%{
-    transform: translateX(100%);
-  }
-  100% {
-    transform: translateX(0);
-  }
+.divider {
+  width: 80px;
+  height: 4px;
+  background: var(--color-heading);
+  margin: 0 auto;
 }
-
-/* Transição para a opacidade do conteúdo do modal */
-@keyframes fade-in {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-
 .container {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  min-height: 87vh;
-  width: 100%;
-  padding: 70px 2rem 0.5rem 2rem;
-  align-items: center;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem;
 }
 
-.card__container{
-  max-width: 1280px;
+.hero-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  padding: 2rem;
 }
 
-.title {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem 1rem 0.8rem 1rem;
-}
-
-.title h1 {
-  font-size: 2rem;
-  font-weight: 700;
+.hero-title {
+  font-size: clamp(1rem, 8vw, 3rem);
+  font-weight: 800;
+  letter-spacing: -2px;
+  text-transform: uppercase;
   color: var(--color-heading);
+  margin: 0;
 }
 
 .animate {
@@ -195,135 +197,341 @@ onMounted(() => {
   transform: translateY(0);
 }
 
-.video-grid {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  gap: 1rem;
-  /* margin-top: 2rem; */
-  padding: 0 10rem;
-  justify-content: flex-start;
+/* Content Grid */
+.content-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 2rem;
+  margin-bottom: 3rem;
 }
 
-.video-main {
-  position: relative;
+/* Featured Video */
+.video-featured {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-radius: 12px;
   overflow: hidden;
-  max-width: 610px;
-  height: 390px;
+  background: var(--color-background-soft);
+  border: 1px solid var(--color-border);
+}
+
+.video-featured:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.video-thumbnail {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: #000;
+}
+
+.video-thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: all 0.3s ease;
+}
+
+.video-featured:hover .video-thumbnail img,
+.video-secondary:hover .video-thumbnail img {
+  transform: scale(1.05);
+}
+
+.video-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.7) 100%);
   display: flex;
   align-items: center;
-  border: none;
-  border-radius: 8px;
+  justify-content: center;
+  opacity: 0;
+  transition: all 0.3s ease;
 }
 
-.video-main img {
-  width: 100%;
-  border-radius: 8px;
-  height: auto;
-  object-fit: contain;
+.video-featured:hover .video-overlay,
+.video-secondary:hover .video-overlay {
+  opacity: 1;
 }
 
-.video-side {
+.play-icon {
+  width: 70px;
+  height: 70px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  color: #000;
+  transform: scale(0.8);
+  transition: all 0.3s ease;
+}
+
+.video-featured:hover .play-icon,
+.video-secondary:hover .play-icon {
+  transform: scale(1);
+}
+
+.video-details {
+  padding: 1.5rem;
+}
+
+.video-meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.video-tag {
+  padding: 0.375rem 0.875rem;
+  background: var(--color-heading);
+  color: #000;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.video-date {
+  font-size: 0.85rem;
+  color: var(--color-text);
+  opacity: 0.7;
+}
+
+.video-featured .video-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-heading);
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: all 0.3s ease;
+}
+
+.video-featured:hover .video-title {
+  color: var(--color-text);
+}
+
+/* Secondary Videos */
+.videos-secondary {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  flex-wrap: wrap;
+  gap: 2rem;
 }
 
-.video-side-item {
-  position: relative;
-  overflow: hidden;
-}
-
-.video-side-item img {
-  width: 100%;
-  height: auto;
-  border-radius: 8px;
-  object-fit: cover;
-}
-
-.video-info, .video-info-main {
-  position: absolute;
-  bottom: 1rem;
-  left: 1rem;
-  color: white;
-  background: rgba(0, 0, 0, 0.628);
-  padding: 0.5rem;
-  border-radius: 8px;
-  max-width: 90%;
-}
-
-.video-info .tag, .video-info-main .tag {
-  background: white;
-  color: black;
-  padding: 2px 8px;
-  border-radius: 16px;
-  font-size: 0.7rem;
-  font-weight: bold;
-  margin-right: 8px;
-}
-
-.video-info .date, .video-info-main .date {
-  font-size: 0.75rem;
-  margin-top: 4px;
-  display: block;
-}
-
-.video-info h2, .video-info p, .video-info-main h2, .video-info-main p {
-  font-size: .8rem;
-  font-weight: bold;
-  margin-top: 0.5rem;
-}
-
-.video-info button, .video-info-main button{
-  background-color: transparent;
-  border: none;
+.video-secondary {
   cursor: pointer;
-  color: var(--color-heading);
-  text-align: left;
+  transition: all 0.3s ease;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--color-background-soft);
+  border: 1px solid var(--color-border);
 }
 
-@media screen and (max-width: 1092px){
-  .projects{
-    justify-content: center;
+.video-secondary:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.video-secondary .play-icon {
+  width: 50px;
+  height: 50px;
+  font-size: 1.3rem;
+}
+
+.video-secondary .video-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--color-heading);
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: all 0.3s ease;
+}
+
+.video-secondary:hover .video-title {
+  color: var(--color-text);
+}
+
+/* View All Button */
+.view-all-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 3rem;
+}
+
+.btn-view-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.25rem 3rem;
+  background: var(--color-heading);
+  color: #000;
+  border: none;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 1.05rem;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.btn-view-all:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+}
+
+.btn-view-all:hover svg {
+  transform: translateX(4px);
+}
+
+.btn-view-all svg {
+  transition: transform 0.3s ease;
+}
+
+/* Transitions */
+.fade-blur-enter-active,
+.fade-blur-leave-active {
+  transition: all 0.5s ease;
+}
+
+.fade-blur-enter-from {
+  opacity: 0;
+  filter: blur(10px);
+  transform: translateY(20px);
+}
+
+.fade-blur-leave-to {
+  opacity: 0;
+  filter: blur(10px);
+  transform: translateY(-20px);
+}
+
+/* Responsive */
+@media screen and (max-width: 1024px) {
+  .hero-section {
+    height: 40vh;
+    min-height: 350px;
+  }
+
+  .content-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .videos-secondary {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
   }
 }
 
 @media screen and (max-width: 768px) {
   .container {
-    padding: 70px 2rem 0.5rem 2rem;
+    padding: 0 1.5rem;
   }
 
-  .video-grid{
-    padding: 0 1rem;
-    justify-content: flex-end;
+  .hero-section {
+    height: 35vh;
+    min-height: 300px;
+    margin-bottom: 3rem;
   }
 
-  .video-main{
-    height: auto;
-  }
-
-  .projects {
-    padding: 1rem;
-  }
-
-  .image-content {
-    flex-direction: column;
-  }
-
-  .text h2 {
+  .hero-subtitle {
     font-size: 1.1rem;
   }
 
-  .text p {
-    font-size: 0.9rem;
+  .content-section {
+    padding: 3rem 0 4rem 0;
+  }
+
+  .content-grid {
+    gap: 1.5rem;
+  }
+
+  .videos-secondary {
+    grid-template-columns: 1fr;
+  }
+
+  .video-details {
+    padding: 1.25rem;
+  }
+
+  .video-featured .video-title {
+    font-size: 1.3rem;
+  }
+
+  .video-secondary .video-title {
+    font-size: 1rem;
   }
 }
-@media screen and (max-width: 430px){
+
+@media screen and (max-width: 480px) {
   .container {
-    padding: 70px 0.5rem 0.5rem 0.5rem;
+    padding: 0 1rem;
+  }
+
+  .hero-section {
+    margin-bottom: 2rem;
+    min-height: 250px;
+  }
+
+  .hero-title {
+    font-size: 2.5rem;
+  }
+
+  .hero-subtitle {
+    font-size: 1rem;
+  }
+
+  .content-section {
+    padding: 2rem 0 3rem 0;
+  }
+
+  .video-details {
+    padding: 1rem;
+  }
+
+  .video-featured .video-title {
+    font-size: 1.2rem;
+  }
+
+  .video-secondary .video-title {
+    font-size: 0.95rem;
+  }
+
+  .btn-view-all {
+    padding: 1rem 2rem;
+    font-size: 0.95rem;
+  }
+
+  .play-icon {
+    width: 60px;
+    height: 60px;
+    font-size: 1.5rem;
+  }
+
+  .video-secondary .play-icon {
+    width: 45px;
+    height: 45px;
+    font-size: 1.2rem;
   }
 }
-
-
 </style>
