@@ -8,6 +8,7 @@ import AboutView from '@/views/AboutView.vue'
 import OurTeamView from '@/views/OurTeamView.vue'
 import OurActivitiesView from '@/views/OurActivitiesView.vue'
 import ImageManagement from '@/components/Admin/ImageManagement.vue'
+import Login from '@/views/login.vue'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 

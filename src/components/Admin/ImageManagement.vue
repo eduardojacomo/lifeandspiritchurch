@@ -1,6 +1,26 @@
 <script setup>
 import { ref, reactive, computed, onMounted, nextTick } from 'vue'
-import CustomSelect from '../Forms/CustomSelect.vue'
+import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage";
+import { getFirestore, collection, getDocs, addDoc, doc } from "firebase/firestore";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+
+
+import ManagementGaleryImages from './ManagementGaleryImages.vue'
+
+ const storage = getStorage();
+ const db = getFirestore();
+
+
+function dataURLtoBlob(dataURL) {
+  const byteString = atob(dataURL.split(',')[1]);
+  const mimeString = dataURL.split(',')[0].split(':')[1].split(';')[0];
+  const ab = new ArrayBuffer(byteString.length);
+  const ia = new Uint8Array(ab);
+  for (let i = 0; i < byteString.length; i++) {
+    ia[i] = byteString.charCodeAt(i);
+  }
+  return new Blob([ab], { type: mimeString });
+}
 
 // State
 const activeTab = ref('upload')
@@ -35,6 +55,25 @@ let lastX = 0
 let lastY = 0
 const moveStep = 5
 const uploadedSection = ref(null)
+
+
+const auth = getAuth();
+const currentUser = ref(null);
+
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+    currentUser.value = user; 
+    } else {
+    currentUser.value = null; 
+    }
+});
+
+const locationOptions = {
+  home: ["hero", "about", "app", "scheadle"],
+  about: ["aboutchurch", "aboutpastors"],
+  activities: [] // será carregado do Firestore
+};
+
 
 
 const pageOptions = [
@@ -78,6 +117,21 @@ const filteredImages = computed(() => {
 })
 
 // Methods
+async function loadActivities() {
+  const querySnapshot = await getDocs(collection(db, "activities"));
+  locationOptions.activities = querySnapshot.docs.map(doc => doc.id); 
+  // ou doc.data().nome se você tiver um campo "nome"
+}
+
+function updateLocations(img) {
+  if (img.page === "activities") {
+    img.availableLocations = locationOptions.activities;
+  } else {
+    img.availableLocations = locationOptions[img.page] || [];
+  }
+}
+
+
 const handleDrop = (e) => {
   isDragOver.value = false
   const files = e.dataTransfer.files
@@ -97,38 +151,6 @@ const handleFileSelect = (e) => {
   handleFiles(files)
 }
 
-// const handleFiles = (files) => {
-//   const validFiles = [...files].filter(file => {
-//     if (!file.type.startsWith('image/')) {
-//       showToast(`${file.name} não é uma imagem válida`, 'error')
-//       return false
-//     }
-//     if (file.size > 10 * 1024 * 1024) {
-//       showToast(`${file.name} excede 10MB`, 'error')
-//       return false
-//     }
-//     return true
-//   })
-
-//   if (validFiles.length > 0) {
-//     validFiles.forEach(file => {
-//       const reader = new FileReader()
-//       reader.onload = (e) => {
-//         uploadedImages.value.push({
-//           id: Date.now() + Math.random(),
-//           file: file,
-//           preview: e.target.result,
-//           name: file.name,
-//           page: 'home',
-//           desktop: true,
-//           mobile: true,
-//           expirationDate: ''
-//         })
-//       }
-//       reader.readAsDataURL(file)
-//     })
-//   }
-// }
 
 const handleFiles = (files) => {
   const validFiles = [...files].filter(file => {
@@ -169,38 +191,62 @@ const removeUploadedImage = (index) => {
   uploadedImages.value.splice(index, 1)
 }
 
-const saveAllImages = () => {
+async function saveAllImages() {
+  if (!currentUser.value) {
+    showToast("Você precisa estar autenticado para salvar imagens", "error");
+    return;
+  }
+
   if (uploadedImages.value.length === 0) {
-    showToast('Nenhuma imagem para salvar', 'error')
-    return
+    showToast("Nenhuma imagem para salvar", "error");
+    return;
   }
 
-  const hasInvalidDevice = uploadedImages.value.some(img => !img.desktop && !img.mobile)
-  if (hasInvalidDevice) {
-    showToast('Cada imagem deve ter pelo menos um dispositivo selecionado', 'error')
-    return
+  for (const img of uploadedImages.value) {
+    try {
+      if (!img.page || !img.location) {
+        showToast("Preencha página e localização antes de salvar", "error");
+        continue;
+      }
+
+      const blob = dataURLtoBlob(img.preview);
+      const dataAtual = new Date().toISOString().split("T")[0];
+      const nameCreated = `${img.page}_${img.location}_${dataAtual}.jpg`;
+
+      const fileRef = storageRef(storage, `images/${nameCreated}`);
+      await uploadBytes(fileRef, blob);
+
+      const metadata = {
+        name: nameCreated,
+        page: img.page,
+        location: img.location,
+        format: img.desktop ? "desktop" : "mobile",
+        alt: img.description || "",
+        path: `gs://church-lifeandspirit.firebasestorage.app/images/${nameCreated}`,
+        created_at: new Date().toISOString(),
+        expired_at: img.expirationDate || null,
+        status: "active",
+        userId: currentUser.value.uid // opcional: vincular ao usuário
+      };
+
+      if (img.page === "activities") {
+        const activityRef = doc(db, "activities", img.location);
+        await addDoc(collection(activityRef, "images"), metadata);
+      } else {
+        await addDoc(collection(db, "images"), metadata);
+      }
+
+      showToast(`Imagem ${nameCreated} salva com sucesso!`, "success");
+    } catch (error) {
+      console.error("Erro ao salvar imagem:", error);
+      showToast(`Erro ao salvar ${img.name}`, "error");
+    }
   }
 
-  uploadedImages.value.forEach(img => {
-    savedImages.value.push({
-      ...img,
-      uploadDate: new Date().toISOString(),
-      status: 'active'
-    })
-  })
-
-  // Save to localStorage
-  localStorage.setItem('churchImages', JSON.stringify(savedImages.value))
-  
-  showToast(`${uploadedImages.value.length} imagem(s) salva(s) com sucesso!`)
-  
-  uploadedImages.value = []
-  if (fileInput.value) {
-    fileInput.value.value = ''
-  }
-  
-  activeTab.value = 'gallery'
-}
+  uploadedImages.value = [];
+  if (fileInput.value) fileInput.value.value = "";
+  activeTab.value = "gallery";
+};
 
 const deleteImage = (id) => {
   if (confirm('Tem certeza que deseja excluir esta imagem?')) {
@@ -319,27 +365,29 @@ const endDrag = () => {
 }
 
 
-const saveEditedImage = async () => {
-  const canvas = canvasEditor.value
-  const editedPreview = canvas.toDataURL('image/jpeg', 0.9)
+ const saveEditedImage = async () => {
+   const canvas = canvasEditor.value
+   const editedPreview = canvas.toDataURL('image/jpeg', 0.9)
 
-  uploadedImages.value.push({
-    id: Date.now(),
-    preview: editedPreview,
-    page: '',
-    name: selectedImage.value.name,
-    desktop: selectedType.value === 'desktop',
-    mobile: selectedType.value === 'mobile'
-  })
+   uploadedImages.value.push({
+     id: Date.now(),
+     preview: editedPreview,
+     page: '',
+     name: selectedImage.value.name,
+     desktop: selectedType.value === 'desktop',
+     mobile: selectedType.value === 'mobile'
+   })
 
-  showEditModal.value = false
-  await nextTick()
-  const section = document.getElementById('edit-image-section')
-  section?.scrollIntoView({
-    behavior: 'smooth',
-    block: 'start'
-  })
-}
+   showEditModal.value = false
+   await nextTick()
+   const section = document.getElementById('edit-image-section')
+   section?.scrollIntoView({
+     behavior: 'smooth',
+     block: 'start'
+   })
+ }
+
+
 
 const zoomIn = () => {
   scale.value *= 1.1
@@ -505,20 +553,30 @@ onMounted(() => {
               
               
               <div class="config-form">
-                  <div class="form-group">      
-                      <label>Descrição</label>
-                      <input type="text" v-model="filters.description" placeholder="Descrição da imagem">
-                  </div>
-                <div class="form-group">
-                  <label>Exibição da imagem</label>
-                  <select v-model="img.page">
-                    <option value="" selected disabled>Selecione o destino da imagem</option>  
-                    <option value="home">Home</option>
-                    <option value="sobre">Sobre</option>
-                    <option value="agenda">Agenda</option>
-                    <option value="conteudo">Conteúdo</option>
-                  </select>
+                <div class="form-group">      
+                    <label>Descrição</label>
+                    <input type="text" v-model="filters.description" placeholder="Descrição da imagem">
                 </div>
+              <div class="form-group">
+                <label>Exibição da imagem</label>
+                <select v-model="img.page" @change="updateLocations(img)">
+                    <option value="" disabled>Selecione o destino da imagem</option>  
+                    <option value="home">Home</option>
+                    <option value="about">Sobre</option>
+                    <option value="activities">Atividades</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Localização da imagem</label>
+                <select v-model="img.location">
+                    <option value="" disabled>Selecione a localização da imagem</option>  
+                    <option v-for="loc in img.availableLocations" :key="loc" :value="loc">
+                    {{ loc }}
+                    </option>
+                </select>
+              </div>
+
                 
                 <div class="form-group">
                   <label>Dispositivos</label>
@@ -560,61 +618,7 @@ onMounted(() => {
 
     <!-- Gallery Tab -->
     <div v-show="activeTab === 'gallery'" class="tab-content active">
-      <div class="gallery-filters">
-
-        <div class="filter-group">
-              <label>Página</label>
-              <CustomSelect v-model="filters.page" :options="pageOptions" />
-          </div>
-  
-          <div class="filter-group">
-              <label>Dispositivo</label>
-              <CustomSelect v-model="filters.device" :options="deviceOptions" />
-          </div>
-  
-          <div class="filter-group">
-              <label>Status</label>
-              <CustomSelect v-model="filters.status" :options="statusOptions" />
-          </div>
-      </div>
-
-      <div v-if="filteredImages.length > 0" class="gallery-grid">
-        <div 
-          v-for="img in filteredImages" 
-          :key="img.id" 
-          class="gallery-item"
-        >
-          <div class="gallery-image">
-            <img :src="img.preview" :alt="img.name">
-          </div>
-          <div class="gallery-info">
-            <div class="gallery-tags">
-              <span v-if="img.desktop" class="tag desktop">Desktop</span>
-              <span v-if="img.mobile" class="tag mobile">Mobile</span>
-              <span v-if="isExpired(img)" class="tag expired">Expirada</span>
-            </div>
-            <div class="gallery-details">
-              <strong>Página:</strong> {{ capitalizeFirst(img.page) }}
-            </div>
-            <div v-if="img.expirationDate" class="gallery-details">
-              <strong>Expira em:</strong> {{ formatDate(img.expirationDate) }}
-            </div>
-            <div class="gallery-details" style="font-size: 0.8rem; margin-top: 0.5rem;">
-              Enviada em: {{ formatDate(img.uploadDate) }}
-            </div>
-            <div class="gallery-actions">
-              <button class="btn-edit" @click="editImage(img)">Editar</button>
-              <button class="btn-delete" @click="deleteImage(img.id)">Excluir</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div v-else class="empty-state">
-        <div class="icon">🖼️</div>
-        <h3>Nenhuma imagem encontrada</h3>
-        <p>Faça upload de imagens para começar</p>
-      </div>
+      <ManagementGaleryImages />
     </div>
 
     <!-- Toast Notification -->

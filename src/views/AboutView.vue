@@ -240,12 +240,13 @@ onMounted(() => {
               <!-- Mission & Vision Section (mantido do código original) -->
       
         <div class="row-text vision-mission">
-          <div class="column">
+          <div class="card-row">
             <div class="cards">
-              <div class="title animate">
+              <div class="title-header animate">
                 <Transition name="fade-blur" mode="out-in">
-                  <h1 :key="currentLocaleKey">{{ Vision.title?.[locale] }}</h1>
+                  <h2 :key="currentLocaleKey">{{ Vision.title?.[locale] }}</h2>
                 </Transition>
+                <div class="divider"></div>
               </div>
               <div class="about-description">
                 <Transition name="fade-blur" mode="out-in">
@@ -254,10 +255,11 @@ onMounted(() => {
               </div>
             </div>
             <div class="cards">
-              <div class="title animate">
+              <div class="title-header animate">
                 <Transition name="fade-blur" mode="out-in">
-                  <h1 :key="currentLocaleKey">{{ Mission.title?.[locale] }}</h1>
+                  <h2 :key="currentLocaleKey">{{ Mission.title?.[locale] }}</h2>
                 </Transition>
+                <div class="divider"></div>
               </div>
               <div class="about-description">
                 <Transition name="fade-blur" mode="out-in">
@@ -441,7 +443,7 @@ onMounted(() => {
   width: 100%;
   overflow: hidden;
   box-sizing: border-box;
-  padding: 8rem 0 0 0;
+  /* padding: 8rem 0 0 0; */
   z-index: 100;
   position: relative;
 }
@@ -503,14 +505,21 @@ onMounted(() => {
   justify-content: center;
 }
 
+.card-row{
+  display: flex;
+  flex-direction: column;
+  gap: 4rem;
+}
+
 .cards {
   flex-wrap: wrap;
   justify-content: center;
-  width: clamp(350px, 100%, 550px);
+  /* width: clamp(350px, 100%, 550px); */
 }
 
 .title {
   display: flex;
+  flex-direction: column;
   width: 100%;
   justify-content: flex-start;
   margin-bottom: 1rem;
@@ -540,13 +549,18 @@ onMounted(() => {
   margin-bottom: 4rem;
 }
 
-.section-header h2 {
+.title-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.section-header h2, .title-header h2 {
   font-size: clamp(2rem, 5vw, 3rem);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 1px;
   color: var(--color-heading);
-  margin-bottom: 1rem;
+  /* margin-bottom: 1rem; */
 }
 
 .divider {
