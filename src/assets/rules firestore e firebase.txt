@@ -1,0 +1,42 @@
+
+alterado 2026-01-25
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /images/{imageId} {
+      // Para ESCRITA (upload), verificamos autenticação E que seja uma imagem.
+      allow write: if request.auth != null && request.resource.contentType.matches('image/.*');
+      // Para LEITURA (acessar), basta verificar a autenticação.
+      allow read: if request.auth != null;
+    }
+    // Mantém a negação para outras pastas/arquivos
+    match /{otherPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
+
+
+regras a serem aplicadas no firebaserules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Coleção de imagens do Hero
+    match /images/{document} {
+      allow read: if true; // Público para o banner carregar
+      allow write: if request.auth != null; // Só admin/logado grava
+    }
+
+    // Se você estiver usando imagens dentro de atividades, libere aqui também:
+    match /activities/{activityId}/images/{imgId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    
+    // Opcional: regras para o restante da coleção activities
+    match /activities/{document=**} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+  }
+}

@@ -1,74 +1,166 @@
 <script setup>
-    import { onMounted, ref, computed, onUnmounted } from 'vue';
-    import { useI18n } from 'vue-i18n';
-    import {useLanguage} from '../stores/languageStore'
-    import {storeToRefs} from 'pinia';
-    const uselanguage = useLanguage();
-    const { currentLocaleKey} = storeToRefs(uselanguage);
+import { onMounted, ref, onUnmounted, watch } from 'vue';
+import { getFirestore, collection, query, where, getDocs } from "firebase/firestore";
+import { getStorage, ref as storageRef, getDownloadURL } from "firebase/storage";
 
-    const { t } = useI18n();
+const db = getFirestore();
+const storage = getStorage();
 
-    const observeElements = (el) => {
-    const observer = new IntersectionObserver((entries) => {
-            entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('in-view');
-            } else {
-                entry.target.classList.remove('in-view');
-            }
-            });
-        });
+const CACHE_KEY = 'church_hero_cache';
+const CACHE_TIME = 1000 * 60 * 60 * 4;
 
-    el.forEach((element) => observer.observe(element));
-    };
+const location = 'hero';
+const page = 'home';
 
-    const images = [
-  { src: new URL('/src/assets/hero1.jpg', import.meta.url).href, alt: 'Image 1' },
-  { src: new URL('/src/assets/hero2.jpg', import.meta.url).href, alt: 'Image 2' }
-];
-        
-    const currentSlide = ref(1);
+const images = ref([]); 
+const currentSlide = ref(1);
+const isMobile = ref(window.innerWidth <= 768);
+const isLoading = ref(true); // Estado inicial de carregamento
+let sliderInterval = null;
 
-    const setSlide = (index) => {
-    currentSlide.value = index;
-    };
+const checkScreenSize = () => {
+    isMobile.value = window.innerWidth <= 768;
+};
 
-    onMounted(() => {
-    let counter = 1;
-    setInterval(() => {
-        currentSlide.value = counter;
-        counter++;
-        if (counter > images.length) {
-        counter = 1;
+const renderImages = (allImages) => {
+    const filterFormat = isMobile.value ? 'mobile' : 'desktop';
+    const filtered = allImages.filter(img => img.format === filterFormat);
+    
+    images.value = filtered.length > 0 ? filtered : allImages;
+    
+    // Desativa o skeleton apenas se houver imagens ou após tentar carregar
+    isLoading.value = false;
+    
+    if (images.value.length > 0) startSlider();
+};
+
+async function loadHeroImages() {
+    isLoading.value = true;
+
+    // 1. Tenta Cache
+    const cached = localStorage.getItem(CACHE_KEY);
+    if (cached) {
+        const { timestamp, data } = JSON.parse(cached);
+        if (Date.now() - timestamp < CACHE_TIME) {
+            renderImages(data);
+            return;
         }
-    }, 5000); // Troca de slide a cada 5 segundos
-    });
+    }
 
+    // 2. Busca no Firebase
+    try {
+        const today = new Date().toISOString().split('T')[0];
+        const q = query(
+            collection(db, "images"),
+            where("page", "==", page),
+            where("location", "==", location),
+            where("status", "==", "active")
+            // Removi o 'where expired_at' pois o Firebase exige índice composto. 
+            // Filtraremos manualmente abaixo para evitar erros iniciais.
+        );
+
+        const querySnapshot = await getDocs(q);
+        const fetchedImages = [];
+
+        for (const docSnap of querySnapshot.docs) {
+            const data = docSnap.data();
+            
+            // Filtro manual de expiração (Seguro e economiza índices)
+            if (data.expired_at && data.expired_at < today) continue;
+
+            try {
+                const fileRef = storageRef(storage, `images/${data.name}`);
+                const url = await getDownloadURL(fileRef);
+                
+                fetchedImages.push({
+                    src: url,
+                    alt: data.alt || 'Church Image',
+                    format: data.format
+                });
+            } catch (err) {
+                console.warn(`Arquivo não encontrado: ${data.name}`);
+            }
+        }
+
+        localStorage.setItem(CACHE_KEY, JSON.stringify({
+            timestamp: Date.now(),
+            data: fetchedImages
+        }));
+
+        renderImages(fetchedImages);
+
+    } catch (error) {
+        console.error("Erro ao carregar:", error);
+        isLoading.value = false;
+    }
+}
+
+const startSlider = () => {
+    if (sliderInterval) clearInterval(sliderInterval);
+    sliderInterval = setInterval(() => {
+        if (images.value.length > 0) {
+            currentSlide.value = (currentSlide.value % images.value.length) + 1;
+        }
+    }, 5000);
+};
+
+const setSlide = (index) => {
+    currentSlide.value = index;
+};
+
+onMounted(() => {
+    window.addEventListener('resize', checkScreenSize);
+    loadHeroImages();
+});
+
+onUnmounted(() => {
+    window.removeEventListener('resize', checkScreenSize);
+    if (sliderInterval) clearInterval(sliderInterval);
+});
+
+watch(isMobile, () => {
+    const cached = localStorage.getItem(CACHE_KEY);
+    if (cached) {
+        const { data } = JSON.parse(cached);
+        renderImages(data);
+    }
+});
 </script>
 
 <template>
     <main>
-        <!-- <div class="banner">
-            <div class="content" v-for="(s,index) in slides" :key="index">
-             
-                <div class="image-content animate" :style="{backgroundImage: `url(${s.image})`}"></div>
-            </div>
-        </div> -->
-        <div class="slider">
-            <div class="slides">
-            <!-- Slides -->
-            <div class="slide" v-for="(image, index) in images" :key="index" :class="{ active: currentSlide === index + 1 }">
-                <img :src="image.src" :alt="image.alt" loading="lazy">
-            </div>
-            </div>
-
-            <!-- Navegação manual -->
-            <div class="navigation-manual">
-            <span v-for="(image, index) in images" :key="index" class="manual-btn"
-                    :class="{ active: currentSlide === index + 1 }"
-                    @click="setSlide(index + 1)"></span>
+        <div v-if="isLoading" class="skeleton-container">
+            <div class="skeleton-banner"></div>
+            <div class="skeleton-nav">
+                <span></span><span></span><span></span>
             </div>
         </div>
+
+        <div v-else-if="images.length > 0" class="slider">
+            <div class="slides">
+                <div 
+                    class="slide" 
+                    v-for="(image, index) in images" 
+                    :key="index" 
+                    :class="{ active: currentSlide === index + 1 }"
+                >
+                    <img :src="image.src" :alt="image.alt" loading="eager">
+                </div>
+            </div>
+
+            <div class="navigation-manual">
+                <span 
+                    v-for="(image, index) in images" 
+                    :key="index" 
+                    class="manual-btn"
+                    :class="{ active: currentSlide === index + 1 }"
+                    @click="setSlide(index + 1)"
+                ></span>
+            </div>
+        </div>
+        
+        <div v-else class="empty-hero">
+            </div>
     </main>
 </template>
 
@@ -329,4 +421,47 @@
             transform: translateX(20px);
         }
     }
+
+
+    /* Skeleton Styles */
+.skeleton-container {
+    width: 100%;
+    position: relative;
+}
+
+.skeleton-banner {
+    width: 100%;
+    height: 88vh; /* Mesma altura do seu image-content */
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s infinite;
+}
+
+.skeleton-nav {
+    position: absolute;
+    bottom: 20px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.skeleton-nav span {
+    width: 12px;
+    height: 12px;
+    background: #e0e0e0;
+    border-radius: 50%;
+}
+
+@keyframes skeleton-loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* Ajuste Mobile para o Skeleton */
+@media screen and (max-width: 780px) {
+    .skeleton-banner {
+        height: 80vh;
+    }
+}
 </style>

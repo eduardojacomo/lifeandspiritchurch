@@ -1,15 +1,17 @@
 <script setup>
 import { ref, reactive, computed, onMounted, nextTick } from 'vue'
 import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage";
-import { getFirestore, collection, getDocs, addDoc, doc } from "firebase/firestore";
+import { getFirestore, collection, getDocs, addDoc, doc, updateDoc } from "firebase/firestore";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-
-
 import ManagementGaleryImages from './ManagementGaleryImages.vue'
 
- const storage = getStorage();
- const db = getFirestore();
+const storage = getStorage();
+const db = getFirestore();
 
+const metadata_type = {
+  cacheControl: 'public,max-age=31536000',
+  contentType: 'image/webp'
+};
 
 function dataURLtoBlob(dataURL) {
   const byteString = atob(dataURL.split(',')[1]);
@@ -69,19 +71,22 @@ onAuthStateChanged(auth, (user) => {
 });
 
 const locationOptions = {
-  home: ["hero", "about", "app", "scheadle"],
-  about: ["aboutchurch", "aboutpastors"],
+  home: ["Hero", "About", "App", "Scheadle"],
+  about: ["Aboutchurch", "Aboutpastors"],
+  logo: ["Logo"],
   activities: [] // será carregado do Firestore
 };
 
 
 
 const pageOptions = [
-  { value: 'all', label: 'Todas' },
-  { value: 'home', label: 'Home' },
-  { value: 'sobre', label: 'Sobre' },
-  { value: 'agenda', label: 'Agenda' },
-  { value: 'conteudo', label: 'Conteúdo' }
+    { value: 'all', label: 'Todas' },
+    { value: 'home', label: 'Home' },
+    { value: 'about', label: 'Sobre' },
+    { value: 'activities', label: 'Atividades' },
+    // { value: 'scheadle', label: 'Agenda' },
+    // { value: 'content', label: 'Conteúdo' },
+    {value: 'logo', label: 'Logo' }
 ]
 
 const deviceOptions = [
@@ -139,10 +144,14 @@ const handleDrop = (e) => {
 }
 
 const getCanvasSizeByType = (type) => {
-  if (type === 'desktop') {
-    return { width: 800, height: 450 } // 16:9
+  if (type === 'desktop') return { width: 800, height: 450 }
+  if (type === 'mobile') return { width: 360, height: 640 }
+  
+  // Se for original, retornamos as dimensões nativas do objeto da imagem
+  if (type === 'original' && imgObj) {
+    return { width: imgObj.naturalWidth, height: imgObj.naturalHeight }
   }
-  return { width: 360, height: 640 } // 9:16
+  return { width: 800, height: 450 } // fallback
 }
 
 
@@ -202,50 +211,86 @@ async function saveAllImages() {
     return;
   }
 
-  for (const img of uploadedImages.value) {
-    try {
-      if (!img.page || !img.location) {
-        showToast("Preencha página e localização antes de salvar", "error");
-        continue;
-      }
+    for (const img of uploadedImages.value) {
+        try {
+            if (!img.page || !img.location) {
+            showToast("Preencha página e localização antes de salvar", "error");
+            continue;
+            }
 
-      const blob = dataURLtoBlob(img.preview);
-      const dataAtual = new Date().toISOString().split("T")[0];
-      const nameCreated = `${img.page}_${img.location}_${dataAtual}.jpg`;
+            const isHomeHero = img.page === 'home' && img.location === 'hero';
 
-      const fileRef = storageRef(storage, `images/${nameCreated}`);
-      await uploadBytes(fileRef, blob);
+            const hash = Math.random().toString(36).substring(2, 7);
+            const blob = dataURLtoBlob(img.preview);
+            const dataAtual = new Date().toISOString().split("T")[0];
+        //   const nameCreated = `${img.page}_${img.location}_${dataAtual}_${hash}.jpg`;
+            const nameCreated = `${img.page}_${img.location}_${dataAtual}_${hash}.webp`;
+            let finalFormat = 'all'; // Default caso ambos estejam marcados ou nenhum esteja
+            
+            if (img.desktop && !img.mobile) {
+            finalFormat = 'desktop';
+            } else if (!img.desktop && img.mobile) {
+            finalFormat = 'mobile';
+            } else if (img.desktop && img.mobile) {
+            finalFormat = 'all';
+            }
 
-      const metadata = {
-        name: nameCreated,
-        page: img.page,
-        location: img.location,
-        format: img.desktop ? "desktop" : "mobile",
-        alt: img.description || "",
-        path: `gs://church-lifeandspirit.firebasestorage.app/images/${nameCreated}`,
-        created_at: new Date().toISOString(),
-        expired_at: img.expirationDate || null,
-        status: "active",
-        userId: currentUser.value.uid // opcional: vincular ao usuário
-      };
+            if (!isHomeHero) {
+                try {
+                    const qDesativar = query(
+                    collection(db, img.page === "activities" ? `activities/${img.location}/images` : "images"),
+                    where("page", "==", img.page),
+                    where("location", "==", img.location),
+                    where("status", "==", "active")
+                    );
 
-      if (img.page === "activities") {
-        const activityRef = doc(db, "activities", img.location);
-        await addDoc(collection(activityRef, "images"), metadata);
-      } else {
-        await addDoc(collection(db, "images"), metadata);
-      }
+                    const snapshotAtivos = await getDocs(qDesativar);
+                    
+                    // Para cada imagem ativa encontrada, mudamos para inactive
+                    const promises = snapshotAtivos.docs.map(docSnap => {
+                    return updateDoc(docSnap.ref, { status: 'inactive' });
+                    });
+                    
+                    await Promise.all(promises);
+                    console.log(`Imagens anteriores em ${img.location} desativadas.`);
+                } catch (err) {
+                    console.error("Erro ao desativar imagens anteriores:", err);
+                }
+            }   
 
-      showToast(`Imagem ${nameCreated} salva com sucesso!`, "success");
-    } catch (error) {
-      console.error("Erro ao salvar imagem:", error);
-      showToast(`Erro ao salvar ${img.name}`, "error");
+            const fileRef = storageRef(storage, `images/${nameCreated}`);
+            await uploadBytes(fileRef, blob, metadata_type);
+
+            const metadata = {
+            name: nameCreated,
+            page: img.page,
+            location: img.location.toLowerCase(),
+            format: finalFormat,
+            alt: img.description || "",
+            path: `gs://church-lifeandspirit.firebasestorage.app/images/${nameCreated}`,
+            created_at: new Date().toISOString(),
+            expired_at: img.expirationDate || null,
+            status: "active",
+            userId: currentUser.value.uid // opcional: vincular ao usuário
+            };
+
+            if (img.page === "activities") {
+            const activityRef = doc(db, "activities", img.location);
+            await addDoc(collection(activityRef, "images"), metadata);
+            } else {
+            await addDoc(collection(db, "images"), metadata);
+            }
+
+            showToast(`Imagem ${nameCreated} salva com sucesso!`, "success");
+        } catch (error) {
+            console.log("Erro ao salvar imagem:", error);
+            showToast(`Erro ao salvar ${img.name}, erro ${error.message}`, "error");
+        }
     }
-  }
 
-  uploadedImages.value = [];
-  if (fileInput.value) fileInput.value.value = "";
-  activeTab.value = "gallery";
+    uploadedImages.value = [];
+    if (fileInput.value) fileInput.value.value = "";
+    activeTab.value = "gallery";
 };
 
 const deleteImage = (id) => {
@@ -288,29 +333,34 @@ const formatDate = (dateStr) => {
 
 const setType = (type) => {
   selectedType.value = type
-
   const canvas = canvasEditor.value
-  const ctx = canvas.getContext('2d')
-
-  const { width, height } = getCanvasSizeByType(type)
-
-  const maxHeight = window.innerHeight * 0.8
-  const scaleView = height > maxHeight ? maxHeight / height : 1
-
-  canvas.width = width * scaleView
-  canvas.height = height * scaleView
-
+  
+  // Garantimos que a imagem está carregada para pegar as dimensões
   imgObj = new Image()
   imgObj.src = selectedImage.value.preview
 
   imgObj.onload = () => {
-    scale.value = Math.max(
-      canvas.width / imgObj.width,
-      canvas.height / imgObj.height
-    )
+    const { width, height } = getCanvasSizeByType(type)
 
-    offsetX.value = (canvas.width - imgObj.width * scale.value) / 2
-    offsetY.value = (canvas.height - imgObj.height * scale.value) / 2
+    // Lógica visual: não deixa o canvas maior que a tela do usuário
+    const maxHeight = window.innerHeight * 0.7
+    const maxWidth = window.innerWidth * 0.8
+    const scaleView = Math.min(maxWidth / width, maxHeight / height, 1)
+
+    canvas.width = width * scaleView
+    canvas.height = height * scaleView
+
+    // Se for original, centralizamos e resetamos o zoom
+    if (type === 'original') {
+      scale.value = scaleView
+      offsetX.value = 0
+      offsetY.value = 0
+    } else {
+      // Para desktop/mobile, fazemos o "cover" (preencher tudo)
+      scale.value = Math.max(canvas.width / imgObj.width, canvas.height / imgObj.height)
+      offsetX.value = (canvas.width - imgObj.width * scale.value) / 2
+      offsetY.value = (canvas.height - imgObj.height * scale.value) / 2
+    }
 
     draw()
   }
@@ -365,27 +415,46 @@ const endDrag = () => {
 }
 
 
- const saveEditedImage = async () => {
-   const canvas = canvasEditor.value
-   const editedPreview = canvas.toDataURL('image/jpeg', 0.9)
+const saveEditedImage = async () => {
+  const displayCanvas = canvasEditor.value
+  
+  // Criamos um canvas oculto para renderizar na resolução REAL (sem o scaleView da tela)
+  const tempCanvas = document.createElement('canvas')
+  const tempCtx = tempCanvas.getContext('2d')
+  
+  const targetSize = getCanvasSizeByType(selectedType.value)
+  tempCanvas.width = targetSize.width
+  tempCanvas.height = targetSize.height
 
-   uploadedImages.value.push({
-     id: Date.now(),
-     preview: editedPreview,
-     page: '',
-     name: selectedImage.value.name,
-     desktop: selectedType.value === 'desktop',
-     mobile: selectedType.value === 'mobile'
-   })
+  // Calculamos a proporção entre o que o usuário vê e a realidade
+  const ratio = targetSize.width / displayCanvas.width
 
-   showEditModal.value = false
-   await nextTick()
-   const section = document.getElementById('edit-image-section')
-   section?.scrollIntoView({
-     behavior: 'smooth',
-     block: 'start'
-   })
- }
+  // Desenha no canvas de alta resolução
+  tempCtx.drawImage(
+    imgObj,
+    offsetX.value * ratio,
+    offsetY.value * ratio,
+    (imgObj.width * scale.value) * ratio,
+    (imgObj.height * scale.value) * ratio
+  )
+
+  const editedPreview = tempCanvas.toDataURL('image/webp', 0.8)
+  
+  uploadedImages.value.push({
+    id: Date.now(),
+    preview: editedPreview,
+    page: '',
+    name: selectedImage.value.name.replace(/\.[^/.]+$/, "") + ".webp",
+    // Se for original, ele habilita ambos por padrão ou você escolhe um
+    desktop: selectedType.value === 'desktop' || selectedType.value === 'original',
+    mobile: selectedType.value === 'mobile' || selectedType.value === 'original',
+    availableLocations: []
+  })
+
+  showEditModal.value = false
+  await nextTick()
+  document.getElementById('edit-image-section')?.scrollIntoView({ behavior: 'smooth' })
+}
 
 
 
@@ -470,9 +539,24 @@ onMounted(() => {
             </div>
             </div>
 
-        <button @click="setType('desktop')">Desktop</button>
-        <button @click="setType('mobile')">Mobile</button>
-        <button @click="saveEditedImage">Salvar</button>
+       <div class="type-selector">
+            <button 
+                :class="{ active: selectedType === 'desktop' }" 
+                @click="setType('desktop')"
+            >Desktop (16:9)</button>
+            
+            <button 
+                :class="{ active: selectedType === 'mobile' }" 
+                @click="setType('mobile')"
+            >Mobile (9:16)</button>
+            
+            <button 
+                :class="{ active: selectedType === 'original' }" 
+                @click="setType('original')"
+            >Tamanho Original</button>
+        </div>
+
+        <button class="btn-save-edit" @click="saveEditedImage">Confirmar Edição</button>
       </div>
     </div>
   </div>
@@ -555,15 +639,18 @@ onMounted(() => {
               <div class="config-form">
                 <div class="form-group">      
                     <label>Descrição</label>
-                    <input type="text" v-model="filters.description" placeholder="Descrição da imagem">
+                    <input type="text" v-model="img.description" placeholder="Descrição da imagem">
                 </div>
               <div class="form-group">
                 <label>Exibição da imagem</label>
                 <select v-model="img.page" @change="updateLocations(img)">
                     <option value="" disabled>Selecione o destino da imagem</option>  
-                    <option value="home">Home</option>
+                    <option v-for="option in pageOptions" :key="option.value" :value="option.value">
+                    {{ option.label }}
+                    </option>
+                    <!-- <option value="home">Home</option>
                     <option value="about">Sobre</option>
-                    <option value="activities">Atividades</option>
+                    <option value="activities">Atividades</option> -->
                 </select>
               </div>
 
@@ -1262,5 +1349,16 @@ canvas:active {
   transform: scale(0.95);
 }
 
+.type-selector button.active {
+  background-color: var(--cor-azul-medio);
+  color: white;
+  border-color: transparent;
+}
+
+.type-selector{
+    display: flex;
+    flex-direction: row;
+    gap: .5rem;
+}
 
 </style>

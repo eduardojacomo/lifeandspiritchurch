@@ -1,18 +1,36 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { getFirestore, collection, getDocs } from "firebase/firestore"
-import { getStorage, ref as storageRef, getDownloadURL } from "firebase/storage"
+import { getFirestore, collection, getDocs, doc, deleteDoc, updateDoc } from "firebase/firestore"
+import { getStorage, ref as storageRef, getDownloadURL, deleteObject } from "firebase/storage"
 import CustomSelect from '../Forms/CustomSelect.vue'
 
 const db = getFirestore()
 const storage = getStorage()
 
+
 // Estado
 const savedImages = ref([])
+const showDeleteModal = ref(false);
+const imageToDelete = ref(null);
+const isDeleting = ref(false);
+const isLoading = ref(false)
+
+
+//novo
+const showEditModal = ref(false);
+const editingImage = ref(null);
+const isSaving = ref(false);
+
 const filters = ref({
   page: 'all',
   device: 'all',
   status: 'all'
+})
+
+const toast = ref({
+  show: false,
+  message: '',
+  type: 'success'
 })
 
 // Opções de filtros
@@ -20,8 +38,16 @@ const pageOptions = [
   { value: 'all', label: 'Todas' },
   { value: 'home', label: 'Home' },
   { value: 'about', label: 'Sobre' },
-  { value: 'activities', label: 'Atividades' }
+  { value: 'activities', label: 'Atividades' },
+  {value: 'logo', label: 'Logo' }
 ]
+
+const locationOptions = {
+  home: ["Hero", "About", "App", "Scheadle"],
+  about: ["Aboutchurch", "Aboutpastors"],
+  logo: ["Logo"],
+  activities: [] // será carregado do Firestore
+};
 
 const deviceOptions = [
   { value: 'all', label: 'Todos' },
@@ -44,6 +70,52 @@ const capitalizeFirst = (str) => {
   return str.charAt(0).toUpperCase() + str.slice(1)
 }
 
+const confirmDelete = (img) => {
+  imageToDelete.value = img;
+  showDeleteModal.value = true;
+};
+
+// Fecha o modal e limpa o estado
+const closeModal = () => {
+  showDeleteModal.value = false;
+  imageToDelete.value = null;
+  isDeleting.value = false;
+};
+
+const executeDelete = async () => {
+  if (!imageToDelete.value) return;
+  
+  const img = imageToDelete.value;
+  isDeleting.value = true;
+
+  try {
+    // 1. Referência do documento
+    let docRef;
+    if (img.page === "activities") {
+      docRef = doc(db, "activities", img.activityId, "images", img.id);
+    } else {
+      docRef = doc(db, "images", img.id);
+    }
+
+    
+    await deleteDoc(docRef);
+    const fileRef = storageRef(storage, `images/${img.name}`);
+    await deleteObject(fileRef);
+
+    
+    localStorage.removeItem('church_hero_cache'); 
+
+    await loadAllImages();
+    
+    showToast('Imagem excluída com sucesso!');
+    closeModal();
+  } catch (error) {
+    console.error("Erro ao deletar:", error);
+    showToast('Erro ao excluir. Verifique se o arquivo existe no storage.', 'error');
+    isDeleting.value = false;
+  }
+};
+
 const formatDate = (dateStr) => {
   const date = new Date(dateStr)
   return date.toLocaleDateString('pt-BR')
@@ -54,17 +126,23 @@ const filteredImages = computed(() => {
   return savedImages.value.filter(img => {
     const page = (img.page || '').toLowerCase()
     const format = (img.format || '').toLowerCase()
+    
     const filterPage = filters.value.page.toLowerCase()
     const filterDevice = filters.value.device.toLowerCase()
     const filterStatus = filters.value.status.toLowerCase()
 
-    // Filtro por página
+    // 1. Filtro por página
     if (filterPage !== 'all' && page !== filterPage) return false
 
-    // Filtro por dispositivo
-    if (filterDevice !== 'all' && format !== filterDevice) return false
+    // 2. Filtro por dispositivo (Lógica solicitada)
+    if (filterDevice !== 'all') {
+      // Só bloqueia se: o formato da imagem NÃO for 'all' E NÃO for igual ao filtro
+      if (format !== 'all' && format !== filterDevice) {
+        return false
+      }
+    }
 
-    // Filtro por status
+    // 3. Filtro por status
     const expired = isExpired(img)
     if (filterStatus === 'active' && expired) return false
     if (filterStatus === 'expired' && !expired) return false
@@ -73,128 +151,341 @@ const filteredImages = computed(() => {
   })
 })
 
-// Carregar imagens do Firestore
-async function loadAllImages() {
-  const allImages = []
+//edit images
+const editImage = (img) => {
+ 
+  editingImage.value = { 
+    ...img,
+    // Mapeia o 'format' do banco para os checkboxes do modal
+    desktop: img.format === 'desktop' || img.format === 'all',
+    mobile: img.format === 'mobile' || img.format === 'all',
+    availableLocations: locationOptions[img.page] || []
+  };
+  showEditModal.value = true;
+};
 
-  // 1. Coleção principal "images"
-  const imagesSnapshot = await getDocs(collection(db, "images"))
-  for (const docSnap of imagesSnapshot.docs) {
-    const data = docSnap.data()
-    let url = null
+// Atualiza as opções de localização se mudar a página no modal
+const updateEditLocations = (img) => {
+  img.availableLocations = locationOptions[img.page] || [];
+  img.location = ""; // Reseta a localização para obrigar nova escolha
+};
 
-    try {
-      const fileRef = storageRef(storage, `images/${data.name}`)
-      url = await getDownloadURL(fileRef)
-    } catch (error) {
-      console.warn(`Arquivo não encontrado no Storage: ${data.name}`, error)
-      // fallback: imagem de erro
-      url = "/img/error.png" // coloque aqui o caminho da sua imagem de erro
+async function saveUpdate() {
+  if (!editingImage.value) return;
+  isSaving.value = true;
+  
+  try {
+    const img = editingImage.value;
+    
+    // 1. Tratamento do Formato (all, desktop, mobile)
+    let finalFormat = 'all';
+    if (img.desktop && !img.mobile) finalFormat = 'desktop';
+    else if (!img.desktop && img.mobile) finalFormat = 'mobile';
+
+    // 2. Preparação do objeto de dados (limpo)
+    const updateData = {
+      alt: img.description || img.alt || "", // Garante que pegamos o campo preenchido
+      page: img.page,
+      location: img.location,
+      format: finalFormat,
+      // Se houver expirationDate (do input date), salva. Caso contrário, mantém o que existia.
+      expired_at: img.expirationDate || img.expired_at || null 
+    };
+
+    // 3. Definição da Referência do Documento
+    let docRef;
+    if (img.page === "activities") {
+      // Importante: usamos img.activityId que salvamos no loadAllImages
+      if (!img.activityId) {
+         throw new Error("activityId não encontrado para esta imagem de atividades.");
+      }
+      docRef = doc(db, "activities", img.activityId, "images", img.id);
+    } else {
+      docRef = doc(db, "images", img.id);
     }
 
-    allImages.push({
-      id: docSnap.id,
-      preview: url,
-      ...data
-    })
+    console.log("Tentando atualizar documento:", docRef.path);
+
+    // 4. Execução da atualização
+    await updateDoc(docRef, updateData);
+    
+    showToast("Dados atualizados com sucesso!");
+    showEditModal.value = false;
+    
+    // 5. Atualização local para evitar recarregamento pesado se possível
+    // Ou simplesmente recarrega tudo:
+    await loadAllImages(); 
+    
+  } catch (error) {
+    console.error("Erro detalhado ao atualizar:", error);
+    showToast(`Erro ao atualizar: ${error.message}`, "error");
+  } finally {
+    isSaving.value = false;
   }
+}
 
-  // 2. Subcoleções "activities/{id}/images"
-  const activitiesSnapshot = await getDocs(collection(db, "activities"))
-  for (const activityDoc of activitiesSnapshot.docs) {
-    const imagesSubSnapshot = await getDocs(collection(db, `activities/${activityDoc.id}/images`))
-    for (const imgDoc of imagesSubSnapshot.docs) {
-      const data = imgDoc.data()
+
+async function loadAllImages() {
+  isLoading.value = true // Inicia o loading
+  const allImages = []
+
+  try {
+    // 1. Coleção principal "images"
+    const imagesSnapshot = await getDocs(collection(db, "images"))
+    for (const docSnap of imagesSnapshot.docs) {
+      const data = docSnap.data()
       let url = null
-
       try {
         const fileRef = storageRef(storage, `images/${data.name}`)
         url = await getDownloadURL(fileRef)
       } catch (error) {
-        console.warn(`Arquivo não encontrado no Storage: ${data.name}`, error)
         url = "/img/error.png"
       }
-
       allImages.push({
-        id: imgDoc.id,
+        id: docSnap.id,
         preview: url,
         ...data,
-        activityId: activityDoc.id
+        expirationDate: data.expired_at || "" // Garante compatibilidade com input date
       })
     }
-  }
 
-  savedImages.value = allImages
+    // 2. Subcoleções "activities"
+    const activitiesSnapshot = await getDocs(collection(db, "activities"))
+    for (const activityDoc of activitiesSnapshot.docs) {
+      const imagesSubSnapshot = await getDocs(collection(db, `activities/${activityDoc.id}/images`))
+      for (const imgDoc of imagesSubSnapshot.docs) {
+        const data = imgDoc.data()
+        let url = null
+        try {
+          const fileRef = storageRef(storage, `images/${data.name}`)
+          url = await getDownloadURL(fileRef)
+        } catch (error) {
+          url = "/img/error.png"
+        }
+        allImages.push({
+          id: imgDoc.id,
+          preview: url,
+          ...data,
+          activityId: activityDoc.id,
+          expirationDate: data.expired_at || ""
+        })
+      }
+    }
+    savedImages.value = allImages
+  } catch (error) {
+    console.error("Erro ao carregar imagens:", error)
+    showToast("Erro ao carregar a galeria", "error")
+  } finally {
+    isLoading.value = false // Finaliza o loading independente de erro ou sucesso
+  }
 }
+
+const deleteImage = async (img) => {
+  if (!confirm(`Tem certeza que deseja excluir a imagem "${img.name}"?`)) return;
+
+  try {
+    
+    let docRef;
+    if (img.page === "activities") {
+    
+      docRef = doc(db, "activities", img.location, "images", img.id);
+    } else {
+    
+      docRef = doc(db, "images", img.id);
+    }
+
+    
+    await deleteDoc(docRef);
+
+    
+    const fileRef = storageRef(storage, `images/${img.name}`);
+    await deleteObject(fileRef);
+
+    // 4. Atualizar a UI e Cache Local
+    savedImages.value = savedImages.value.filter(i => i.id !== img.id);
+    localStorage.setItem('churchImages', JSON.stringify(savedImages.value));
+
+    showToast('Imagem removida do banco e do storage com sucesso!');
+  } catch (error) {
+    console.error("Erro ao deletar:", error);
+    showToast('Erro ao excluir imagem. Verifique o console.', 'error');
+  } finally {
+    closeModal();
+  } 
+};
+
+const showToast = (message, type = 'success') => {
+  toast.value = {
+    show: true,
+    message,
+    type
+  }
+  setTimeout(() => {
+    toast.value.show = false
+  }, 3000)
+}
+
 // Lifecycle
 onMounted(async () => {
   await loadAllImages()
 })
 
-// Ações
-const editImage = (img) => {
-  console.log("Editar imagem:", img)
-}
-
-const deleteImage = (id) => {
-  savedImages.value = savedImages.value.filter(img => img.id !== id)
-}
 </script>
 
 <template>
-  <!-- Gallery Tab -->
-  <div class="tab-content active">
-    <div class="gallery-filters">
-      <div class="filter-group">
-        <label>Página</label>
-        <CustomSelect v-model="filters.page" :options="pageOptions" />
-      </div>
+    <div class="modal" v-if="showEditModal">
+        <div class="modal-content edit-modal">
+            <div class="header-modal">
+            <h3>Editar Informações</h3>
+            <button class="modal-close" @click="showEditModal = false">✖</button>
+            </div>
 
-      <div class="filter-group">
-        <label>Dispositivo</label>
-        <CustomSelect v-model="filters.device" :options="deviceOptions" />
-      </div>
+            <div class="edit-grid" v-if="editingImage">
+            <div class="config-preview">
+                <img :src="editingImage.preview" :alt="editingImage.name">
+                <p class="filename">{{ editingImage.name }}</p>
+            </div>
 
-      <div class="filter-group">
-        <label>Status</label>
-        <CustomSelect v-model="filters.status" :options="statusOptions" />
-      </div>
-    </div>
+            <div class="config-form-modal">
+                <div class="form-group">
+                <label>Descrição (Alt)</label>
+                <input type="text" v-model="editingImage.description" placeholder="Descrição da imagem">
+                </div>
 
-    <div v-if="filteredImages.length > 0" class="gallery-grid">
-      <div v-for="img in filteredImages" :key="img.id" class="gallery-item">
-        <div class="gallery-image">
-          <img :src="img.preview" :alt="img.name">
+                <div class="form-group">
+                <label>Página</label>
+                <select v-model="editingImage.page" @change="updateEditLocations(editingImage)">
+                    <option v-for="option in pageOptions" :key="option.value" :value="option.value">
+                    {{ option.label }}
+                    </option>
+                </select>
+                </div>
+
+                <div class="form-group">
+                <label>Localização</label>
+                <select v-model="editingImage.location">
+                    <option value="" disabled>Selecione a localização</option>
+                    <option v-for="loc in editingImage.availableLocations" :key="loc" :value="loc">
+                    {{ loc }}
+                    </option>
+                </select>
+                </div>
+
+                <div class="form-group">
+                <label>Dispositivos</label>
+                <div class="device-toggle">
+                    <label :class="['device-option', { selected: editingImage.desktop }]">
+                    <input type="checkbox" v-model="editingImage.desktop"> 🖥️ Desktop
+                    </label>
+                    <label :class="['device-option', { selected: editingImage.mobile }]">
+                    <input type="checkbox" v-model="editingImage.mobile"> 📱 Mobile
+                    </label>
+                </div>
+                </div>
+
+                <div class="form-group">
+                <label>Data de Expiração</label>
+                <input type="date" v-model="editingImage.expirationDate" :min="minDate">
+                </div>
+            </div>
+            </div>
+
+            <div class="modal-actions">
+            <button class="btn-cancel" @click="showEditModal = false">Cancelar</button>
+            <button class="btn-save" @click="saveUpdate" :disabled="isSaving">
+                {{ isSaving ? 'Salvando...' : 'Salvar Alterações' }}
+            </button>
+            </div>
         </div>
-        <div class="gallery-info">
-          <div class="gallery-tags">
-            <span v-if="img.desktop" class="tag desktop">Desktop</span>
-            <span v-if="img.mobile" class="tag mobile">Mobile</span>
-            <span v-if="isExpired(img)" class="tag expired">Expirada</span>
-          </div>
-          <div class="gallery-details">
-            <strong>Página:</strong> {{ capitalizeFirst(img.page) }}
-          </div>
-          <div v-if="img.expirationDate" class="gallery-details">
-            <strong>Expira em:</strong> {{ formatDate(img.expirationDate) }}
-          </div>
-          <div class="gallery-details" style="font-size: 0.8rem; margin-top: 0.5rem;">
-            Enviada em: {{ formatDate(img.created_at) }}
-          </div>
-          <div class="gallery-actions">
-            <button class="btn-edit" @click="editImage(img)">Editar</button>
-            <button class="btn-delete" @click="deleteImage(img.id)">Excluir</button>
-          </div>
-        </div>
-      </div>
     </div>
+    <div class="tab-content active">
+        <div class="gallery-filters">
+            <div class="filter-group">
+            <label>Página</label>
+            <CustomSelect v-model="filters.page" :options="pageOptions" />
+            </div>
 
-    <div v-else class="empty-state">
-      <div class="icon">🖼️</div>
-      <h3>Nenhuma imagem encontrada</h3>
-      <p>Faça upload de imagens para começar</p>
+            <div class="filter-group">
+            <label>Dispositivo</label>
+            <CustomSelect v-model="filters.device" :options="deviceOptions" />
+            </div>
+
+            <div class="filter-group">
+            <label>Status</label>
+            <CustomSelect v-model="filters.status" :options="statusOptions" />
+            </div>
+        </div>
+
+        <div v-if="isLoading" class="loading-container">
+            <div class="spinner"></div>
+            <p>Buscando imagens na nuvem...</p>
+        </div>
+
+        <div v-else-if="filteredImages.length > 0" class="gallery-grid">
+            <div v-for="img in filteredImages" :key="img.id" class="gallery-item">
+            <div class="gallery-image">
+                <img :src="img.preview" :alt="img.name">
+            </div>
+            <div class="gallery-info">
+                <div class="gallery-tags">
+                    <span v-if="img.desktop" class="tag desktop">Desktop</span>
+                    <span v-if="img.mobile" class="tag mobile">Mobile</span>
+                    <span v-if="isExpired(img)" class="tag expired">Expirada</span>
+                </div>
+                 <div class="gallery-details">
+                    <strong>Descrição:</strong> {{ capitalizeFirst(img.alt) }}
+                </div>
+                <div class="gallery-details">
+                    <strong>Página:</strong> {{ capitalizeFirst(img.page) }}
+                </div>
+                <div v-if="img.expirationDate" class="gallery-details">
+                    <strong>Expira em:</strong> {{ formatDate(img.expirationDate) }}
+                </div>
+                <div class="gallery-details" style="font-size: 0.8rem; margin-top: 0.5rem;">
+                    Enviada em: {{ formatDate(img.created_at) }}
+                </div>
+                <div class="gallery-actions">
+                    <button class="btn-edit" @click="editImage(img)">Editar</button>
+                    <button class="btn-delete" @click="confirmDelete(img)">Excluir</button>
+                </div>
+            </div>
+            </div>
+            <Teleport to="body">
+            <div v-if="showDeleteModal" class="modal-overlay" @click.self="closeModal">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <span class="warning-icon">⚠️</span>
+                    <h3>Confirmar Exclusão</h3>
+                </div>
+                
+                <div class="modal-body">
+                    <p>Você tem certeza que deseja excluir <strong>{{ imageToDelete?.name }}</strong>?</p>
+                    <p class="warning-text">Esta ação removerá o arquivo permanentemente do banco de dados e do servidor.</p>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn-cancel" @click="closeModal" :disabled="isDeleting">Cancelar</button>
+                    <button class="btn-confirm-delete" @click="executeDelete" :disabled="isDeleting">
+                    <span v-if="isDeleting">Excluindo...</span>
+                    <span v-else>Sim, excluir agora</span>
+                    </button>
+                </div>
+                </div>
+            </div>
+            </Teleport>
+        </div>
+
+        <div v-else class="empty-state">
+            <div class="icon">🖼️</div>
+            <h3>Nenhuma imagem encontrada</h3>
+            <p>Faça upload de imagens para começar</p>
+        </div>
     </div>
-  </div>
+     <transition name="slide">
+      <div v-if="toast.show" :class="['toast', toast.type]">
+        {{ toast.message }}
+      </div>
+    </transition>
 </template>
 
 <style scoped>
@@ -631,7 +922,7 @@ h1 {
   padding: 1rem 2rem;
   border-radius: 8px;
   font-weight: 600;
-  z-index: 1000;
+  z-index: 9999;
 }
 
 .toast.error {
@@ -816,7 +1107,7 @@ canvas:active {
   border: none;
   border-radius: 6px;
   background: #333;
-  color: #fff;
+  color: var(--color-text);
   cursor: pointer;
   transition: background 0.2s, transform 0.1s;
 }
@@ -830,4 +1121,137 @@ canvas:active {
 }
 
 
+/* novo modal */
+/* Overlay para escurecer o fundo */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 9999;
+  backdrop-filter: blur(4px); /* Ar profissional */
+}
+
+/* Caixa do Modal */
+.modal-content {
+  background: var(--color-background-mute);
+  padding: 2rem;
+  border-radius: 12px;
+  max-width: 450px;
+  width: 90%;
+  box-shadow: 0 20px 25px -5px rgba(41, 41, 41, 0.1);
+}
+
+.modal-header {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 1rem;
+}
+
+.warning-icon { font-size: 1.5rem; }
+
+.warning-text {
+  color: #ef4444; font-size: 0.85rem; margin-top: 10px; font-style: italic;
+}
+
+.modal-footer {
+  display: flex; justify-content: flex-end; gap: 12px; margin-top: 2rem;
+}
+
+/* Botões do Modal */
+.btn-cancel {
+  background: #f3f4f6; color: #374151; padding: 10px 20px; border-radius: 6px; border: none; cursor: pointer;
+}
+
+.btn-confirm-delete {
+  background: #ef4444; color: white; padding: 10px 20px; border-radius: 6px; border: none; cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-confirm-delete:hover { background: #dc2626; }
+.btn-confirm-delete:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.edit-modal {
+  max-width: 800px;
+  width: 90%;
+}
+
+.edit-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: 2rem;
+  margin-top: 1.5rem;
+}
+
+.filename {
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+  color: #888;
+  word-break: break-all;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.btn-save {
+  background-color: var(--cor-azul-medio);
+  color: white;
+  padding: 0.8rem 1.5rem;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-cancel {
+  background: transparent;
+  color: #ccc;
+  border: 1px solid #444;
+  padding: 0.8rem 1.5rem;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.config-form-modal {
+  display: grid;
+  gap: .5rem;
+}
+
+
+@media (max-width: 600px) {
+  .edit-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem;
+  color: var(--cor-azul-claro);
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(255, 255, 255, 0.1);
+  border-left-color: var(--cor-azul-medio);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Garante que o grid não "pule" ao carregar */
+.gallery-grid {
+  min-height: 400px;
+}
 </style>

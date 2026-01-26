@@ -8,17 +8,13 @@ import {storeToRefs} from 'pinia';
 const uselanguage = useLanguage();
 const { locale, currentLocaleKey} = storeToRefs(uselanguage);
 
-// function setLanguage() {
-//   uselanguage.setLanguage();
-//  }
 const { t, locale: i18nLocale } = useI18n();
- 
 
 const isOpen = ref(false);
 const navbarRef = ref(null);
 const route = useRoute();
 const isHomePage = computed(() => route.path === '/' || route.path === '/home');
-const isTop   = ref(true);
+const isTop = ref(true);
 
 const menuItems = ref([
   {
@@ -33,10 +29,6 @@ const menuItems = ref([
       { labelKey: '_about._our_activities', route: '/activities' }
     ]
   },
-  // {
-  //   labelKey: '_nav._scheadle',
-  //   route: '/scheadle'
-  // },
   {
     labelKey: '_nav._content',
     children: [
@@ -54,34 +46,29 @@ const isSubmenuVisible = ref(menuItems.value.map(() => false));
 const submenuPositions = ref(menuItems.value.map(() => 0));
 const menuItemRefs = ref([]);
 
-const showDropdown = ref(false)
+const showDropdown = ref(false);
 
 function toggleDropdown() {
-  showDropdown.value = !showDropdown.value
+  showDropdown.value = !showDropdown.value;
 }
 
 function closeDropdown() {
-  showDropdown.value = false
+  showDropdown.value = false;
 }
 
 function setLanguage(lang) {
-  // Seu método para trocar de idioma
-  // locale.value = lang
   uselanguage.setLanguage(lang);
-  showDropdown.value = false
+  showDropdown.value = false;
 }
 
-// Clique fora para fechar
 function handleClickOutsideLanguage(event) {
-  const dropdown = document.querySelector('.language-selector')
+  const dropdown = document.querySelector('.language-selector');
   if (dropdown && !dropdown.contains(event.target)) {
-    closeDropdown()
+    closeDropdown();
   }
 }
 
-
 const handleMouseEnter = (index) => {
-  isTop.value = false;
   isSubmenuVisible.value = isSubmenuVisible.value.map((_, i) => i === index);
   if (menuItemRefs.value[index]) {
     const rect = menuItemRefs.value[index].getBoundingClientRect();
@@ -93,19 +80,18 @@ const handleMouseLeave = (index) => {
   setTimeout(() => {
     isSubmenuVisible.value[index] = false;
   }, 300);
-  onScroll();
 };
 
 function onScroll() {
-  isTop.value = window.scrollY === 0
+  isTop.value = window.scrollY === 0;
 }
 
 const scrollTo = (sectionId) => {
-const section = document.getElementById(sectionId);
-if (section) {
-  section.scrollIntoView({ behavior: 'smooth' });
-  isOpen.value = false; // Close menu after scrolling
-}
+  const section = document.getElementById(sectionId);
+  if (section) {
+    section.scrollIntoView({ behavior: 'smooth' });
+    isOpen.value = false;
+  }
 };
 
 const toggleMenu = () => {
@@ -115,7 +101,7 @@ const toggleMenu = () => {
 const closeMenu = () => {
   isOpen.value = false;
 };
-  
+
 const handleClickOutside = (event) => {
   if (navbarRef.value && !navbarRef.value.contains(event.target)) {
     isOpen.value = false;
@@ -123,17 +109,16 @@ const handleClickOutside = (event) => {
 };
 
 watch(locale, (newLocale) => {
-  i18nLocale.value = newLocale; // Atualiza o vue-i18n quando o Pinia mudar
+  i18nLocale.value = newLocale;
 });
 
 onMounted(() => {
   document.addEventListener('click', handleClickOutside);
-  document.addEventListener('click', handleClickOutsideLanguage)
+  document.addEventListener('click', handleClickOutsideLanguage);
   window.addEventListener('scroll', onScroll, { passive: true });
   menuItemRefs.value = Array(menuItems.value.length).fill(null);
-  onScroll(); // inicializa
+  onScroll();
 });
-
 
 onBeforeUnmount(() => {
   document.removeEventListener('click', handleClickOutside);
@@ -143,147 +128,170 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-    <nav class="navbar" ref="navbarRef" :class="{
-    'navbar--transparent': isHomePage && isTop,
-    'navbar--solid': !(isHomePage && isTop)
-  }">
+  <nav 
+    class="navbar" 
+    ref="navbarRef" 
+    :class="{
+      'navbar--transparent': isHomePage && isTop,
+      'navbar--solid': !(isHomePage && isTop)
+    }"
+  >
+    <div class="navbar-container">
+      <!-- Logo -->
       <div class="logo">
-        <a href="#"><img src="../assets/logo.png" alt="logo"></a>
+        <router-link to="/">
+          <img src="../assets/logo.png" alt="Life & Spirit Church">
+        </router-link>
       </div>
-      <nav class="navbar-new">
+
+      <!-- Desktop Menu -->
+      <nav class="navbar-desktop">
         <ul class="main-menu">
           <li
             v-for="(item, index) in menuItems"
             :key="index"
+            :ref="el => menuItemRefs[index] = el"
             class="menu-item"
             @mouseenter="handleMouseEnter(index)"
             @mouseleave="handleMouseLeave(index)"
           >
-            <router-link v-if="item.route" :to="item.route">{{ t(item.labelKey) }}</router-link>
-            <span v-else>{{ t(item.labelKey) }} <font-awesome-icon icon="fa-solid fa-caret-down" /></span>
-            <Transition name="submenu-transition">
-              <ul v-if="isSubmenuVisible[index]" class="submenu">
+            <router-link v-if="item.route" :to="item.route" class="menu-link">
+              {{ t(item.labelKey) }}
+            </router-link>
+            <span v-else class="menu-link">
+              {{ t(item.labelKey) }}
+              <font-awesome-icon icon="fa-solid fa-chevron-down" class="dropdown-icon" />
+            </span>
+
+            <!-- Submenu -->
+            <Transition name="submenu">
+              <ul v-if="isSubmenuVisible[index] && item.children" class="submenu">
                 <li v-for="child in item.children" :key="child.labelKey" class="submenu-item">
-                  <router-link :to="child.route">{{ t(child.labelKey) }}</router-link>
+                  <router-link :to="child.route" class="submenu-link">
+                    {{ t(child.labelKey) }}
+                  </router-link>
                 </li>
               </ul>
             </Transition>
           </li>
         </ul>
       </nav>
-      
-      <div class="btn-actions-menu">
-    
-          <div class="language-selector">
-            <button class="languageButton" @click="toggleDropdown">
-              <font-awesome-icon icon="fa-solid fa-language" />
-            </button>
 
+      <!-- Actions -->
+      <div class="navbar-actions">
+        <!-- Language Selector -->
+        <div class="language-selector">
+          <button class="language-button" @click="toggleDropdown" aria-label="Select Language">
+            <font-awesome-icon icon="fa-solid fa-globe" />
+            <span class="current-lang">{{ locale.toUpperCase() }}</span>
+          </button>
+
+          <Transition name="dropdown">
             <ul v-if="showDropdown" class="language-dropdown">
-              <li @click="setLanguage('pt')">PT-BR</li>
-              <li @click="setLanguage('en')">EN</li>
+              <li @click="setLanguage('pt')" :class="{ active: locale === 'pt' }">
+                <span class="flag">🇧🇷</span>
+                PT-BR
+              </li>
+              <li @click="setLanguage('en')" :class="{ active: locale === 'en' }">
+                <span class="flag">🇺🇸</span>
+                EN
+              </li>
             </ul>
-          </div>
-        <div class="hamburger" @click="toggleMenu">
-          <font-awesome-icon :icon="isOpen ? 'fa-solid fa-times' : 'fa-solid fa-bars'" />
+          </Transition>
         </div>
 
+        <!-- Hamburger -->
+        <button class="hamburger" @click="toggleMenu" aria-label="Toggle Menu">
+          <span class="hamburger-line" :class="{ open: isOpen }"></span>
+          <span class="hamburger-line" :class="{ open: isOpen }"></span>
+          <span class="hamburger-line" :class="{ open: isOpen }"></span>
+        </button>
       </div>
-      
-      <Transition name="fade" mode="out-in">
-            
-        <ul :class="['nav-links', { open: isOpen }]" :key="isOpen">
+    </div>
+
+    <!-- Mobile Menu -->
+    <Transition name="mobile-menu">
+      <div v-if="isOpen" class="mobile-menu">
+        <ul class="mobile-menu-list">
           <template v-for="(item, index) in menuItems" :key="index">
-            <li v-if="item.route">
-              <router-link :to="item.route" @click="closeMenu">{{ t(item.labelKey) }}</router-link>
+            <!-- Simple Link -->
+            <li v-if="item.route" class="mobile-menu-item">
+              <router-link :to="item.route" @click="closeMenu" class="mobile-menu-link">
+                {{ t(item.labelKey) }}
+              </router-link>
             </li>
-            <li v-else-if="item.children">
-              <span class="submenu-label">{{ t(item.labelKey) }}</span>
+
+            <!-- With Submenu -->
+            <li v-else-if="item.children" class="mobile-menu-item">
+              <span class="mobile-menu-label">{{ t(item.labelKey) }}</span>
               <ul class="mobile-submenu">
                 <li v-for="child in item.children" :key="child.labelKey">
-                  <router-link :to="child.route" @click="closeMenu">{{ t(child.labelKey) }}</router-link>
+                  <router-link :to="child.route" @click="closeMenu" class="mobile-submenu-link">
+                    {{ t(child.labelKey) }}
+                  </router-link>
                 </li>
               </ul>
             </li>
           </template>
         </ul>
-      </Transition>    
-    </nav>
+      </div>
+    </Transition>
+  </nav>
 </template>
-  
+
 <style scoped>
-  /* Transitions */
-  .fade-enter-active,
-  .fade-leave-active {
-  transition: all 0.5s ease-in;
-}
-
-.fade-enter-from {
-  opacity: 0;
-  transform: translateX(100px); 
-}
-
-.fade-enter-to {
-  opacity: 1;
-  transform: translateX(0); 
-}
-
-.fade-leave-from {
-  opacity: 1;
-  transform: translateX(0); 
-}
-
-.fade-leave-to {
-  opacity: 0;
-  transform: translateX(100px); 
-}
-/* General styles */
+/* Navbar Base */
 .navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: .5rem 2rem;
-  transition: background-color .3s ease;
-  color: white;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
   z-index: 2000;
-  /*transition: background-color 0.4s ease-in-out;*/
-  /* position:relative; */
-  transition: background-color 0.4s ease-in-out, backdrop-filter 0.4s ease-in-out, box-shadow 0.4s;
-
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .navbar--transparent {
-  background-color: transparent !important;
+  background-color: transparent;
 }
 
-/* cor padrão em todo resto */
 .navbar--solid {
-  /* background-color: var(--color-background) !important; */
-  background-color: #000 !important;
-  backdrop-filter: blur(4px);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  background-color: rgba(0, 0, 0, 0.95);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
 }
 
-/*novo menu */
+.navbar-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0.875rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
-.navbar-new{
+/* Logo */
+.logo {
+  z-index: 2001;
+}
+
+.logo a {
+  display: block;
+  transition: all 0.3s ease;
+}
+
+.logo a:hover {
+  transform: scale(1.05);
+}
+
+.logo img {
+  height: 42px;
+  width: auto;
   display: block;
 }
 
-/* Transição */
-.submenu-transition-enter-active,
-.submenu-transition-leave-active {
-  transition: opacity 0.4s ease, transform 0.4s ease;
-}
-.submenu-transition-enter-from,
-.submenu-transition-leave-to {
-  opacity: 0;
-  transform: translateY(-20px);
-}
-.submenu-transition-enter-to,
-.submenu-transition-leave-from {
-  opacity: 1;
-  transform: translateY(0);
+/* Desktop Menu */
+.navbar-desktop {
+  display: block;
 }
 
 .main-menu {
@@ -291,235 +299,347 @@ onBeforeUnmount(() => {
   padding: 0;
   margin: 0;
   display: flex;
-  justify-content: center; /* Centraliza os itens principais */
+  gap: 0.5rem;
+  align-items: center;
 }
 
 .menu-item {
   position: relative;
-  padding: 10px 20px;
 }
 
-.menu-item > a,
-.menu-item > span {
-  display: block;
+.menu-link {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.625rem 1.125rem;
+  color: rgba(255, 255, 255, 0.9);
   text-decoration: none;
-  color: var(--color-text);
+  font-size: 0.95rem;
+  font-weight: 500;
   cursor: pointer;
+  transition: all 0.3s ease;
+  border-radius: 8px;
+  letter-spacing: 0.3px;
 }
 
+.menu-link:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.dropdown-icon {
+  font-size: 0.75rem;
+  transition: transform 0.3s ease;
+}
+
+.menu-item:hover .dropdown-icon {
+  transform: rotate(180deg);
+}
+
+/* Submenu */
 .submenu {
-  list-style: none;
-  padding: 0;
-  margin: 0;
   position: absolute;
   top: 100%;
   left: 0;
-  background-color: var(--color-background-mute);
-  border:none;
-  z-index: 10;
-  min-width: 100%; /* Largura mínima do submenu */
+  margin-top: 0.5rem;
+  background: rgba(0, 0, 0, 0.98);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 0.5rem;
+  min-width: 220px;
+  list-style: none;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
 }
 
-.submenu-item a, .full-width-submenu-item a {
+.submenu-item {
+  margin: 0;
+}
+
+.submenu-link {
   display: block;
-  padding: 10px 25px 10px 15px;
+  padding: 0.75rem 1rem;
+  color: rgba(255, 255, 255, 0.85);
   text-decoration: none;
-  color: white;
+  font-size: 0.9rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
 }
 
-.submenu-item a:hover, .full-width-submenu-item a:hover {
-  background-color: #555;
+.submenu-link:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateX(4px);
 }
 
-.submenu-label {
-  font-weight: bold;
-  color: white;
-  text-align: center;
-  margin-top: 1rem;
+/* Navbar Actions */
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  z-index: 2001;
+}
+
+/* Language Selector */
+.language-selector {
+  position: relative;
+}
+
+.language-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.language-button:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.current-lang {
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+}
+
+.language-dropdown {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  background: rgba(0, 0, 0, 0.98);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 0.5rem;
+  min-width: 140px;
+  list-style: none;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+
+.language-dropdown li {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.75rem 1rem;
+  color: rgba(255, 255, 255, 0.85);
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+}
+
+.language-dropdown li:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.language-dropdown li.active {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  font-weight: 600;
+}
+
+.flag {
+  font-size: 1.2rem;
+}
+
+/* Hamburger */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  padding: 0.5rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.hamburger-line {
+  width: 24px;
+  height: 2px;
+  background: #fff;
+  transition: all 0.3s ease;
+  border-radius: 2px;
+}
+
+.hamburger-line.open:nth-child(1) {
+  transform: rotate(45deg) translate(7px, 7px);
+}
+
+.hamburger-line.open:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger-line.open:nth-child(3) {
+  transform: rotate(-45deg) translate(7px, -7px);
+}
+
+/* Mobile Menu */
+.mobile-menu {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 100%;
+  max-width: 400px;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.98);
+  backdrop-filter: blur(20px);
+  padding: 5rem 2rem 2rem 2rem;
+  overflow-y: auto;
+  box-shadow: -10px 0 40px rgba(0, 0, 0, 0.5);
+}
+
+.mobile-menu-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.mobile-menu-item {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding-bottom: 0.5rem;
+}
+
+.mobile-menu-link {
+  display: block;
+  padding: 1rem;
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
+  font-size: 1.125rem;
+  font-weight: 500;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.mobile-menu-link:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.mobile-menu-label {
+  display: block;
+  padding: 1rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .mobile-submenu {
   list-style: none;
   padding: 0;
   margin: 0;
-  /*padding-left: 1rem;
-  margin-bottom: 1rem;*/
-  background-color: #444;
+  padding-left: 1rem;
 }
 
-.mobile-submenu li a {
-  font-size: .9rem;
-  color: white;
+.mobile-submenu-link {
+  display: block;
+  padding: 0.875rem 1rem;
+  color: rgba(255, 255, 255, 0.85);
   text-decoration: none;
-}
-
-.mobile-submenu li a:hover {
-  text-decoration: underline;
-}
-
-/*fim novo menu */
-.btn-actions-menu{
-  display: flex;
-  flex-direction: row;
-  gap: .5rem;
-}
-
-.menu ul{
-  list-style-type: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: row;
-  gap: .5rem;
-  background-color: transparent;
-}
-
-.menu li a {
-  text-decoration: none;
-  color: white;
   font-size: 1rem;
-  padding: 10px;
-  border-radius: 5px;
-  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.3s ease;
 }
 
-.menu li a:hover {
-  background-color: #444;
-  color: #ddd;
+.mobile-submenu-link:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  transform: translateX(4px);
 }
 
-
-.logo {
-  display: flex;
-  flex-direction: row;
-  gap: 1rem;
-  align-items: center;
+/* Transitions */
+.submenu-enter-active,
+.submenu-leave-active {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.logo a {
-  text-decoration: none;
-  color: white;
-  font-size: 1.5rem;
-  font-weight: bold;
+.submenu-enter-from {
+  opacity: 0;
+  transform: translateY(-10px);
 }
 
-.logo img{
-  height: 38.40px;
+.submenu-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
 }
 
-/* menu language */
-.language-selector {
-  position: relative;
+.dropdown-enter-active,
+.dropdown-leave-active {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.language-dropdown {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  background-color: var(--color-background-soft);
-  /* border-radius: 5px; */
-  width: 100px;
-  padding: 0;
-  margin-top: 0.5rem;
-  z-index: 999;
-  list-style: none;
+.dropdown-enter-from {
+  opacity: 0;
+  transform: translateY(-10px);
 }
 
-.language-dropdown li {
-  padding: 10px;
-  cursor: pointer;
-  color: var(--color-heading);
+.dropdown-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
 }
 
-.language-dropdown li:hover {
-  background-color: var(--color-background-mute);
+.mobile-menu-enter-active,
+.mobile-menu-leave-active {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-
-
-/* Hamburger icon styles */
-.hamburger {
-  font-size: 1.5rem;
-  cursor: pointer;
-  display: none;
-  
+.mobile-menu-enter-from {
+  opacity: 0;
+  transform: translateX(100%);
 }
 
-/* Navigation links */
-.nav-links {
-  list-style: none;
-  display: none;
-  flex-direction: column;
-  gap: 1.5rem;
-  position: absolute;
-  top: 0;
-  right: 0;
-  background-color: var(--color-background-soft);
-  padding: 1rem;
-  height: 100vh;
-  width: 250px;
+.mobile-menu-leave-to {
+  opacity: 0;
+  transform: translateX(100%);
 }
 
-.nav-links.open {
-  display: flex;
-}
-
-.nav-links li {
-  text-align: center;
-}
-
-.nav-links li a {
-  text-decoration: none;
-  color: white;
-  font-size: 1.2rem;
-  padding: 10px;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.nav-links li a:hover {
-  background-color: #444;
-  color: #ddd;
-}
-
-.languageButton {
-  cursor: pointer;
-  display: flex;
-  flex-direction: row;
-  gap: .5rem;
-  background-color: transparent;
-  border: none;
-  width: 150px;
-  justify-content: flex-start;
-  color: var(--color-heading);
-  font-size: 1.2rem;
-  align-items: center;
-}
-
-.languageButton span{
-  font-size: .8rem;
-}
-
-@media (max-width: 768px) {
-  .nav-links {
-    width: 100%;
-  }
-
-  .navbar--transparent {
-    background-color: var(--color-background) !important;
-  }
-
-  .navbar-new {
+/* Responsive */
+@media (max-width: 968px) {
+  .navbar-desktop {
     display: none;
   }
 
-  .hamburger{
-    z-index: 100;
-    display: block;
+  .hamburger {
+    display: flex;
   }
-  .nav-links.open {
-    justify-content: center;
+
+  .language-button {
+    padding: 0.5rem 0.75rem;
+  }
+
+  .current-lang {
+    display: none;
+  }
+
+  .navbar--transparent {
+    background-color: rgba(0, 0, 0, 0.95);
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar-container {
+    padding: 0.75rem 1rem;
+  }
+
+  .logo img {
+    height: 36px;
+  }
+
+  .mobile-menu {
+    max-width: 100%;
   }
 }
 </style>
-  
