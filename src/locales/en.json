@@ -9,14 +9,16 @@
     "_nav":{
       "_home": "Home",
       "_about": "About",
-      "_scheadle": "Scheadle",
+      "_events": "Events",
       "_content": "Content",
       "_contact": "Contact"
     },
     "_navadm":{
       "_videos": "Videos",
       "_content": "Content",
-      "_users": "Users"
+      "_users": "Users",
+      "_events": "Events",
+      "_images": "Images"
     },
     "_about": {
       "_about_us": "About Us",

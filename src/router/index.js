@@ -8,6 +8,9 @@ import AboutView from '@/views/AboutView.vue'
 import OurTeamView from '@/views/OurTeamView.vue'
 import OurActivitiesView from '@/views/OurActivitiesView.vue'
 import ImageManagement from '@/components/Admin/ImageManagement.vue'
+import EventsManager from '@/components/Admin/EventsManager.vue'
+import ContactView from '@/views/ContactView.vue'
+import EventsView from '@/views/EventsView.vue'
 import demopage from '@/components/demopage.vue'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
@@ -50,6 +53,16 @@ const router = createRouter({
     component: OurActivitiesView
     },
     {
+      path: '/contact',
+      name: 'contactview',
+    component: ContactView
+    },
+    {
+      path: '/events',
+      name: 'eventsview',
+      component: EventsView
+    },
+    {
       path: '/content',
       name: 'contentvideos',
       component: ListVideosView
@@ -65,10 +78,15 @@ const router = createRouter({
       component: EditVideo
     },
     {
-      path: '/admin/content/images',
+      path: '/admin/images',
       name: 'imageManagement',
       component: ImageManagement
     },
+    {
+      path: '/admin/events',
+      name: 'eventsManager',
+      component: EventsManager
+    }
   ],
   scrollBehavior(to, from, savedPosition) {
     if (to.hash) {

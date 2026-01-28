@@ -37,6 +37,10 @@ const menuItems = ref([
     ]
   },
   {
+    labelKey: '_nav._events',
+    route: '/events'
+  },
+  {
     labelKey: '_nav._contact',
     route: '/contact'
   },

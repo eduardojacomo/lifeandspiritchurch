@@ -1,3 +1,30 @@
+<script setup>
+import { ref, onMounted } from 'vue';
+
+const features = ref([
+  { icon: 'fa-solid fa-play', text: 'Receba conteúdos exclusivos.' },
+  { icon: 'fa-solid fa-bible', text: 'Tenha a Bíblia no seu bolso.' },
+  { icon: 'fa-solid fa-heart', text: 'Faça doações pelo aplicativo.' },
+  { icon: 'fa-solid fa-clipboard-list', text: 'Faça inscrições nos eventos.' }
+]);
+
+const observeElements = (el) => {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in-view');
+      }
+    });
+  });
+  el.forEach((element) => observer.observe(element));
+};
+
+onMounted(() => {
+  const sections = document.querySelectorAll('.animate');
+  observeElements(sections);
+});
+</script>
+
 <template>
   <section class="app-section">
     <div class="container">
@@ -37,33 +64,6 @@
     </div>
   </section>
 </template>
-
-<script setup>
-import { ref, onMounted } from 'vue';
-
-const features = ref([
-  { icon: 'fa-solid fa-play', text: 'Receba conteúdos exclusivos.' },
-  { icon: 'fa-solid fa-bible', text: 'Tenha a Bíblia no seu bolso.' },
-  { icon: 'fa-solid fa-heart', text: 'Faça doações pelo aplicativo.' },
-  { icon: 'fa-solid fa-clipboard-list', text: 'Faça inscrições nos eventos.' }
-]);
-
-const observeElements = (el) => {
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('in-view');
-      }
-    });
-  });
-  el.forEach((element) => observer.observe(element));
-};
-
-onMounted(() => {
-  const sections = document.querySelectorAll('.animate');
-  observeElements(sections);
-});
-</script>
 
 <style scoped>
 /* App Section */
@@ -278,14 +278,21 @@ onMounted(() => {
 
   .app-content {
     gap: 2.5rem;
+    display: flex; 
+    flex-direction: column;
   }
 
-  .text-area {
-    gap: 2rem;
+.text-area {
+    display: contents; 
   }
 
   .text-area h2 {
     font-size: 1.8rem;
+    order: 1;
+  }
+
+  .features{
+    order: 3;
   }
 
   .feature {
@@ -308,6 +315,11 @@ onMounted(() => {
 
   .store-buttons {
     justify-content: center;
+    order: 43;
+  }
+  .mockup-area { 
+    order: 2; /* aparece logo após o h2 */ 
+    margin-top: 1.5rem; 
   }
 }
 

@@ -30,8 +30,12 @@ const menuItems = ref([
     route: '/admin/videos'
   },
   {
-    labelKey: '_navadm._content',
-    route: '/admin/content'
+    labelKey: '_navadm._images',
+    route: '/admin/images'
+  },
+  {
+    labelKey: '_navadm._events',
+    route: '/admin/events'
   },
   {
     labelKey: '_navadm._users',
