@@ -11,6 +11,7 @@ import ImageManagement from '@/components/Admin/ImageManagement.vue'
 import EventsManager from '@/components/Admin/EventsManager.vue'
 import ContactView from '@/views/ContactView.vue'
 import EventsView from '@/views/EventsView.vue'
+import EventDetailView from '@/views/EventDetailView.vue'
 import demopage from '@/components/demopage.vue'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
@@ -30,6 +31,12 @@ const router = createRouter({
       path: '/video-watch/:id',
       name: 'videowatch',
       component: VideoWatchView,
+      props: true
+    },
+    {
+      path: '/events/detail_event/:id',
+      name: 'eventsdetail',
+      component: EventDetailView,
       props: true
     },
     {
