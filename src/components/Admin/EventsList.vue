@@ -60,9 +60,11 @@ const filteredEvents = computed(() => {
   return events.value.filter(event => {
     const search = searchFilter.value.toLowerCase()
 
+    const titlePT = event.title?.pt?.toLowerCase() ?? ''
+    const titleEN = event.title?.en?.toLowerCase() ?? ''
+
     const matchesSearch =
-      (event.title?.pt ?? '').toLowerCase().includes(search) ||
-      (event.title?.en ?? '').toLowerCase().includes(search)
+      titlePT.includes(search) || titleEN.includes(search)
 
     const matchesStatus =
       statusFilter.value === 'all' ||
@@ -76,12 +78,16 @@ const filteredEvents = computed(() => {
   })
 })
 
+
 const toggleStatus = async (event) => {
-  const newStatus = event.status === 'active' ? 'inactive' : 'active'
+  const newStatus = (event.status ?? 'active') === 'active'
+    ? 'inactive'
+    : 'active'
+
   try {
     await updateDoc(doc(db, "events", event.id), { status: newStatus })
     event.status = newStatus
-  } catch (error) {
+  } catch {
     alert("Erro ao mudar status")
   }
 }
@@ -161,7 +167,10 @@ onMounted(loadEvents)
     <div v-else class="events-grid">
       <div v-for="event in filteredEvents" :key="event.id" :class="['event-card', { inactive: event.status === 'inactive' }]">
         <div class="event-img">
-          <img :src="event.imageUrl || '/img/placeholder.png'" alt="Banner">
+          <img
+            :src="event.bannerDesktop || event.bannerMobile || '/img/placeholder.png'"
+            alt="Banner do evento"
+          />
           <span :class="['status-badge', event.status]">{{ event.status === 'active' ? 'Ativo' : 'Inativo' }}</span>
         </div>
         

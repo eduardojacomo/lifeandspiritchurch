@@ -1,72 +1,88 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue';
-import { getFirestore, doc, getDoc } from 'firebase/firestore';
+import { ref, onMounted, computed } from 'vue'
+import { getFirestore, doc, getDoc } from 'firebase/firestore'
 
 const props = defineProps({
   id: {
     type: String,
     required: true
   }
-});
+})
 
-const db = getFirestore();
-const event = ref(null);
-const loading = ref(true);
-const error = ref(null);
-const lang = 'pt'; // Pode ser dinâmico no futuro
+const db = getFirestore()
+const event = ref(null)
+const loading = ref(true)
+const error = ref(null)
+const lang = 'pt'
 
-// Função para buscar os dados
+// Busca do evento
 const fetchEventData = async () => {
-  loading.value = true;
-  error.value = null;
-  
+  loading.value = true
+  error.value = null
+
   try {
-    const docRef = doc(db, "events", props.id);
-    const docSnap = await getDoc(docRef);
+    const docRef = doc(db, 'events', props.id)
+    const docSnap = await getDoc(docRef)
 
     if (docSnap.exists()) {
-      event.value = docSnap.data();
+      event.value = docSnap.data()
     } else {
-      error.value = "Evento não encontrado.";
+      error.value = 'Evento não encontrado.'
     }
   } catch (err) {
-    console.error("Erro ao buscar evento:", err);
-    error.value = "Erro ao carregar os detalhes do evento.";
+    console.error(err)
+    error.value = 'Erro ao carregar os detalhes do evento.'
   } finally {
-    loading.value = false;
+    loading.value = false
   }
-};
+}
 
-// Formatação de Data
+
+const bannerImage = computed(() => {
+  if (!event.value) return '/img/placeholder.png'
+
+  const isMobile = window.innerWidth <= 768
+
+  if (isMobile && event.value.bannerMobile) {
+    return event.value.bannerMobile
+  }
+
+  return (
+    event.value.bannerDesktop ||
+    event.value.bannerMobile ||
+    '/img/placeholder.png'
+  )
+})
+
+
+// Formatação de data
 const formatDate = (dateStr) => {
-  if (!dateStr) return '';
-  // Adicionamos o tempo para evitar problemas de fuso horário na conversão
-  const d = new Date(dateStr + 'T00:00:00');
-  return d.toLocaleDateString('pt-BR', { 
-    day: '2-digit', 
-    month: 'short', 
-    year: 'numeric' 
-  }).replace('.', '');
-};
+  if (!dateStr) return ''
+  const d = new Date(dateStr + 'T00:00:00')
+  return d
+    .toLocaleDateString('pt-BR', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric'
+    })
+    .replace('.', '')
+}
 
+// Ação inscrição
 const handleRegister = () => {
-  let url = event.value?.registration?.link;
+  const url = event.value?.registration?.link
+  if (!url) return
 
-  if (url) {
-    // Verifica se a URL começa com http:// ou https://
-    // Se não começar, adiciona https:// na frente
-    const absoluteUrl = /^https?:\/\//i.test(url) 
-      ? url 
-      : `https://${url}`;
+  const absoluteUrl = /^https?:\/\//i.test(url)
+    ? url
+    : `https://${url}`
 
-    window.open(absoluteUrl, '_blank');
-  } else {
-    console.warn('Link de inscrição não definido');
-  }
-};
+  window.open(absoluteUrl, '_blank')
+}
 
-onMounted(fetchEventData);
+onMounted(fetchEventData)
 </script>
+
 
 <template>
 
@@ -84,7 +100,10 @@ onMounted(fetchEventData);
 
     <div  v-else-if="event" class="event-detail">
       <div class="event-hero">
-        <div class="hero-background" :style="{ backgroundImage: `url(${event.imageUrl})` }"></div>
+       <div
+          class="hero-background"
+          :style="{ backgroundImage: `url(${bannerImage})` }"
+        ></div>
         
         <div class="hero-content">
           <div class="hero-text">
@@ -92,9 +111,16 @@ onMounted(fetchEventData);
             <!-- <p class="event-subtitle">{{ event.category }}</p> -->
           </div>
           
-          <button v-if="event.hasRegistration" class="hero-btn" @click="handleRegister">
-            {{ event.registration?.value > 0 ? `Inscrição: R$ ${event.registration.value}` : 'Inscreva-se Grátis' }}
-          </button>
+        <button
+          v-if="event.hasRegistration"
+          class="hero-btn"
+          @click="handleRegister"
+        >
+          {{ event.registration?.value > 0
+            ? `Inscrição: R$ ${event.registration.value}`
+            : 'Inscreva-se Grátis'
+          }}
+        </button>
         </div>
       </div>
       <div class="event-content">
@@ -150,7 +176,10 @@ onMounted(fetchEventData);
                 <h2 class="section-title">Preletores</h2>
                 <div class="speakers-list">
                   <div class="speaker-card" v-for="(speaker, index) in event.speakers" :key="index">
-                    <div class="speaker-image" :style="{ backgroundImage: `url(${speaker.imagem})` }"></div>
+                    <div
+                      class="speaker-image"
+                      :style="{ backgroundImage: `url(${speaker.imagem || '/img/avatar.png'})` }"
+                    ></div>
                     <div class="speaker-info">
                       <h3>{{ speaker.nome }}</h3>
                       <p>{{ speaker.funcao }}</p>
@@ -161,7 +190,7 @@ onMounted(fetchEventData);
             </div>
   
             <div class="sidebar">
-              <div class="register-card" v-if="event.registration.hasRegistration">
+              <div class="register-card" v-if="event.hasRegistration">
                 <h3>Inscreva-se</h3>
                 <p>Participe deste encontro. Valor: <strong>{{ event.registration?.value > 0 ? `R$ ${event.registration.value}` : 'Gratuito' }}</strong></p>
                 

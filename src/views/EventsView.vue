@@ -10,6 +10,8 @@ const isLoading = ref(false)
 const categoryFilter = ref('all')
 const showPastEvents = ref(false)
 
+const isMobile = window.matchMedia('(max-width: 768px)').matches
+
 const categories = [
   { value: 'all', label: 'Todas Categorias' },
   { value: 'conferencia', label: 'Conferência' },
@@ -52,6 +54,24 @@ const filteredEvents = computed(() => {
     return isActive && matchesCategory && matchesTimeline
   })
 })
+
+const getEventBanner = (event) => {
+  if (isMobile) {
+    return event.bannerMobile || event.bannerDesktop || '/img/placeholder.png'
+  }
+  return event.bannerDesktop || event.bannerMobile || '/img/placeholder.png'
+}
+
+
+const getEventLocation = (event) => {
+  if (!event.address) return 'A definir'
+
+  return (
+    event.address.label ||
+    event.address.city ||
+    'A definir'
+  )
+}
 
 const formatDate = (dateStr) => {
   if (!dateStr) return ''
@@ -101,30 +121,38 @@ onMounted(loadEvents)
     </div>
 
     <main v-else class="events-grid">
-      <article v-for="event in filteredEvents" :key="event.id" class="event-card">
+      <article
+        v-for="event in filteredEvents"
+        :key="event.id"
+        class="event-card"
+      >
         <div class="image-box">
-          <img :src="event.imageUrl || '/img/placeholder.png'" :alt="event.title.pt">
+          <img
+            :src="getEventBanner(event)"
+            :alt="event.title?.pt"
+          >
           <div class="category-tag">{{ event.category }}</div>
         </div>
 
         <div class="content-box">
-          <h2 class="title">{{ event.title.pt }}</h2>
+          <h2 class="title">{{ event.title?.pt }}</h2>
+
           <div>
-              <span class="date"> 
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                {{ formatDate(event.dateStart) }}
-              </span>
-              <span class="location"> 
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                 {{ event.location || 'A Definir' }}
-              </span>
+            <span class="date">
+              📅 {{ formatDate(event.dateStart) }}
+            </span>
+
+            <span class="location">
+              📍 {{ getEventLocation(event) }}
+            </span>
           </div>
-          
-          
-          <!-- <p class="summary">{{ event.description.pt?.substring(0, 90) }}...</p> -->
-          
-          <!-- <button class="btn-more" >Saber mais</button> -->
-          <router-link :to="`/events/detail_event/${event.id}`" class="btn-more">Detalhes</router-link>
+
+          <router-link
+            :to="`/events/detail_event/${event.id}`"
+            class="btn-more"
+          >
+            Detalhes
+          </router-link>
         </div>
       </article>
     </main>
@@ -273,9 +301,9 @@ onMounted(loadEvents)
 }
 
 .btn-more {
-  display: block;        /* Garante que o link se comporte como bloco/botão */
-  text-align: center;    /* Centraliza o texto */
-  text-decoration: none; /* REMOVE O SUBRINHADO DO LINK */
+  display: block;        
+  text-align: center;    
+  text-decoration: none; 
   width: 100%;
   background: #1e1e1e;
   color: #fff;
@@ -285,13 +313,13 @@ onMounted(loadEvents)
   cursor: pointer;
   font-weight: 500;
   transition: 0.2s;
-  box-sizing: border-box; /* Garante que o padding não quebre o 100% de largura */
+  box-sizing: border-box; 
 }
 
 .btn-more:hover {
   background: #fff;
   color: #000;
-  text-decoration: none; /* Garante que no hover o sublinhado não volte */
+  text-decoration: none; 
 }
 
 /* Feedback */
