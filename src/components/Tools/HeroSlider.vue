@@ -477,7 +477,7 @@ onUnmounted(() => {
 /* Responsive */
 @media (max-width: 768px) {
   .slide-content {
-    padding: 0 24px;
+    padding: 60px 24px;
   }
   
   .nav-container {
