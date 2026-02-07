@@ -24,7 +24,7 @@ onMounted(() => {
         scrollTrigger: {
           trigger: sectionRef.value,
           start: "top top",      // Trava quando o topo da seção chega no topo da tela
-          end: "+=2000",         // Duração do scroll (quanto maior, mais lento o efeito)
+          end: "+=1000",         // Duração do scroll (quanto maior, mais lento o efeito)
           pin: true,             // Trava a seção na tela
           scrub: 1.5,            // Suaviza o movimento do scroll
           anticipatePin: 1,
@@ -63,7 +63,7 @@ onMounted(() => {
     }, sectionRef.value);
 
     ScrollTrigger.refresh();
-  }, 200);
+  }, 400);
 });
 
 

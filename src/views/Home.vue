@@ -16,50 +16,50 @@ gsap.registerPlugin(ScrollTrigger);
 
 const loader = ref(null);
 const mainContent = ref(null);
+const isFirstVisit = ref(true);
 
 onMounted(() => {
+  const hasLoaded = sessionStorage.getItem('hasLoaded');
+
+  if (hasLoaded) {
+    isFirstVisit.value = false;
+    // Se não é a primeira visita, remove o loader e mostra o conteúdo instantaneamente
+    gsap.set(loader.value, { display: 'none' });
+    gsap.set(mainContent.value, { opacity: 1 });
+    ScrollTrigger.refresh();
+  }
+
+
   const tl = gsap.timeline({ paused: true }); 
 
+  if (isFirstVisit.value) {
+    tl.to(".loader-title", { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" })
+      .to(".loader-bar-inner", { width: "100%", duration: 1.5, ease: "power2.inOut" }, "-=0.2")
+      .to(loader.value, { 
+        yPercent: -100, 
+        duration: 0.8, 
+        ease: "expo.inOut",
+        onComplete: () => {
+          sessionStorage.setItem('hasLoaded', 'true'); // Marca como carregado
+          ScrollTrigger.refresh(); 
+        }
+      })
+      .to(mainContent.value, { opacity: 1, duration: 0.1 }, "-=0.4");
+  }
   
-  tl.to(".loader-title", {
-    opacity: 1,
-    y: 0,
-    duration: 0.8,
-    ease: "power3.out"
-  })
-  .to(".loader-bar-inner", {
-    width: "100%",
-    duration: 1.5, 
-    ease: "power2.inOut"
-  }, "-=0.2")
-  .to(loader.value, {
-    yPercent: -100,
-    duration: 0.8,
-    ease: "expo.inOut",
-    onComplete: () => {
-      ScrollTrigger.refresh(); 
-    }
-  })
-  .to(mainContent.value, {
-    opacity: 1,
-    duration: 0.1
-  }, "-=0.4")
-  .from("#home", {
+  
+  tl.from("#home", {
     opacity: 0,
     y: 30,
     duration: 1,
-    ease: "power3.out"
-  }, "-=0.2");
-  tl.add(() => {
-    ScrollTrigger.refresh();
-  }, "-=0.2");
-
+    ease: "power3.out",
+    onComplete: () => ScrollTrigger.refresh()
+  }, isFirstVisit.value ? "-=0.2" : 0);
+  
   if (document.readyState === 'complete') {
     tl.play();
   } else {
-    window.addEventListener('load', () => {
-      tl.play();
-    });
+    window.addEventListener('load', () => tl.play());
   }
 
   ScrollTrigger.create({
@@ -107,8 +107,7 @@ onMounted(() => {
 </script>
 
 <template>
-
-  <div id="preloader" ref="loader">
+  <div v-if="isFirstVisit" id="preloader" ref="loader">
     <div class="loader-content">
       <h1 class="loader-title">LIFE & SPIRIT</h1>
       <div class="loader-bar-bg">
@@ -117,26 +116,12 @@ onMounted(() => {
     </div>
   </div>
 
-  <main ref="mainContent" class="main-content">
-    <section id="home" class="section">
-      <HeroSection />
-    </section>
-    
-    <section id="about" class="section">
-      <About />
-    </section>
-    
-    <section id="scheadle" class="section">
-      <Scheadle />
-    </section>
-    
-    <section id="content" class="section">
-      <ContentSection />
-    </section>
-    
-    <section id="mobile" class="section">
-      <MobileApp />
-    </section>
+  <main ref="mainContent" class="main-content" :style="{ opacity: isFirstVisit ? 0 : 1 }">
+    <section id="home" class="section"><HeroSection /></section>
+    <section id="about" class="section"><About /></section>
+    <section id="scheadle" class="section"><Scheadle /></section>
+    <section id="content" class="section"><ContentSection /></section>
+    <section id="mobile" class="section"><MobileApp /></section>
   </main>
 </template>
 
