@@ -41,6 +41,9 @@
     "_videoRecent":{
         "_title":"Adicionados Recente"
     },
+    "_footer_navigation": "Navegação",
+    "_footer_schedule": "Horários",
+    "_footer_contact": "Contato",
     "_btnSearch": "Buscar",
     "_btnShare": "Compartilhar",
     "_btnCopyLink": "Copiar Link",

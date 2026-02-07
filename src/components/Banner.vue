@@ -12,11 +12,18 @@ const CACHE_TIME = 1000 * 60 * 60 * 4;
 const location = 'hero';
 const page = 'home';
 
+
+const desktopImages = ref([]);
+const mobileImages = ref([]);
 const images = ref([]); 
+
+
 const currentSlide = ref(1);
 const isMobile = ref(window.innerWidth <= 768);
 const isLoading = ref(true); // Estado inicial de carregamento
 let sliderInterval = null;
+
+
 
 const checkScreenSize = () => {
     isMobile.value = window.innerWidth <= 768;
@@ -34,65 +41,84 @@ const renderImages = (allImages) => {
     if (images.value.length > 0) startSlider();
 };
 
+const resolveImages = () => {
+  if (isMobile.value) {
+    images.value = mobileImages.value.length
+      ? mobileImages.value
+      : desktopImages.value
+  } else {
+    images.value = desktopImages.value.length
+      ? desktopImages.value
+      : mobileImages.value
+  }
+
+  currentSlide.value = 1
+  isLoading.value = false
+
+  if (images.value.length) startSlider()
+}
+
+const splitImagesByFormat = (allImages) => {
+  desktopImages.value = allImages.filter(img => img.format === 'desktop')
+  mobileImages.value = allImages.filter(img => img.format === 'mobile')
+}
+
 async function loadHeroImages() {
-    isLoading.value = true;
+  isLoading.value = true
 
-    // 1. Tenta Cache
-    const cached = localStorage.getItem(CACHE_KEY);
-    if (cached) {
-        const { timestamp, data } = JSON.parse(cached);
-        if (Date.now() - timestamp < CACHE_TIME) {
-            renderImages(data);
-            return;
-        }
+  const cached = localStorage.getItem(CACHE_KEY)
+  if (cached) {
+    const { timestamp, data } = JSON.parse(cached)
+    if (Date.now() - timestamp < CACHE_TIME) {
+      splitImagesByFormat(data)
+      resolveImages()
+      return
+    }
+  }
+
+  try {
+    const today = new Date().toISOString().split('T')[0]
+
+    const q = query(
+      collection(db, 'images'),
+      where('page', '==', page),
+      where('location', '==', location),
+      where('status', '==', 'active')
+    )
+
+    const querySnapshot = await getDocs(q)
+    const fetchedImages = []
+
+    for (const docSnap of querySnapshot.docs) {
+      const data = docSnap.data()
+      if (data.expired_at && data.expired_at < today) continue
+
+      try {
+        const fileRef = storageRef(storage, `images/${data.name}`)
+        const url = await getDownloadURL(fileRef)
+
+        fetchedImages.push({
+          src: url,
+          alt: data.alt || 'Church Image',
+          format: data.format
+        })
+      } catch {
+        console.warn(`Arquivo não encontrado: ${data.name}`)
+      }
     }
 
-    // 2. Busca no Firebase
-    try {
-        const today = new Date().toISOString().split('T')[0];
-        const q = query(
-            collection(db, "images"),
-            where("page", "==", page),
-            where("location", "==", location),
-            where("status", "==", "active")
-            // Removi o 'where expired_at' pois o Firebase exige índice composto. 
-            // Filtraremos manualmente abaixo para evitar erros iniciais.
-        );
+    localStorage.setItem(CACHE_KEY, JSON.stringify({
+      timestamp: Date.now(),
+      data: fetchedImages
+    }))
 
-        const querySnapshot = await getDocs(q);
-        const fetchedImages = [];
+    splitImagesByFormat(fetchedImages)
+    resolveImages()
 
-        for (const docSnap of querySnapshot.docs) {
-            const data = docSnap.data();
-            
-            // Filtro manual de expiração (Seguro e economiza índices)
-            if (data.expired_at && data.expired_at < today) continue;
-
-            try {
-                const fileRef = storageRef(storage, `images/${data.name}`);
-                const url = await getDownloadURL(fileRef);
-                
-                fetchedImages.push({
-                    src: url,
-                    alt: data.alt || 'Church Image',
-                    format: data.format
-                });
-            } catch (err) {
-                console.warn(`Arquivo não encontrado: ${data.name}`);
-            }
-        }
-
-        localStorage.setItem(CACHE_KEY, JSON.stringify({
-            timestamp: Date.now(),
-            data: fetchedImages
-        }));
-
-        renderImages(fetchedImages);
-
-    } catch (error) {
-        console.error("Erro ao carregar:", error);
-        isLoading.value = false;
-    }
+  } catch (err) {
+    console.error('Erro ao carregar hero:', err)
+    isLoading.value = false
+  }
 }
 
 const startSlider = () => {
@@ -124,6 +150,7 @@ watch(isMobile, () => {
         const { data } = JSON.parse(cached);
         renderImages(data);
     }
+    resolveImages();
 });
 </script>
 

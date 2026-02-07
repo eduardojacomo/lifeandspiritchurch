@@ -132,13 +132,18 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <nav 
+  <!-- <nav 
     class="navbar" 
     ref="navbarRef" 
     :class="{
       'navbar--transparent': isHomePage && isTop,
       'navbar--solid': !(isHomePage && isTop)
     }"
+  > -->
+  <nav 
+    class="navbar navbar--solid" 
+    ref="navbarRef" 
+    
   >
     <div class="navbar-container">
       <!-- Logo -->
