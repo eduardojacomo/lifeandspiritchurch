@@ -242,7 +242,7 @@ onUnmounted(() => {
   height: 100%;
   display: flex;
   align-items: flex-end;
-  padding: 40px;
+  padding: 100px 40px;
 }
 
 /* Alinhamento à Esquerda (Padrão) */
@@ -369,7 +369,7 @@ onUnmounted(() => {
 /* Navegação */
 .nav-container {
   position: absolute;
-  bottom: 0px;
+  bottom: 20px;
   left: 0;
   right: 0;
   z-index: 3;
@@ -381,7 +381,7 @@ onUnmounted(() => {
   gap: 15px;
   align-items: center;
   justify-content: center;
-  padding: 20px 0;
+  padding: 40px 0;
 }
 
 .dot {

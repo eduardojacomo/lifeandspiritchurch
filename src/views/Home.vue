@@ -18,9 +18,9 @@ const loader = ref(null);
 const mainContent = ref(null);
 
 onMounted(() => {
-  const tl = gsap.timeline({ paused: true }); // Criamos a timeline pausada
+  const tl = gsap.timeline({ paused: true }); 
 
-  // 1. Configuração da Animação do Preloader
+  
   tl.to(".loader-title", {
     opacity: 1,
     y: 0,
@@ -35,7 +35,10 @@ onMounted(() => {
   .to(loader.value, {
     yPercent: -100,
     duration: 0.8,
-    ease: "expo.inOut"
+    ease: "expo.inOut",
+    onComplete: () => {
+      ScrollTrigger.refresh(); 
+    }
   })
   .to(mainContent.value, {
     opacity: 1,
@@ -47,8 +50,10 @@ onMounted(() => {
     duration: 1,
     ease: "power3.out"
   }, "-=0.2");
+  tl.add(() => {
+    ScrollTrigger.refresh();
+  }, "-=0.2");
 
-  // EXCUÇÃO REAL: Espera o window.load (imagens, fontes, etc)
   if (document.readyState === 'complete') {
     tl.play();
   } else {
@@ -61,13 +66,14 @@ onMounted(() => {
     trigger: "#home",
     start: "top top",
     end: "bottom top",
-    pin: true,          // Trava o Hero na tela
-    pinSpacing: false,   // Permite que o About suba por cima dele
+    pin: true,       
+    pinSpacing: false,  
+    anticipatePin: 1,
   });
 
-  // Efeito de Parallax Sutil na Imagem do Hero enquanto o About sobe
+  
   gsap.to("#home HeroSection", {
-    yPercent: -20, // Move levemente para cima para dar profundidade
+    yPercent: -20,
     opacity: 0.5,
     scrollTrigger: {
       trigger: "#about",
@@ -77,7 +83,7 @@ onMounted(() => {
     }
   });
 
-  // 2. Animações de Scroll para as demais seções (ajustado)
+
   const sections = ['#about', '#scheadle', '#content', '#contact'];
   
   sections.forEach((id) => {
@@ -101,7 +107,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <!-- Preloader Estruturado com CSS Puro -->
+
   <div id="preloader" ref="loader">
     <div class="loader-content">
       <h1 class="loader-title">LIFE & SPIRIT</h1>
@@ -135,7 +141,7 @@ onMounted(() => {
 </template>
 
 <style scoped>
-/* Estilos do Preloader */
+
 #preloader {
   position: fixed;
   top: 0;
@@ -199,7 +205,8 @@ html {
 #home {
   z-index: 1;
   position: relative;
-  height: 100vh;
+  width: 100%;
+  /* height: 100vh; */
 }
 
 
@@ -209,9 +216,7 @@ html {
   background-color: var(--color-background);
   box-shadow: 0 -10px 30px rgba(0,0,0,0.5); 
   margin-top: 0; 
-  /* Se o componente About tiver um <h2> no topo, 
-     o padding evita que a margem do <h2> crie o espaço branco */
-  padding-top: 1px;
+
 }
 :deep(html) {
   scroll-behavior: auto !important;

@@ -1,5 +1,9 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
 
 const features = ref([
   { icon: 'fa-solid fa-play', text: 'Receba conteúdos exclusivos.' },
@@ -8,28 +12,70 @@ const features = ref([
   { icon: 'fa-solid fa-clipboard-list', text: 'Faça inscrições nos eventos.' }
 ]);
 
-const observeElements = (el) => {
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('in-view');
-      }
-    });
-  });
-  el.forEach((element) => observer.observe(element));
-};
+const sectionRef = ref(null);
+let ctx;
 
 onMounted(() => {
-  const sections = document.querySelectorAll('.animate');
-  observeElements(sections);
+  setTimeout(() => {
+    ctx = gsap.context(() => {
+      
+      // Criamos uma timeline que controla o PIN e as animações
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: sectionRef.value,
+          start: "top top",      // Trava quando o topo da seção chega no topo da tela
+          end: "+=2000",         // Duração do scroll (quanto maior, mais lento o efeito)
+          pin: true,             // Trava a seção na tela
+          scrub: 1.5,            // Suaviza o movimento do scroll
+          anticipatePin: 1,
+        }
+      });
+
+      // --- SEQUÊNCIA DE ANIMAÇÃO ---
+
+      // 1. Primeiro: O Mockup faz o Zoom Out (estava gigante, fica normal)
+      tl.fromTo(".mockup-wrapper", 
+        { scale: 4, opacity: 0, y: 100 },
+        { scale: 1, opacity: 1, y: 0, duration: 2 }
+      );
+
+      // 2. Segundo: O Título entra (só começa depois que o celular quase terminou)
+      tl.fromTo(".text-area h2", 
+        { opacity: 0, y: 30 },
+        { opacity: 1, y: 0, duration: 1 },
+        "-=0.5" // Sobreposição leve
+      );
+
+      // 3. Terceiro: Os cards entram um por um da esquerda
+      // Como estamos no scrub, cada card entra conforme você scrola
+      tl.fromTo(".feature", 
+        { opacity: 0, x: -100 },
+        { opacity: 1, x: 0, stagger: 1, duration: 1.5 },
+        "+=0.2" // Pequena pausa após o título
+      );
+
+      // 4. Quarto: Os botões das lojas
+      tl.fromTo(".store-link", 
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, stagger: 0.5, duration: 1 }
+      );
+
+    }, sectionRef.value);
+
+    ScrollTrigger.refresh();
+  }, 200);
+});
+
+
+onUnmounted(() => {
+  if (ctx) ctx.revert(); // Limpa as animações para evitar vazamento de memória
 });
 </script>
 
 <template>
-  <section class="app-section">
+  <section class="app-section" ref="sectionRef">
     <div class="container">
       <div class="app-content">
-        <!-- Text Content -->
         <div class="text-area">
           <h2>Baixe nosso aplicativo e tenha a igreja 24 horas com você.</h2>
           
@@ -45,33 +91,33 @@ onMounted(() => {
           </div>
 
           <div class="store-buttons">
-            <a href="#" class="store-link" aria-label="Download on Google Play">
+            <a href="#" class="store-link">
               <img src="@/assets/GooglePlayEN.png" alt="Google Play" />
             </a>
-            <a href="#" class="store-link" aria-label="Download on App Store">
+            <a href="#" class="store-link">
               <img src="@/assets/ApleStoreEN.svg" alt="App Store" />
             </a>
           </div>
         </div>
 
-        <!-- Phone Mockup -->
         <div class="mockup-area">
           <div class="mockup-wrapper">
-            <img src="@/assets/app-mockup.png" alt="Life & Spirit Church App" />
+            <img src="@/assets/app-mockup.png" alt="App Mockup" />
           </div>
         </div>
       </div>
     </div>
   </section>
 </template>
-
 <style scoped>
 /* App Section */
 .app-section {
-  background: linear-gradient(135deg, #22293b 0%, #031b6a 100%);
-  padding: 6rem 0;
-  position: relative;
+  min-height: 100vh; /* Garante que ocupa a tela toda para o pin */
+  display: flex;
+  align-items: center;
+  justify-content: center;
   overflow: hidden;
+  background: linear-gradient(135deg, #22293b 0%, #031b6a 100%);
 }
 
 .app-section::before {
@@ -96,10 +142,18 @@ onMounted(() => {
   border-radius: 50%;
 }
 
+.app-content {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: center;
+}
+
 .container {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 0 2rem;
+  padding: 0 4rem;
   position: relative;
   z-index: 1;
 }
@@ -208,19 +262,60 @@ onMounted(() => {
   filter: brightness(1.1);
 }
 
-/* Mockup Area */
+
 .mockup-area {
   display: flex;
   justify-content: center;
   align-items: center;
   position: relative;
+  /* Importante para o zoom gigante não quebrar o layout */
+  perspective: 1000px; 
 }
 
 .mockup-wrapper {
   position: relative;
   max-width: 350px;
   width: 100%;
+  z-index: 10;
+  /* Remova a animação 'float' daqui se ela conflitar com o zoom inicial */
+  /* Vamos aplicá-la apenas na imagem interna */
+}
+
+.mockup-wrapper img {
+  width: 100%;
+  height: auto;
+  display: block;
+  filter: drop-shadow(0 20px 60px rgba(0, 0, 0, 0.4));
+  /* A animação de flutuar deve ser suave para não brigar com o GSAP */
   animation: float 6s ease-in-out infinite;
+}
+
+/* Garante que o container pai não corte o zoom out */
+.app-section {
+  overflow: clip;
+}
+
+.text-area h2, 
+.feature, 
+.store-link, .mockup-wrapper {
+  opacity: 0; /* Começam invisíveis */
+  will-change: transform, opacity;
+}
+
+/* O mockup também começa invisível para o zoom-out */
+.mockup-wrapper {
+  opacity: 0;
+}
+
+/* IMPORTANTE: Remova qualquer transição de CSS anterior (.animate, .in-view) 
+   para que o CSS não brigue com o GSAP */
+.feature {
+  transition: background 0.3s ease, transform 0.3s ease; /* Apenas para o hover */
+}
+
+/* Evita "pulos" de layout enquanto o GSAP carrega */
+[data-v-app] {
+  overflow-x: hidden;
 }
 
 @keyframes float {
@@ -232,24 +327,6 @@ onMounted(() => {
   }
 }
 
-.mockup-wrapper img {
-  width: 100%;
-  height: auto;
-  display: block;
-  filter: drop-shadow(0 20px 60px rgba(0, 0, 0, 0.4));
-}
-
-/* Animations */
-.animate {
-  opacity: 0;
-  transform: translateY(30px);
-  transition: all 0.8s ease-out;
-}
-
-.in-view {
-  opacity: 1;
-  transform: translateY(0);
-}
 
 /* Responsive */
 @media screen and (max-width: 1024px) {
