@@ -450,9 +450,9 @@ const teamList = computed(() => {
     min-height: 400px;
   } */
 
-  .scroll-indicator {
+  /* .scroll-indicator {
     display: none;
-  }
+  } */
 
   .about-section {
     padding: 4rem 0;

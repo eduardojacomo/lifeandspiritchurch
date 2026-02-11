@@ -98,9 +98,9 @@ onMounted(async () => {
            <Transition name="fade-blur" mode="out-in">
             <p :key="currentLocaleKey" class="hero-subtitle">{{ Activities.subtitle?.[locale] }}</p>
           </Transition>
-          <div class="scroll-indicator">
-            <div class="scroll-line"></div>
-          </div>
+        </div>
+        <div class="scroll-indicator">
+          <div class="scroll-line"></div>
         </div>
       </section>
 
