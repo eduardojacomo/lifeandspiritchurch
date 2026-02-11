@@ -12,9 +12,11 @@ import EventsManager from '@/components/Admin/EventsManager.vue'
 import ContactView from '@/views/ContactView.vue'
 import EventsView from '@/views/EventsView.vue'
 import EventDetailView from '@/views/EventDetailView.vue'
+import ActivityAdmin from '@/components/Admin/Activity/ActivityAdmin.vue'
 import demopage from '@/components/demopage.vue'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
+import TeamManager from '@/components/Admin/Team/TeamManager.vue'
 
 // Configurar NProgress (opcional)
 NProgress.configure({ showSpinner: false, trickleSpeed: 200 })
@@ -93,6 +95,16 @@ const router = createRouter({
       path: '/admin/events',
       name: 'eventsManager',
       component: EventsManager
+    },
+    {
+      path: '/admin/content/team',
+      name: 'teamManager',
+      component: TeamManager
+    },
+    {
+      path: '/admin/content/activities',
+      name: 'activitiesManager',
+      component: ActivityAdmin
     }
   ],
   scrollBehavior(to, from, savedPosition) {

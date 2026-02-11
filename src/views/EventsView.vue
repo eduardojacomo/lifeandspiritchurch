@@ -1,6 +1,14 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { getFirestore, collection, getDocs, query, orderBy } from "firebase/firestore"
+
+import { useI18n } from 'vue-i18n';
+import { storeToRefs } from 'pinia';
+import { useLanguage } from '../stores/languageStore';
+
+const uselanguage = useLanguage();
+const { currentLocaleKey, locale } = storeToRefs(uselanguage);
+const { t } = useI18n();
 
 const db = getFirestore()
 const allEvents = ref([]) // Armazena tudo que vem do banco
@@ -20,6 +28,17 @@ const categories = [
   { value: 'encontro', label: 'Encontro' },
   { value: 'culto', label: 'Culto Especial' }
 ]
+
+const headerEvents = ref({
+  title: {
+    pt: 'Eventos',
+    en: 'Events'
+  },
+  subtitle: {
+    pt: 'Fique por dentro dos nossos próximos eventos e celebrações.',
+    en: 'Stay informed about our upcoming events and celebrations.'
+  }
+})
 
 // Carregamento simples sem filtros de query
 const loadEvents = async () => {
@@ -79,16 +98,27 @@ const formatDate = (dateStr) => {
   return `${day}/${month}/${year}`
 }
 
+watch(locale, () => {
+  // Isso forçará a atualização do conteúdo quando o idioma mudar
+});
+
 onMounted(loadEvents)
 </script>
 
 <template>
     <section class="hero-section">
-        <div class="hero-overlay"></div>
+        <div class="hero-overlay">
+        </div>
         <div class="hero-content">
-            <Transition name="fade-blur" mode="out-in">
-            <h1 :key="currentLocaleKey" class="hero-title"> Events</h1>
-            </Transition>
+      <Transition name="fade-blur" mode="out-in">
+            <h1 :key="currentLocaleKey" class="hero-title">{{ headerEvents.title?.[locale] }}</h1>
+          </Transition>
+           <Transition name="fade-blur" mode="out-in">
+            <p :key="currentLocaleKey" class="hero-subtitle">{{ headerEvents.subtitle?.[locale] }}</p>
+          </Transition>
+        </div>
+        <div class="scroll-indicator">
+          <div class="scroll-line"></div>
         </div>
     </section>
   <div class="events-container">

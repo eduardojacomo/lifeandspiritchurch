@@ -21,6 +21,10 @@ const AboutUs = {
         pt: "Sobre Nós",
         en: "About Us"
     },
+    subtitle: {
+        pt: "Estamos aqui para te ajudar a aprofundar sua fé e descobrir seu propósito.",
+        en: "We are here to help you deepen your faith and discover your purpose."
+    },
     content: {
         pt: "O Ministério Life & Spirit Church é uma congregação enraizada na Palavra de Deus e dedicada a alcançar vidas de todas as nações e raças. Fundado por Cristiano da Silva e Kauane Gomes da Mata, nosso ministério nasceu da direção divina em junho de 2019 para seguir a única doutrina: a Bíblia, totalmente inspirada por Deus.\n\nSomos uma família vibrante de crentes que vivenciam profundamente o amor e a presença de Deus, unindo-se a Jesus para expressar a alegria e o poder do Seu reino em todas as áreas da vida. Nosso centro de operações está sediado em Claremorris, Co Mayo, Irlanda, e em novembro de 2019 fomos oficialmente registrados como Igreja Cristã na Irlanda, expandindo nosso alcance e conexão com outras igrejas globalmente. Convidamos você a se juntar a nós nesta jornada para que todos possam conhecer verdadeiramente a Deus e Pai.",
         en: "Life & Spirit Church Ministry is a congregation rooted in the Word of God and dedicated to reaching lives of all nations and races. Founded by Cristiano da Silva and Kauane Gomes da Mata, our ministry was born from divine direction in June 2019 to follow the sole doctrine: the Bible, fully inspired by God.\n\nWe are a vibrant family of believers who deeply experience the love and presence of God, uniting with Jesus to express the joy and power of His kingdom in all areas of life. Our operations center is based in Claremorris, Co Mayo, Ireland, and in November 2019 we were officially registered as a Christian Church in Ireland, expanding our reach and connection with other churches globally. We invite you to join us on this journey so that everyone can truly know God the Father."
@@ -204,6 +208,14 @@ onMounted(() => {
           <Transition name="fade-blur" mode="out-in">
             <h1 :key="currentLocaleKey" class="hero-title">{{ AboutUs.title?.[locale] }}</h1>
           </Transition>
+          <Transition name="fade-blur" mode="out-in"> 
+            <p class="hero-subtitle" :key="currentLocaleKey">
+            {{ AboutUs.subtitle?.[locale] }}
+          </p>
+          </Transition>
+        </div>
+        <div class="scroll-indicator">
+          <div class="scroll-line"></div>
         </div>
       </section>
 
@@ -221,10 +233,10 @@ onMounted(() => {
             </div>
 
             <!-- Text Content -->
-            <div class="about-text">
+            <div class="text-bio">
               <Transition name="fade-blur" mode="out-in">
                 <div :key="currentLocaleKey" class="text-content">
-                  <p v-for="(paragraph, index) in AboutUs.content?.[locale].split('\n\n')" :key="index">
+                  <p v-for="(paragraph, index) in AboutUs.content?.[locale].split('\n\n')" :key="index" class="bio-paragraph">
                     {{ paragraph }}
                   </p>
                 </div>
@@ -526,12 +538,12 @@ onMounted(() => {
   /* margin-bottom: 1rem; */
 }
 
-.divider {
+/* .divider {
   width: 80px;
   height: 4px;
   background: var(--color-heading);
   margin: 0 auto;
-}
+} */
 
 .values-grid {
   display: grid;

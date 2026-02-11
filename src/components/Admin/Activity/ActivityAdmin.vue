@@ -1,57 +1,75 @@
 <script setup>
-import { ref } from 'vue'
-import UploadImagesPanel from './UploadImagesPanel.vue'
-import ManagementGaleryImages from './ManagementGaleryImages.vue'
+import { ref, onMounted } from 'vue';
+import { useActivityRepository } from '@/composables/useActivityRepository';
+import ActivityUpload from './ActivityUpload.vue';
+import ActivityList from './ActivityList.vue';
 
-const galleryKey = ref(0)
+const { activities, fetchActivities, deleteActivity, isLoading } = useActivityRepository();
+const activeTab = ref('list');
+const activityToEdit = ref(null);
+const galleryKey = ref(0); 
 
-const refreshGallery = () => {
-  galleryKey.value++ // Isso força o componente ManagementGaleryImages a recarregar do zero
-}
+onMounted(fetchActivities);
 
-const activeTab = ref('upload')
+const handleEdit = (activity) => {
+  activityToEdit.value = activity;
+  activeTab.value = 'upload';
+};
+
+const openNew = () => {
+  activityToEdit.value = null;
+  activeTab.value = 'upload';
+};
+
+const onSaved = () => {
+  activeTab.value = 'list';
+  fetchActivities();
+  galleryKey.value++; // Força atualização do gallery
+};
 </script>
 
 <template>
   <div class="container">
     <div class="header">
-      <h1>Gerenciamento de Imagens</h1>
+        <h1>Gerenciar Atividades</h1>
+
+        <div class="tabs">
+            <button
+                :class="['tab', { active: activeTab === 'upload' }]"
+                @click="activeTab = 'upload'"
+            >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-upload" viewBox="0 0 16 16">
+                <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5"/>
+                <path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708z"/>
+            </svg>  
+            Upload
+            </button>
+
+            <button
+                :class="['tab', { active: activeTab === 'list' }]"
+                @click="activeTab = 'list'"
+            >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-image" viewBox="0 0 16 16">
+                <path d="M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0"/>
+                <path d="M2.002 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2zm12 1a1 1 0 0 1 1 1v6.5l-3.777-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12V3a1 1 0 0 1 1-1z"/>
+            </svg>  
+            Galeria
+            </button>
+        </div>
     </div>
 
-    <!-- Tabs -->
-    <div class="tabs">
-      <button
-        :class="['tab', { active: activeTab === 'upload' }]"
-        @click="activeTab = 'upload'"
-      >
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-upload" viewBox="0 0 16 16">
-        <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5"/>
-        <path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708z"/>
-      </svg>  
-      Upload
-      </button>
-
-      <button
-        :class="['tab', { active: activeTab === 'gallery' }]"
-        @click="activeTab = 'gallery'"
-      >
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-image" viewBox="0 0 16 16">
-        <path d="M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0"/>
-        <path d="M2.002 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2zm12 1a1 1 0 0 1 1 1v6.5l-3.777-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12V3a1 1 0 0 1 1-1z"/>
-      </svg>  
-      Galeria
-      </button>
+    <div v-if="activeTab === 'upload'" class="tab-content active">
+        <ActivityUpload 
+          :edit-data="activityToEdit" 
+          :key="activityToEdit ? activityToEdit.id : 'new'"
+          @saved="onSaved" 
+        />
+    </div>
+   
+     <div v-if="activeTab === 'list'" class="tab-content active">
+      <ActivityList :key="galleryKey" @edit="handleEdit" />
     </div>
 
-    <!-- Upload -->
-    <div v-show="activeTab === 'upload'" class="tab-content active">
-      <UploadImagesPanel @saved="refreshGallery" />
-    </div>
-
-    <!-- Gallery -->
-    <div v-show="activeTab === 'gallery'" class="tab-content active">
-      <ManagementGaleryImages :key="galleryKey"/>
-    </div>
   </div>
 </template>
 

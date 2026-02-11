@@ -32,14 +32,10 @@ const resolucao = ref('');
 const { t } = useI18n();
 
 const fetchVideos = async () => {
-  // loading.value = true;
   const q = query(collection(db, 'videos'), orderBy('publishedAt', 'desc'), limit(5));
   const snapshot = await getDocs(q);
-
   videos.value = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-  //loading.value = false;
 };
-
 
 const observeElements = (el) => {
   const observer = new IntersectionObserver((entries) => {
@@ -61,16 +57,14 @@ const formatDate = (dateString) => {
 };
 
 function openVideoSelected(videoData){
-  setVideo (videoData);
+  setVideo(videoData);
   router.push({
     name: 'videowatch',
     params: {
-      id: videoData.youtubeId // O parâmetro que você espera na sua rota (ex: /detalhes-video/:id)
+      id: videoData.youtubeId
     }
   });
-  
 }
-
 
 onMounted(() => {
   fetchVideos();
@@ -79,70 +73,80 @@ onMounted(() => {
 });
 </script>
 
-
 <template>
   <main>
     <!-- Featured Content Section -->
     <section class="content-section">
-      <div class="hero-content animate">
-         <Transition name="fade-blur" mode="out-in">
-              <h1 :key="currentLocaleKey" class="hero-title">{{ t('_contentTitle') }}</h1>
-            </Transition>
-            <div class="divider"></div>
-            <!-- <Transition name="fade-blur" mode="out-in">
-              <h3 :key="currentLocaleKey">{{ t('_contentDescription') }}</h3>
-            </Transition> -->
-
+      <div class="container">
+        <!-- Section Header -->
+        <div class="section-header">
+          <Transition name="fade-blur" mode="out-in">
+            <h1 :key="currentLocaleKey" class="section-title">{{ t('_contentTitle') }}</h1>
+          </Transition>
+          <div class="divider"></div>
         </div>
 
-      <div class="container">
-        <div class="content-grid" v-if="videos.length">
+        <div v-if="videos.length">
           <!-- Main Featured Video -->
-          <div class="video-featured" @click="openVideoSelected(videos[0])">
-            <div class="video-thumbnail">
-              <img :src="videos[0].thumbnails?.high" :alt="videos[0].title?.[locale]" />
-              <div class="video-overlay">
-                <div class="play-icon">▶</div>
-              </div>
-            </div>
-            <div class="video-details">
-              <div class="video-meta">
-                <span class="video-tag">Palavras</span>
-                <span class="video-date">{{ formatDate(videos[0].publishedAt) }}</span>
-              </div>
-              <h2 class="video-title">{{ videos[0].title?.[locale] }}</h2>
-            </div>
-          </div>
-
-          <!-- Secondary Videos -->
-          <div class="videos-secondary">
-            <div 
-              v-for="video in videos.slice(1, 3)" 
-              :key="video.id"
-              class="video-secondary"
-              @click="openVideoSelected(video)"
-            >
-              <div class="video-thumbnail">
-                <img :src="video.thumbnails?.medium" :alt="video.title?.[locale]" />
+          <div class="featured-wrapper">
+            <div class="featured-video" @click="openVideoSelected(videos[0])">
+              <div class="featured-thumbnail">
+                <img :src="videos[0].thumbnails?.high" :alt="videos[0].title?.[locale]" />
                 <div class="video-overlay">
                   <div class="play-icon">▶</div>
                 </div>
               </div>
-              <div class="video-details">
-                <div class="video-meta">
-                  <span class="video-tag">Palavras</span>
-                  <span class="video-date">{{ formatDate(video.publishedAt) }}</span>
+            </div>
+
+            <div class="featured-info">
+              <div class="video-meta">
+                <span class="video-tag">Palavras</span>
+                <span class="video-date">{{ formatDate(videos[0].publishedAt) }}</span>
+              </div>
+              <h2 class="featured-title">{{ videos[0].title?.[locale] }}</h2>
+              <p class="featured-description" v-if="videos[0].description">
+                {{ videos[0].description?.[locale] }}
+              </p>
+              <button class="btn-watch" @click="openVideoSelected(videos[0])">
+                <font-awesome-icon icon="fa-solid fa-play" />
+                Assistir Agora
+              </button>
+            </div>
+          </div>
+
+          <!-- Secondary Videos Grid -->
+          <div class="secondary-section">
+            <h3 class="secondary-title">{{ t('_videoRecent._title') || 'Vídeos Recentes' }}</h3>
+            
+            <div class="secondary-grid">
+              <div 
+                v-for="video in videos.slice(1, 5)" 
+                :key="video.id"
+                class="video-card"
+                @click="openVideoSelected(video)"
+              >
+                <div class="card-thumbnail">
+                  <img :src="video.thumbnails?.medium" :alt="video.title?.[locale]" />
+                  <div class="video-overlay">
+                    <div class="play-icon-small">▶</div>
+                  </div>
                 </div>
-                <h3 class="video-title">{{ video.title?.[locale] }}</h3>
+                <div class="card-content">
+                  <div class="video-meta">
+                    <span class="video-tag-small">Palavras</span>
+                    <span class="video-date-small">{{ formatDate(video.publishedAt) }}</span>
+                  </div>
+                  <h4 class="card-title">{{ video.title?.[locale] }}</h4>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
         <!-- View All Button -->
-        <div class="view-all-wrapper">
+        <div class="view-all-wrapper animate">
           <router-link to="/content" class="btn-view-all">
-           {{ t('_contentDescription') }}
+            {{ t('_contentDescription') }}
             <font-awesome-icon icon="fa-solid fa-arrow-right" />
           </router-link>
         </div>
@@ -152,40 +156,42 @@ onMounted(() => {
 </template>
 
 <style scoped>
-
 /* Content Section */
 .content-section {
   padding: 4rem 0 6rem 0;
   background: var(--color-background);
 }
-.divider {
-  width: 80px;
-  height: 4px;
-  background: var(--color-heading);
-  margin: 0 auto;
-}
+
 .container {
   max-width: 1400px;
   margin: 0 auto;
   padding: 0 2rem;
 }
 
-.hero-content {
-  position: relative;
-  z-index: 2;
+/* Section Header */
+.section-header {
   text-align: center;
-  padding: 2rem;
+  margin-bottom: 4rem;
 }
 
-.hero-title {
-  font-size: clamp(1rem, 8vw, 3rem);
+.section-title {
+  font-size: clamp(2rem, 5vw, 3.5rem);
   font-weight: 800;
   letter-spacing: -2px;
   text-transform: uppercase;
   color: var(--color-heading);
-  margin: 0;
+  margin: 0 0 1rem 0;
 }
 
+.divider {
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
+  margin: 0 auto;
+  border-radius: 2px;
+}
+
+/* Animation */
 .animate {
   opacity: 0;
   transform: translateY(30px);
@@ -197,31 +203,29 @@ onMounted(() => {
   transform: translateY(0);
 }
 
-/* Content Grid */
-.content-grid {
-  display: grid;
-  grid-template-columns: 1.5fr 1fr;
-  gap: 2rem;
-  margin-bottom: 3rem;
-}
-
-/* Featured Video */
-.video-featured {
-  cursor: pointer;
-  transition: all 0.3s ease;
-  border-radius: 12px;
-  overflow: hidden;
+/* Featured Video Section */
+.featured-wrapper {
+  display: flex;
+  gap: 3rem;
+  margin-bottom: 5rem;
   background: var(--color-background-soft);
   border: 1px solid var(--color-border);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: all 0.3s ease;
 }
 
-.video-featured:hover {
-  transform: translateY(-8px);
+.featured-wrapper:hover {
+  border-color: rgba(59, 130, 246, 0.3);
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-  border-color: rgba(255, 255, 255, 0.2);
 }
 
-.video-thumbnail {
+.featured-video {
+  flex: 1.2;
+  cursor: pointer;
+}
+
+.featured-thumbnail {
   position: relative;
   width: 100%;
   aspect-ratio: 16 / 9;
@@ -229,71 +233,70 @@ onMounted(() => {
   background: #000;
 }
 
-.video-thumbnail img {
+.featured-thumbnail img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: all 0.3s ease;
+  transition: transform 0.4s ease;
 }
 
-.video-featured:hover .video-thumbnail img,
-.video-secondary:hover .video-thumbnail img {
+.featured-video:hover .featured-thumbnail img {
   transform: scale(1.05);
 }
 
 .video-overlay {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   background: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.7) 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   opacity: 0;
-  transition: all 0.3s ease;
+  transition: opacity 0.3s ease;
 }
 
-.video-featured:hover .video-overlay,
-.video-secondary:hover .video-overlay {
+.featured-video:hover .video-overlay {
   opacity: 1;
 }
 
 .play-icon {
-  width: 70px;
-  height: 70px;
-  background: rgba(255, 255, 255, 0.9);
+  width: 80px;
+  height: 80px;
+  background: rgba(255, 255, 255, 0.95);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.8rem;
+  font-size: 2rem;
   color: #000;
   transform: scale(0.8);
-  transition: all 0.3s ease;
+  transition: transform 0.3s ease;
 }
 
-.video-featured:hover .play-icon,
-.video-secondary:hover .play-icon {
+.featured-video:hover .play-icon {
   transform: scale(1);
 }
 
-.video-details {
-  padding: 1.5rem;
+/* Featured Info */
+.featured-info {
+  flex: 1;
+  padding: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .video-meta {
   display: flex;
   align-items: center;
   gap: 1rem;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .video-tag {
-  padding: 0.375rem 0.875rem;
-  background: var(--color-heading);
-  color: #000;
+  padding: 0.5rem 1rem;
+  background: var(--color-primary);
+  color: #fff;
   border-radius: 20px;
   font-size: 0.75rem;
   font-weight: 700;
@@ -302,71 +305,166 @@ onMounted(() => {
 }
 
 .video-date {
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   color: var(--color-text);
   opacity: 0.7;
 }
 
-.video-featured .video-title {
-  font-size: 1.5rem;
+.featured-title {
+  font-size: clamp(1.5rem, 3vw, 2.2rem);
   font-weight: 700;
   color: var(--color-heading);
   line-height: 1.3;
+  margin: 0 0 1rem 0;
+}
+
+.featured-description {
+  font-size: 1rem;
+  color: var(--color-text);
+  line-height: 1.7;
+  opacity: 0.8;
+  margin-bottom: 2rem;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  text-overflow: ellipsis;
+}
+
+.btn-watch {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 2rem;
+  background: var(--color-primary);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
   transition: all 0.3s ease;
+  align-self: flex-start;
 }
 
-.video-featured:hover .video-title {
-  color: var(--color-text);
+.btn-watch:hover {
+  background: var(--color-primary-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
 }
 
-/* Secondary Videos */
-.videos-secondary {
-  display: flex;
-  flex-direction: column;
+/* Secondary Videos Section */
+.secondary-section {
+  margin-bottom: 4rem;
+}
+
+.secondary-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-heading);
+  margin: 0 0 2rem 0;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--color-border);
+}
+
+.secondary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 2rem;
 }
 
-.video-secondary {
+/* Video Card */
+.video-card {
   cursor: pointer;
-  transition: all 0.3s ease;
-  border-radius: 12px;
-  overflow: hidden;
   background: var(--color-background-soft);
   border: 1px solid var(--color-border);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.3s ease;
 }
 
-.video-secondary:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-  border-color: rgba(255, 255, 255, 0.2);
+.video-card:hover {
+  transform: translateY(-8px);
+  border-color: rgba(59, 130, 246, 0.3);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
 }
 
-.video-secondary .play-icon {
+.card-thumbnail {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: #000;
+}
+
+.card-thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.video-card:hover .card-thumbnail img {
+  transform: scale(1.08);
+}
+
+.video-card:hover .video-overlay {
+  opacity: 1;
+}
+
+.play-icon-small {
   width: 50px;
   height: 50px;
-  font-size: 1.3rem;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  color: #000;
+  transform: scale(0.8);
+  transition: transform 0.3s ease;
 }
 
-.video-secondary .video-title {
+.video-card:hover .play-icon-small {
+  transform: scale(1);
+}
+
+.card-content {
+  padding: 1.25rem;
+}
+
+.video-tag-small {
+  padding: 0.375rem 0.75rem;
+  background: var(--color-primary);
+  color: #fff;
+  border-radius: 16px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.video-date-small {
+  font-size: 0.8rem;
+  color: var(--color-text);
+  opacity: 0.6;
+}
+
+.card-title {
   font-size: 1.1rem;
   font-weight: 600;
   color: var(--color-heading);
-  line-height: 1.3;
+  line-height: 1.4;
+  margin: 1rem 0 0 0;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  text-overflow: ellipsis;
-  transition: all 0.3s ease;
+  transition: color 0.3s ease;
 }
 
-.video-secondary:hover .video-title {
-  color: var(--color-text);
+.video-card:hover .card-title {
+  color: var(--color-primary);
 }
 
 /* View All Button */
@@ -381,9 +479,9 @@ onMounted(() => {
   align-items: center;
   gap: 0.75rem;
   padding: 1.25rem 3rem;
-  background: var(--color-heading);
-  color: #000;
-  border: none;
+  background: transparent;
+  color: var(--color-heading);
+  border: 2px solid var(--color-border);
   border-radius: 50px;
   font-weight: 700;
   font-size: 1.05rem;
@@ -395,8 +493,11 @@ onMounted(() => {
 }
 
 .btn-view-all:hover {
+  background: var(--color-primary);
+  color: #fff;
+  border-color: var(--color-primary);
   transform: translateY(-3px);
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
 }
 
 .btn-view-all:hover svg {
@@ -427,17 +528,16 @@ onMounted(() => {
 
 /* Responsive */
 @media screen and (max-width: 1024px) {
-  .hero-section {
-    height: 40vh;
-    min-height: 350px;
+  .featured-wrapper {
+    flex-direction: column;
+    gap: 0;
   }
 
-  .content-grid {
-    grid-template-columns: 1fr;
+  .featured-info {
+    padding: 2rem;
   }
 
-  .videos-secondary {
-    display: grid;
+  .secondary-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 1.5rem;
   }
@@ -448,38 +548,33 @@ onMounted(() => {
     padding: 0 1.5rem;
   }
 
-  .hero-section {
-    height: 35vh;
-    min-height: 300px;
+  .section-header {
     margin-bottom: 3rem;
-  }
-
-  .hero-subtitle {
-    font-size: 1.1rem;
   }
 
   .content-section {
     padding: 3rem 0 4rem 0;
   }
 
-  .content-grid {
-    gap: 1.5rem;
+  .featured-wrapper {
+    margin-bottom: 3rem;
   }
 
-  .videos-secondary {
+  .featured-info {
+    padding: 1.5rem;
+  }
+
+  .featured-description {
+    -webkit-line-clamp: 2;
+  }
+
+  .secondary-grid {
     grid-template-columns: 1fr;
   }
 
-  .video-details {
-    padding: 1.25rem;
-  }
-
-  .video-featured .video-title {
-    font-size: 1.3rem;
-  }
-
-  .video-secondary .video-title {
-    font-size: 1rem;
+  .btn-watch {
+    width: 100%;
+    justify-content: center;
   }
 }
 
@@ -488,33 +583,25 @@ onMounted(() => {
     padding: 0 1rem;
   }
 
-  .hero-section {
-    margin-bottom: 2rem;
-    min-height: 250px;
-  }
-
-  .hero-title {
-    font-size: 2.5rem;
-  }
-
-  .hero-subtitle {
-    font-size: 1rem;
-  }
-
   .content-section {
     padding: 2rem 0 3rem 0;
   }
 
-  .video-details {
-    padding: 1rem;
+  .section-header {
+    margin-bottom: 2rem;
   }
 
-  .video-featured .video-title {
-    font-size: 1.2rem;
+  .featured-info {
+    padding: 1.25rem;
   }
 
-  .video-secondary .video-title {
-    font-size: 0.95rem;
+  .featured-title {
+    font-size: 1.3rem;
+  }
+
+  .btn-watch {
+    padding: 0.875rem 1.5rem;
+    font-size: 0.9rem;
   }
 
   .btn-view-all {
@@ -528,10 +615,10 @@ onMounted(() => {
     font-size: 1.5rem;
   }
 
-  .video-secondary .play-icon {
+  .play-icon-small {
     width: 45px;
     height: 45px;
-    font-size: 1.2rem;
+    font-size: 1rem;
   }
 }
 </style>

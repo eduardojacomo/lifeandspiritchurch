@@ -11,7 +11,7 @@ const emit = defineEmits(['close', 'confirm'])
 /* ======================  State ====================== */
 const canvas = ref(null)
 const selectedType = ref('desktop')
-const scale = ref(1)
+const scale = ref(.1)
 const offsetX = ref(0)
 const offsetY = ref(0)
 

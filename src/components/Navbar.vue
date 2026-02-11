@@ -31,10 +31,7 @@ const menuItems = ref([
   },
   {
     labelKey: '_nav._content',
-    children: [
-      { labelKey: '_content._news', route: '/news' },
-      { labelKey: '_content._content', route: '/content' }
-    ]
+    route: '/content'
   },
   {
     labelKey: '_nav._events',

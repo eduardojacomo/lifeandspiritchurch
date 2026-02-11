@@ -8,6 +8,14 @@ import { useToast } from '@/composables/useToast'
 const repo = useImageRepository()
 const rules = useImageRules()
 const toast = useToast()
+
+const props = defineProps({
+  editData: {
+    type: Object,
+    default: null
+  }
+})
+
 const emit = defineEmits(['saved'])
 
 /* ================= STATE ================= */
@@ -19,9 +27,9 @@ const isDragOver = ref(false)
 
 /* ================= OPTIONS ================= */
 const locationOptions = {
-  home: ["Hero", "About", "App", "Scheadle"],
-  about: ["Aboutchurch", "Aboutpastors"],
-  logo: ["Logo"],
+  home: [{value: "hero", label: "Hero"}, {value: "about", label: "About"}, {value: "app", label: "App"}, {value: "scheadle", label: "Scheadle"}],
+  about: [{value: "aboutchurch", label: "About Church"}, {value: "aboutpastors", label: "About Pastors"}, {value: "aboutteam", label: "About Team"}],
+  logo: [{value: "logo", label: "Logo"}],
   activities: []
 };
 
@@ -61,8 +69,8 @@ const handleFiles = (files) => {
 const onImageEdited = ({ preview, name }) => {
   uploadedImages.value.push({
     id: Date.now(),
-    preview, // Desktop Path
-    previewMobile: null, // Mobile Path
+    preview, 
+    previewMobile: null, 
     name,
     alt: '',
     page: '',
@@ -81,14 +89,14 @@ const onImageEdited = ({ preview, name }) => {
   scrollToSection('edit-image-section')
 }
 
-// Upload específico para Mobile dentro do card
+
 const handleMobileUpload = (e, index) => {
   const file = e.target.files[0]
   if (!file) return
   const reader = new FileReader()
   reader.onload = (event) => {
     uploadedImages.value[index].previewMobile = event.target.result
-    uploadedImages.value[index].devices.mobile = true // Ativa mobile automaticamente
+    uploadedImages.value[index].devices.mobile = true 
     toast.info("Versão mobile adicionada!")
   }
   reader.readAsDataURL(file)
@@ -101,45 +109,47 @@ const removeUploadedImage = (index) => {
 /* ================= SAVE ================= */
 async function saveAllImages() {
   if (!repo.user.value) {
-    toast.error('Sessão expirada. Faça login novamente.')
+    toast.error('Sessão expirada.')
     return
   }
 
-  let successCount = 0
-  const imagesToProcess = [...uploadedImages.value]
-
-  for (const img of imagesToProcess) {
-    try {
-      rules.validateBeforeSave(img)
-      
-      await repo.saveImage({
-        preview: img.preview,
-        previewMobile: img.previewMobile,
-        page: img.page,
-        location: img.location,
-        alt: img.alt,
-        expirationDate: img.expirationDate,
-        devices: img.devices,
-        ...(img.page === 'home' && img.location === 'Hero' && {
-          heroTitle: img.heroTitle,
-          heroDesc: img.heroDesc,
-          order: img.order,
-          buttonLabel: img.buttonLabel,
-          buttonLink: img.buttonLink,
-          textPosition: img.textPosition || 'left'
-        })
+  const img = uploadedImages.value[0] // No modo edição ou upload unitário, focamos no primeiro
+  
+  try {
+    rules.validateBeforeSave(img)
+    
+    const payload = {
+      // ... espalha os dados comuns
+      id: img.id,
+      activityId: img.activityId,
+      preview: img.preview,
+      previewMobile: img.previewMobile,
+      page: img.page,
+      location: img.location,
+      alt: img.alt,
+      expirationDate: img.expirationDate,
+      devices: img.devices,
+      ...(img.page === 'home' && img.location === 'Hero' && {
+        heroTitle: img.heroTitle,
+        heroDesc: img.heroDesc,
+        order: img.order,
+        buttonLabel: img.buttonLabel,
+        buttonLink: img.buttonLink,
+        textPosition: img.textPosition
       })
-
-      successCount++
-      uploadedImages.value = uploadedImages.value.filter(i => i.id !== img.id)
-    } catch (err) {
-      toast.error(`Erro em ${img.name}: ${err.message}`)
     }
-  }
 
-  if (successCount > 0) {
-    toast.success(`${successCount} imagem(ns) salva(s)!`)
+    if (props.editData) {
+      await repo.updateImage(payload)
+      toast.success('Alterações salvas!')
+    } else {
+      await repo.saveImage(payload)
+      toast.success('Upload realizado!')
+    }
+
     emit('saved')
+  } catch (err) {
+    toast.error(`Erro: ${err.message}`)
   }
 }
 
@@ -149,6 +159,36 @@ const scrollToSection = (id) => {
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
   })
 }
+
+onMounted(() => {
+  if (props.editData) {
+
+    uploadedImages.value = [{
+      id: props.editData.id,
+      activityId: props.editData.activityId,
+      preview: props.editData.preview,
+      previewMobile: props.editData.previewMobile || null,
+      name: props.editData.name,
+      alt: props.editData.alt || '',
+      page: props.editData.page || '',
+      location: props.editData.location || '',
+      expirationDate: props.editData.expirationDate || null,
+      devices: { 
+        desktop: props.editData.format === 'all' || props.editData.format === 'desktop', 
+        mobile: props.editData.format === 'all' || props.editData.format === 'mobile' 
+      },
+      // Campos do Hero
+      heroTitle: props.editData.heroTitle || { pt: '', en: '' },
+      heroDesc: props.editData.heroDesc || { pt: '', en: '' },
+      order: props.editData.order || 0,
+      buttonLabel: props.editData.buttonLabel || { pt: '', en: '' },
+      buttonLink: props.editData.buttonLink || '',
+      textPosition: props.editData.textPosition || 'left'
+    }]
+  }
+})
+
+
 </script>
 <template>
 
@@ -160,7 +200,7 @@ const scrollToSection = (id) => {
 />
 
 <div class="tab-content active">
-    <section id="upload-section" v-if="uploadedImages.length === 0">
+    <section id="upload-section" v-if="uploadedImages.length === 0 && !props.editData">
         <div class="upload-card">
             <div 
               class="upload-area" 
@@ -194,7 +234,8 @@ const scrollToSection = (id) => {
     <section id="edit-image-section">
         <!-- Configuration Section -->
         <div v-if="uploadedImages.length > 0" class="config-section active">
-          <h2 style="margin-bottom: 2rem; font-size: 1.8rem;">Configure as Imagens</h2>
+          <h2 style="margin-bottom: 2rem; font-size: 1.8rem;" v-if="!props.editData">Configure as Imagens</h2>
+          <h2 style="margin-bottom: 2rem; font-size: 1.8rem;" v-else>Editar Configurações</h2>
           <div class="config-grid">
             <div 
               v-for="(img, index) in uploadedImages" 
@@ -202,14 +243,6 @@ const scrollToSection = (id) => {
               class="image-config-item"
             >
               
-              <!-- <div>
-                <div class="config-preview">
-                  <img :src="img.preview" :alt="img.name">
-                </div>
-                <p style="margin-top: 0.5rem; font-size: 0.85rem; color: rgba(255, 255, 255, 0.6);">
-                  {{ img.name }}
-                </p>
-              </div> -->
               <div class="previews-column">
                 <div class="main-preview">
                   <label>🖥️ Desktop (Principal)</label>
@@ -256,8 +289,8 @@ const scrollToSection = (id) => {
                     <label>Localização da imagem</label>
                     <select v-model="img.location">
                         <option value="" disabled>Selecione a localização da imagem</option>  
-                        <option v-for="loc in updateLocations(img.page)" :key="loc" :value="loc">
-                        {{ loc }}
+                        <option v-for="loc in updateLocations(img.page)" :key="loc.value" :value="loc.value">
+                        {{ loc.label }}
                         </option>
                     </select>
                   </div>
@@ -320,22 +353,6 @@ const scrollToSection = (id) => {
                   </div>
 
               </div>
-
-                
-                <!-- <div class="form-group">
-                  <label>Dispositivos</label>
-                  <div class="device-toggle">
-                    <label :class="['device-option', { selected: img.desktop }]">
-                      <input type="checkbox" v-model="img.desktop">
-                      🖥️ Desktop
-                    </label>
-                    <label :class="['device-option', { selected: img.mobile }]">
-                      <input type="checkbox" v-model="img.mobile">
-                      📱 Mobile
-                    </label>
-                  </div>
-                </div> -->
-  
                 <div class="form-group">
                   <label>Data de Expiração (opcional)</label>
                   <input 
@@ -354,7 +371,7 @@ const scrollToSection = (id) => {
             </div>
           </div>
           <button class="upload-btn" style="width: 100%; margin-top: 2rem;" @click="saveAllImages()" :disabled="repo.isLoading.value">
-            {{ repo.isLoading.value ? 'Salvando Arquivos...' : 'Salvar Imagem' }}
+            {{ repo.isLoading.value ? 'Processando...' : (props.editData ? 'Atualizar Dados' : 'Salvar Imagem') }}
           </button>
 
           <div v-if="repo.isLoading.value" class="loading-overlay">

@@ -124,12 +124,12 @@ onMounted(() => {
   transform: translateY(0);
 }
 
-.divider {
+/* .divider {
   width: 80px;
   height: 4px;
   background: var(--color-heading);
   margin: 0 auto;
-}
+} */
 
 .hero-overlay {
   position: absolute;

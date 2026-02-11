@@ -1,168 +1,151 @@
 <script setup>
-import { ref, onMounted, computed, watch } from 'vue';
-import { useI18n } from 'vue-i18n';
-import {storeToRefs} from 'pinia';
-import {useLanguage} from '../stores/languageStore'
-import { useCollection } from 'vuefire'
-import { collection, addDoc } from 'firebase/firestore'
-import { useFirestore } from 'vuefire'
-const db = useFirestore()
-
-const users = useCollection(collection(db, 'users'))
-const categories = useCollection(collection(db, 'activities'))
+import { onMounted, computed } from 'vue';
+import { storeToRefs } from 'pinia';
+import { useLanguage } from '../stores/languageStore';
+import { useTeamRepository } from '@/composables/useTeamRepository';
 
 const uselanguage = useLanguage();
-const { currentLocaleKey, locale} = storeToRefs(uselanguage);
+const { locale, currentLocaleKey } = storeToRefs(uselanguage);
 
-const { t } = useI18n();
+const { teamItems, fetchTeam, isLoading } = useTeamRepository();
 
-const Pastors = {
-    title: {
-        pt: "Nossos Pastores",
-        en: "Our Pastors"
-    },
-    content: {
-        pt: `Eu sou o pastor Cristiano, casado com a pastora Kauane desde 2008. Nossa história começou de uma forma muito especial: eu já estava morando na Irlanda desde 2003 e, 
-        em uma viagem de férias ao Brasil, nós nos conhecemos. Namoramos apenas por um mês e, com a direção de Deus, decidimos nos casar. O Senhor nos abençoou com quatro filhos maravilhosos — 
-        três meninas e um menino. Além deles, também sou pai de outros três filhos, que Deus me presenteou antes do nosso casamento. Cada um é parte do plano perfeito do Senhor para nossa vida. 
-        Em 2008 para 2009, vivemos um marco inesquecível: nos entregamos a Jesus e, em abril de 2009, fomos batizados. Naquele momento, entendemos que não queríamos apenas frequentar uma igreja, 
-        mas desejávamos servir ativamente ao Senhor. Na época, ainda não havia uma igreja fixa em Dublin, então os cultos eram realizados em um ginásio. Isso significava montar e desmontar cadeiras, 
-        equipamentos de som e tudo mais a cada encontro. Foi nesse cenário que nasceu nossa paixão pelo ministério. Nosso primeiro pastor, Fernando, foi quem nos batizou e nos ensinou a conhecer Jesus de verdade. 
-        Ele também nos deu a oportunidade de servir, e desde então começamos a nos envolver de corpo e alma: ajudando na obra, aprendendo, evangelizando e crescendo espiritualmente. O caminho não foi fácil. 
-        Aceitar o chamado pastoral sempre é um desafio — muitas vezes pensamos que somos improváveis para tamanha responsabilidade. Mas Deus é fiel e, com o tempo, Ele confirmou nossa vocação. 
-        Passamos pelo diaconato, presbitério, evangelismo, até que, pela graça do Senhor, fui ordenado pastor. Hoje, servimos juntos na Life and Spirit Church, que Deus nos confiou aqui na Irlanda. 
-        Temos um sonho que nos move: ver pessoas se entregando verdadeiramente a Jesus, vivendo uma relação com Ele que vai além das palavras, algo que só pode ser explicado pelo poder do Espírito Santo. 
-        Nossa igreja é um reflexo do Reino de Deus: temos oito nacionalidades reunidas em adoração. Entre elas estão brasileiros, portugueses, romenos, espanhóis, peruanos, colombianos e dominicanos. 
-        Uma verdadeira família multicultural unida pelo mesmo Espírito. Cada passo dessa jornada foi dirigido por Deus. E seguimos firmes, cheios de gratidão, confiando que o melhor ainda está por vir.`,
-        en: `I am Pastor Cristiano, married to Pastor Kauane since 2008. Our story began in a very special way: I had already been living in Ireland since 2003, and during a vacation trip to Brazil, we met. 
-        We dated for only one month and, under God's guidance, decided to get married. The Lord blessed us with four wonderful children — three girls and one boy. In addition to them, 
-        I am also the father of three other children, whom God gifted me before our marriage. Each one is part of the Lord's perfect plan for our lives. From 2008 to 2009, we experienced an unforgettable milestone: 
-        we surrendered our lives to Jesus, and in April 2009, we were baptized. At that moment, we understood that we didn't just want to attend a church, but we desired to actively serve the Lord. At that time, 
-        there was no established church in Dublin, so services were held in a gymnasium. This meant setting up and taking down chairs, sound equipment, and everything else at each gathering. It was in this setting 
-        that our passion for ministry was born. Our first pastor, Fernando, was the one who baptized us and taught us to truly know Jesus. He also gave us the opportunity to serve, and since then we began to get 
-        involved wholeheartedly: helping in the work, learning, evangelizing, and growing spiritually. The journey was not easy. Accepting the pastoral calling is always a challenge — many times we think 
-        we are unlikely candidates for such great responsibility. But God is faithful, and over time He confirmed our vocation. We went through the diaconate, the presbytery, evangelism, until, by the grace of the Lord,
-         I was ordained as a pastor. Today, we serve together at Life and Spirit Church, which God entrusted to us here in Ireland. We have a dream that drives us: to see people truly surrendering to Jesus, 
-         living a relationship with Him that goes beyond words — something that can only be explained by the power of the Holy Spirit. Our church is a reflection of the Kingdom of God: we have eight nationalities
-          gathered in worship. Among them are Brazilians, Portuguese, Romanians, Spaniards, Peruvians, Colombians, and Dominicans. A true multicultural family united by the same Spirit. Every step of this journey 
-          has been directed by God. And we continue steadfast, full of gratitude, trusting that the best is yet to come.`
-    }
-};
-
-watch(locale, () => {
-  // Isso forçará a atualização do conteúdo quando o idioma mudar
+onMounted(async () => {
+  await fetchTeam();
 });
 
-onMounted(() => {
-  const sections = document.querySelectorAll('.animate');
-  // observeElements(sections);
+const mainAboutMember = computed(() => {
+  return teamItems.value.find(m => m.isMainAbout) || null;
+});
+
+// Lógica de ordenação e filtro
+const teamList = computed(() => {
+  if (!teamItems.value) return [];
+
+  return [...teamItems.value]
+    // 1. Filtra para remover quem tem ordem 0 ou nula
+    .filter(member => member.ordem !== 0 && member.ordem !== '0' && member.ordem)
+    // 2. Ordena
+    .sort((a, b) => {
+      // Primeiro critério: Ordem numérica (Crescente: 1, 2, 3...)
+      const diff = a.ordem - b.ordem;
+      
+      if (diff !== 0) {
+        return diff;
+      }
+
+      // Segundo critério (Desempate): Ordem Alfabética
+      return a.nome.localeCompare(b.nome);
+    });
 });
 </script>
 
 <template>
-    <main>
-      <!-- Hero Section -->
-      <section class="hero-section">
-        <div class="hero-overlay"></div>
-        <div class="hero-content">
-          <img src="/src/assets/aboutphotoedited.png" alt="Pastor Cristiano & Pastora Kauane" />
-        </div>
-      </section>
-      
-      <!-- About Pastors Section -->
-      <section class="about-section">
-        <div class="container">
-          <div class="about-content-flex">
-            <!-- Images Section -->
-            <div style="width: 100%;">
-              <Transition name="fade-blur" mode="out-in">
-                <h1 :key="currentLocaleKey" class="hero-title">{{ Pastors.title?.[locale] }}</h1>
-              </Transition>
-              
+  <main class="pastors-page">
+    <!-- Hero Section com Gradiente Melhorado -->
+    <section class="hero-section">
+      <div class="hero-overlay">
+        <div class="hero-gradient"></div>
+      </div>
+      <div class="hero-content">
+        <!-- <div class="hero-badge">
+          {{ locale === 'pt' ? 'Liderança' : 'Leadership' }}
+        </div> -->
+        <h1 class="hero-title">
+          {{ locale === 'pt' ? 'Nossa Equipe' : 'Our Team' }}
+        </h1>
+        <p class="hero-subtitle">
+          {{ locale === 'pt' 
+            ? 'Conheça a equipe dedicada que lidera nossa comunidade' 
+            : 'Meet the dedicated team leading our community' 
+          }}
+        </p>
+      </div>
+      <div class="scroll-indicator">
+        <div class="scroll-line"></div>
+      </div>
+    </section>
+
+    <!-- About Section - Pastor Principal -->
+    <section class="about-section">
+      <div class="container">
+        <div v-if="mainAboutMember" class="about-content-grid">
+          <!-- Imagem do Pastor com Overlay -->
+          <div class="pastor-image-wrapper">
+            <div class="image-decoration"></div>
+            <div class="pastor-image-container">
+              <img :src="mainAboutMember.url" :alt="mainAboutMember.nome" />
+              <div class="image-overlay"></div>
             </div>
-            <div class="divider"></div>
-            <!-- Text Content -->
-            <div class="pastors-text">
-              <Transition name="fade-blur" mode="out-in">
-                <div :key="currentLocaleKey" class="text-content">
-                  <p v-for="(paragraph, index) in Pastors.content?.[locale].split(/\n\s*\n/)" :key="index">
-                    {{ paragraph.trim() }}
-                  </p>
-                </div>
-              </Transition>
+          </div>
+
+          <!-- Texto sobre o Pastor -->
+          <div class="text-wrapper">
+            <div class="section-label">
+              {{ locale === 'pt' ? 'Sobre' : 'About' }}
+            </div>
+            <h2 class="pastor-name">{{ mainAboutMember.nome }}</h2>
+            <!-- <div class="pastor-role">
+              {{ mainAboutMember.cargo?.[locale] }}
+            </div> -->
+            
+            <Transition name="fade-blur" mode="out-in">
+              <div :key="currentLocaleKey + mainAboutMember.id" class="text-bio">
+                <p v-for="(p, i) in mainAboutMember.about?.[locale]?.split('\n')" :key="i" class="bio-paragraph">
+                  {{ p.trim() }}
+                </p>
+              </div>
+            </Transition>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Team Section -->
+    <section class="team-section">
+      <div class="container">
+        <div class="team-header">
+          <div class="section-label centered">
+            {{ locale === 'pt' ? 'Nossa Equipe' : 'Our Team' }}
+          </div>
+          <h2 class="section-title">
+            {{ locale === 'pt' ? 'Equipe Ministerial' : 'Ministry Team' }}
+          </h2>
+          <div class="divider"></div>
+        </div>
+
+        <div class="team-grid">
+          <div 
+            v-for="member in teamList" 
+            :key="member.id" 
+            class="card"
+          >
+            <div class="card-image-wrapper">
+              <img :src="member.url" :alt="member.nome" class="card-image" />
+              <div class="card-overlay"></div>
+            </div>
+            <div class="card-content">
+              <h3 class="card-name">{{ member.nome }}</h3>
+              <p class="card-role">{{ member.cargo?.[locale] }}</p>
+              <p class="card-role">{{ member.ministerio }}</p>
             </div>
           </div>
         </div>
-      </section>
-    </main>
+      </div>
+    </section>
+  </main>
 </template>
 
 <style scoped>
-/* Hero Section */
-.hero-section {
-  position: relative;
-  /* height: 50vh; */
-  height: 400px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-  /* margin-bottom: 4rem; */
-}
-
-.hero-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: radial-gradient(circle at 30% 50%, rgba(255, 255, 255, 0.03) 0%, transparent 50%);
-}
-
-.hero-content {
-  position: relative;
-  z-index: 2;
-  text-align: center;
-  aspect-ratio: 810 / 455;
-  border-radius: 18px;
-  overflow: hidden;
-  padding: 12rem 15rem 0 15rem;
-  /* padding: 2rem; */
-}
-
-.hero-content img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: top;
-  display: block;
-  /* padding: 15rem 15rem 0 15rem;*/
-} 
-
-.hero-title {
-  font-size: clamp(1.5rem, 8vw, 4rem);
-  font-weight: 900;
-  letter-spacing: -2px;
-  text-transform: uppercase;
-  color: var(--color-heading);
-  margin: 0;
-  text-align: center;
-}
-
-.about-tittle{
-    font-size: clamp(1.5rem, 8vw, 4rem);
-  font-weight: 900;
-  letter-spacing: -2px;
-  text-transform: uppercase;
-  color: var(--color-heading);
-  margin: 0;
-}
-
-/* About Section */
-.about-section {
-  padding: 4rem 0 6rem 0;
+.pastors-page {
   background: var(--color-background);
+  overflow-x: hidden;
+}
+
+
+/* ========== ABOUT SECTION ========== */
+.about-section {
+  padding: 8rem 0;
+  position: relative;
 }
 
 .container {
@@ -174,98 +157,199 @@ onMounted(() => {
 .about-content-grid {
   display: grid;
   grid-template-columns: 500px 1fr;
-  gap: 4rem;
-  align-items: start;
+  gap: 6rem;
+  align-items:flex-start;
 }
 
-.about-content-flex {
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-  align-items: center;
-  
-}
-
-/* Pastors Images */
-.pastors-images {
-  position: sticky;
-  top: 100px;
-  height: fit-content;
-}
-
-.images-wrapper {
+/* Pastor Image */
+.pastor-image-wrapper {
   position: relative;
-  width: 100%;
-  height: 600px;
 }
 
-.image-card {
+.image-decoration {
   position: absolute;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  transition: all 0.4s ease;
-}
-
-.image-card:hover {
-  transform: scale(1.02) translateY(-5px);
-  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.4);
-  z-index: 10;
-}
-
-.image-1 {
-  width: 300px;
-  height: 400px;
-  top: 0;
-  left: 0;
-  z-index: 2;
-}
-
-.image-2 {
-  width: 300px;
-  height: 400px;
-  top: 220px;
-  right: 0;
-  z-index: 3;
-}
-
-.image-card img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: top;
-  transition: transform 0.4s ease;
+  top: -20px;
+  left: -20px;
+  border: 2px solid rgba(90, 163, 228, 0.2);
+  border-radius: 16px;
+  z-index: 0;
 }
 
-.image-card:hover img {
+.pastor-image-container {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 
+    0 25px 50px -12px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.05);
+  z-index: 1;
+}
+
+.pastor-image-container img {
+  width: 100%;
+  height: 650px;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+  transition: transform 0.6s ease;
+}
+
+.pastor-image-container:hover img {
   transform: scale(1.05);
 }
-.divider {
-  width: 60px;
-  height: 4px;
-  background: var(--color-heading);
-  margin: -1rem auto 0 auto ;
- 
-}
-/* Pastors Text */
-.pastors-text {
-  display: flex;
-  flex-direction: column;
-  max-width: 900px;
+
+.image-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.3) 0%, transparent 50%);
+  pointer-events: none;
 }
 
-.text-content {
+/* Pastor Text */
+.pastor-text-wrapper {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
 }
 
-.text-content p {
-  font-size: 1.1rem;
-  line-height: 2;
-  color: var(--color-text);
+
+.pastor-name {
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  font-weight: 800;
+  letter-spacing: -1px;
+  color: var(--color-heading);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.pastor-role {
+  font-size: 1.25rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+.pastor-bio {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.bio-paragraph {
+  font-size: 1.125rem;
+  line-height: 1.9;
+  color: rgba(255, 255, 255, 0.8);
   text-align: justify;
-  opacity: 0.9;
+  margin: 0;
+}
+
+.bio-paragraph:first-of-type::first-letter {
+  font-size: 3.5rem;
+  font-weight: 700;
+  line-height: 1;
+  float: left;
+  margin: 0.1rem 0.5rem 0 0;
+  color: var(--color-primary);
+}
+
+/* ========== TEAM SECTION ========== */
+.team-section {
+  padding: 6rem 0 8rem 0;
+  background: linear-gradient(180deg, var(--color-background) 0%, rgba(15, 15, 25, 1) 100%);
+}
+
+.team-header {
+  text-align: center;
+  margin-bottom: 5rem;
+}
+
+.section-title {
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 800;
+  color: var(--color-heading);
+  margin: 1rem 0;
+  letter-spacing: -1px;
+}
+
+
+
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Team Card */
+.team-card {
+  background: rgba(20, 20, 30, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+.team-card:hover {
+  transform: translateY(-10px);
+  border-color: rgba(99, 102, 241, 0.3);
+  box-shadow: 
+    0 20px 40px -10px rgba(99, 102, 241, 0.2),
+    0 0 0 1px rgba(99, 102, 241, 0.1);
+}
+
+.card-image-wrapper {
+  position: relative;
+  width: 100%;
+  height: 350px;
+  overflow: hidden;
+}
+
+.card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  transition: transform 0.6s ease;
+}
+
+.team-card:hover .card-image {
+  transform: scale(1.1);
+}
+
+.card-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(20, 20, 30, 0.9) 0%, transparent 50%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.team-card:hover .card-overlay {
+  opacity: 1;
+}
+
+.card-content {
+  padding: 2rem 1.5rem;
+  text-align: center;
+}
+
+.card-name {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 0.5rem 0;
+  letter-spacing: -0.5px;
+}
+
+.card-role {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0;
+  font-weight: 500;
 }
 
 /* Transitions */
@@ -286,155 +370,118 @@ onMounted(() => {
   transform: translateY(-20px);
 }
 
-/* Responsive */
+/* ========== RESPONSIVE ========== */
 @media screen and (max-width: 1024px) {
   .hero-section {
-    height: 40vh;
-    min-height: 350px;
+    height: 70vh;
+    min-height: 500px;
   }
 
   .about-content-grid {
     grid-template-columns: 1fr;
-    gap: 3rem;
+    gap: 4rem;
   }
 
-  .pastors-images {
-    position: relative;
-    top: 0;
-    margin: 0 auto;
+  .pastor-image-wrapper {
     max-width: 500px;
+    margin: 0 auto;
   }
 
-  .images-wrapper {
-    height: 500px;
+  .pastor-image-container img {
+    height: 550px;
   }
 
-  .image-1 {
-    width: 280px;
-    height: 380px;
-    left: 20px;
-  }
-
-  .image-2 {
-    width: 280px;
-    height: 380px;
-    top: 150px;
-    right: 20px;
-  }
-
-  .text-content p {
-    font-size: 1rem;
+  .team-grid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
   }
 }
 
 @media screen and (max-width: 768px) {
-  .container {
-    padding: 0 1.5rem;
+  .hero-section {
+    min-height: 450px;
   }
 
-  /* .hero-section {
-    height: 35vh;
-    min-height: 300px;
-    margin-bottom: 3rem;
-  } */
-
-   .hero-section {
-    height: 500px;
+  .hero-badge {
+    font-size: 0.75rem;
+    padding: 0.4rem 1.2rem;
   }
 
-  .hero-content {
-    padding: 0;
-    height: 100%;
-    padding: 4rem 0 0 2rem;
-  }
-
-  .hero-content img {
-    border-radius: 0;
-    object-fit: cover;
-    object-position: center top;
-  }
   .about-section {
-    padding: 3rem 0 4rem 0;
+    padding: 5rem 0;
   }
 
   .about-content-grid {
-    gap: 2.5rem;
+    gap: 3rem;
   }
 
-  .images-wrapper {
-    height: 450px;
+  .pastor-image-container img {
+    height: 500px;
   }
 
-  .image-1,
-  .image-2 {
-    width: 240px;
-    height: 320px;
-  }
-
-  .image-1 {
-    left: 10px;
-  }
-
-  .image-2 {
-    top: 140px;
-    right: 10px;
-  }
-
-  .text-content p {
+  .bio-paragraph {
     font-size: 1rem;
     line-height: 1.8;
+  }
+
+  .team-section {
+    padding: 4rem 0 6rem 0;
+  }
+
+  .team-header {
+    margin-bottom: 3rem;
+  }
+
+  .team-grid {
+    gap: 1.5rem;
+  }
+
+  .card-image-wrapper {
+    height: 300px;
   }
 }
 
 @media screen and (max-width: 480px) {
   .container {
-    padding: 0 1rem;
+    padding: 0 1.25rem;
   }
 
   .hero-section {
-    margin-bottom: 2rem;
-    min-height: 250px;
+    min-height: 400px;
   }
 
-  .hero-title {
-    font-size: 2.5rem;
+  .scroll-indicator {
+    display: none;
   }
 
   .about-section {
-    padding: 2rem 0 3rem 0;
+    padding: 4rem 0;
   }
 
-  .about-content-grid {
-    gap: 2rem;
+  .pastor-image-wrapper {
+    max-width: 100%;
   }
 
-  .pastors-images {
-    max-width: 350px;
+  .image-decoration {
+    top: -10px;
+    left: -10px;
   }
 
-  .images-wrapper {
-    height: 400px;
+  .pastor-image-container img {
+    height: 450px;
   }
 
-  .image-1,
-  .image-2 {
-    width: 200px;
-    height: 280px;
+  .bio-paragraph:first-of-type::first-letter {
+    font-size: 2.5rem;
   }
 
-  .image-1 {
-    left: 0;
-    top: 20px;
+  .team-grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
   }
 
-  .image-2 {
-    top: 150px;
-    right: 0;
-  }
-
-  .text-content p {
-    font-size: 0.95rem;
-    line-height: 1.7;
+  .card-content {
+    padding: 1.5rem 1rem;
   }
 }
 </style>

@@ -6,13 +6,13 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faBars, faTimes, faArrowRight, faChevronRight, faChevronLeft, faExternalLink, faXmark, faCode, faArrowLeft, faHandshake, 
     faBold, faItalic, faUnderline, faStrikethrough, faListOl, faListUl, faAlignCenter, faAlignJustify, faAlignLeft, faAlignRight, faHighlighter,
     faFillDrip, faEye, faLanguage, faMobile, faTerminal, faRobot, faLaptopCode, faCaretDown, faPlay, faBible, faHeart, faClipboardList, 
-    faShareNodes, faGlobe, faChevronDown, faAngleLeft, faAngleRight, faCalendar, faLocationDot} from '@fortawesome/free-solid-svg-icons';
+    faShareNodes, faGlobe, faChevronDown, faAngleLeft, faAngleRight, faCalendar, faLocationDot, faCopy, faPhone, faEnvelope} from '@fortawesome/free-solid-svg-icons';
 
 
 library.add(faBars, faTimes, faArrowRight, faChevronLeft, faChevronRight, faExternalLink, faXmark, faCode, faArrowLeft, faHandshake, 
     faBold, faItalic, faUnderline, faStrikethrough, faListOl, faListUl, faAlignCenter, faMobile, faTerminal, faRobot, faLaptopCode, 
     faAlignJustify, faAlignLeft, faAlignRight, faFillDrip, faHighlighter, faEye, faLanguage, faCaretDown, faPlay, faBible, faHeart, faClipboardList, 
-    faShareNodes, faGlobe, faChevronDown, faAngleLeft, faAngleRight, faCalendar, faLocationDot);
+    faShareNodes, faGlobe, faChevronDown, faAngleLeft, faAngleRight, faCalendar, faLocationDot, faCopy, faPhone, faEnvelope);
 
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'

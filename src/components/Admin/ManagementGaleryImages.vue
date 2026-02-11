@@ -3,6 +3,8 @@ import { ref, computed, onMounted } from 'vue'
 import { getFirestore, collection, getDocs, doc, deleteDoc, updateDoc } from "firebase/firestore"
 import { getStorage, ref as storageRef, getDownloadURL, deleteObject } from "firebase/storage"
 import CustomSelect from '../Forms/CustomSelect.vue'
+import UploadImagesPanel from './UploadImagesPanel.vue'
+import Modal from '../Tools/Modal.vue'
 
 const db = getFirestore()
 const storage = getStorage()
@@ -314,6 +316,12 @@ const deleteImage = async (img) => {
   } 
 };
 
+const handleEditSuccess = async () => {
+  showEditModal.value = false;
+  editingImage.value = null;
+  await loadAllImages(); // Recarrega a galeria
+};
+
 const showToast = (message, type = 'success') => {
   toast.value = {
     show: true,
@@ -333,76 +341,35 @@ onMounted(async () => {
 </script>
 
 <template>
-    <div class="modal" v-if="showEditModal">
+    <!-- <div class="modal" v-if="showEditModal">
         <div class="modal-content edit-modal">
             <div class="header-modal">
-            <h3>Editar Informações</h3>
-            <button class="modal-close" @click="showEditModal = false">✖</button>
+              <h3>Editar Informações</h3>
+              <button class="modal-close" @click="showEditModal = false">✖</button>
             </div>
-
-            <div class="edit-grid" v-if="editingImage">
-            <div class="config-preview">
-                <img :src="editingImage.preview" :alt="editingImage.name">
-                <p class="filename">{{ editingImage.name }}</p>
+            <div class="modal-container">
+              <UploadImagesPanel 
+                :edit-data="editingImage" 
+                @close="showEditModal = false"
+                @success="handleEditSuccess"
+              />
             </div>
-
-            <div class="config-form-modal">
-                <div class="form-group">
-                <label>Descrição (Alt)</label>
-                <input type="text" v-model="editingImage.description" placeholder="Descrição da imagem">
-                </div>
-
-                <div class="form-group">
-                <label>Página</label>
-                <select v-model="editingImage.page" @change="updateEditLocations(editingImage)">
-                    <option v-for="option in pageOptions" :key="option.value" :value="option.value">
-                    {{ option.label }}
-                    </option>
-                </select>
-                </div>
-
-                <div class="form-group">
-                <label>Localização</label>
-                <select v-model="editingImage.location">
-                    <option value="" disabled>Selecione a localização</option>
-                    <option v-for="loc in editingImage.availableLocations" :key="loc" :value="loc">
-                    {{ loc }}
-                    </option>
-                </select>
-                </div>
-
-                <div class="form-group">
-                <label>Dispositivos</label>
-                <div class="device-toggle">
-                    <label :class="['device-option', { selected: editingImage.desktop }]">
-                    <input type="checkbox" v-model="editingImage.desktop"> 🖥️ Desktop
-                    </label>
-                    <label :class="['device-option', { selected: editingImage.mobile }]">
-                    <input type="checkbox" v-model="editingImage.mobile"> 📱 Mobile
-                    </label>
-                </div>
-                </div>
-
-                <div class="form-group">
-                <label>Data de Expiração</label>
-                <input type="date" v-model="editingImage.expirationDate" :min="minDate">
-                </div>
-            </div>
-            </div>
-
-            <div class="modal-actions">
-            <button class="btn-cancel" @click="showEditModal = false">Cancelar</button>
-            <button class="btn-save" @click="saveUpdate" :disabled="isSaving">
-                {{ isSaving ? 'Salvando...' : 'Salvar Alterações' }}
-            </button>
-            </div>
+            
         </div>
-    </div>
+    </div> -->
+    <Modal v-model="showEditModal" title="Editar Imagem">
+      <UploadImagesPanel 
+        :edit-data="editingImage" 
+        @close="showEditModal = false"
+        @success="handleEditSuccess"
+      />
+    </Modal>
+
     <div class="tab-content active">
         <div class="gallery-filters">
             <div class="filter-group">
-            <label>Página</label>
-            <CustomSelect v-model="filters.page" :options="pageOptions" />
+              <label>Página</label>
+              <CustomSelect v-model="filters.page" :options="pageOptions" />
             </div>
 
             <div class="filter-group">
@@ -437,6 +404,9 @@ onMounted(async () => {
                 </div>
                 <div class="gallery-details">
                     <strong>Página:</strong> {{ capitalizeFirst(img.page) }}
+                </div>
+                 <div class="gallery-details">
+                    <strong>Location:</strong> {{ capitalizeFirst(img.location) }}
                 </div>
                 <div v-if="img.expirationDate" class="gallery-details">
                     <strong>Expira em:</strong> {{ formatDate(img.expirationDate) }}
@@ -781,7 +751,7 @@ h1 {
   background: #0a0a0a;
   padding: 1rem;
   border-radius: 12px;
-  /* margin-bottom: 2rem; */
+  margin-bottom: 1rem;
   display: flex;
   gap: 1rem;
   flex-wrap: wrap;
@@ -989,11 +959,19 @@ h1 {
   padding: 2rem;
   border-radius: 8px;
   position: relative;
-  width: 80%;
-  max-width: 900px;
+  width: 90%;
+  max-width: 1200px;
   text-align: center;
   color: #fff;
   max-height: 95vh;
+}
+
+.modal-container {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: auto;
 }
 
 /* Botão fechar */
@@ -1170,7 +1148,7 @@ canvas:active {
 .btn-confirm-delete:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .edit-modal {
-  max-width: 800px;
+  max-width: 1200px;
   width: 90%;
 }
 

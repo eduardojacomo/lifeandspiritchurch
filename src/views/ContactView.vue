@@ -21,6 +21,17 @@ const isSubmitting = ref(false);
 const submitSuccess = ref(false);
 const submitError = ref(false);
 
+const headerContact = ref({
+  title: {
+    pt: 'Entre em Contato',
+    en: 'Get in Touch'
+  },
+  subtitle: {
+    pt: 'Estamos aqui para você',
+    en: 'We are here for you'
+  }
+});
+
 // Church info
 const churchInfo = {
   name: {
@@ -149,14 +160,18 @@ const copyToClipboard = (text) => {
       <div class="hero-content">
         <Transition name="fade-blur" mode="out-in">
           <h1 :key="currentLocaleKey" class="hero-title">
-            {{ locale === 'pt' ? 'Entre em Contato' : 'Get in Touch' }}
+            {{ headerContact.title?.[locale] }}
           </h1>
         </Transition>
         <Transition name="fade-blur" mode="out-in">
           <p :key="currentLocaleKey" class="hero-subtitle">
-            {{ locale === 'pt' ? 'Estamos aqui para você' : 'We are here for you' }}
+            {{ headerContact.subtitle?.[locale] }}
           </p>
         </Transition>
+
+      </div>
+      <div class="scroll-indicator">
+        <div class="scroll-line"></div>
       </div>
     </section>
 
@@ -206,7 +221,9 @@ const copyToClipboard = (text) => {
                       class="copy-btn"
                       :title="locale === 'pt' ? 'Copiar' : 'Copy'"
                     >
-                      <font-awesome-icon icon="fa-regular fa-copy" />
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-copy" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/>
+                      </svg>
                     </button>
                   </div>
                 </div>
@@ -226,7 +243,9 @@ const copyToClipboard = (text) => {
                       class="copy-btn"
                       :title="locale === 'pt' ? 'Copiar' : 'Copy'"
                     >
-                      <font-awesome-icon icon="fa-regular fa-copy" />
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-copy" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/>
+                      </svg>
                     </button>
                   </div>
                 </div>
@@ -234,7 +253,7 @@ const copyToClipboard = (text) => {
             </div>
 
             <!-- Social Links -->
-            <div class="social-card">
+            <!-- <div class="social-card">
               <h3>{{ locale === 'pt' ? 'Redes Sociais' : 'Social Media' }}</h3>
               <div class="social-links">
                 <a 
@@ -251,8 +270,8 @@ const copyToClipboard = (text) => {
                   <span>{{ social.name }}</span>
                 </a>
               </div>
-            </div>
-          </div>
+            </div>-->
+          </div> 
 
           <!-- Contact Form -->
           <div class="form-wrapper">

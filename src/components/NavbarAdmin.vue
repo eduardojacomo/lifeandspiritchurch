@@ -8,9 +8,6 @@ import {storeToRefs} from 'pinia';
 const uselanguage = useLanguage();
 const { locale, currentLocaleKey} = storeToRefs(uselanguage);
 
-// function setLanguage() {
-//   uselanguage.setLanguage();
-//  }
 const { t, locale: i18nLocale } = useI18n();
  
 
@@ -36,6 +33,10 @@ const menuItems = ref([
   {
     labelKey: '_navadm._events',
     route: '/admin/events'
+  },
+  {
+    labelKey: '_navadm._content',
+    route: '/admin/content'
   },
   {
     labelKey: '_navadm._users',

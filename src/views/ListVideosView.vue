@@ -45,6 +45,18 @@ const { videoviewStore } = storeToRefs(usevideowatch);
 const {setVideo} = usevideowatch;
 
 
+const headerContent = ref({
+  title: {
+    pt: 'Vídeos',
+    en: 'Videos'
+  },
+  subtitle: {
+    pt: 'Assista aos nossos vídeos mais recentes e populares.',
+    en: 'Watch our latest and most popular videos.'
+  }
+});
+
+
 async function fetchtypeVideos(){
   const typeSnapshot = await getDocs(collection(db, 'type_videos'));
   typeVideos.value = typeSnapshot.docs.map(doc => doc.data());
@@ -203,16 +215,20 @@ onBeforeUnmount(() => {
 <template>
   <div class="videos-page">
     <!-- Header Section -->
-    <section class="page-header">
-      <div class="container">
-        <div class="header-content">
-          <h1>{{ t('_titleListVideosYoutube') }}</h1>
-          <router-link class="btn-home" to="/">
-            <font-awesome-icon icon="fa-solid fa-home" />
-            Home
-          </router-link>
+     <section class="hero-section">
+        <div class="hero-overlay">
         </div>
-      </div>
+        <div class="hero-content">
+      <Transition name="fade-blur" mode="out-in">
+            <h1 :key="currentLocaleKey" class="hero-title">{{ headerContent.title?.[locale] }}</h1>
+          </Transition>
+           <Transition name="fade-blur" mode="out-in">
+            <p :key="currentLocaleKey" class="hero-subtitle">{{ headerContent.subtitle?.[locale] }}</p>
+          </Transition>
+        </div>
+        <div class="scroll-indicator">
+          <div class="scroll-line"></div>
+        </div>
     </section>
 
     <!-- Filters Section -->
@@ -362,7 +378,7 @@ onBeforeUnmount(() => {
 .videos-page {
   min-height: 100vh;
   background: var(--color-background);
-  padding-top: 80px;
+  /* padding-top: 80px; */
 }
 
 /* Container */

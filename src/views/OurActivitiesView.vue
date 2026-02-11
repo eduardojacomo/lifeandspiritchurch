@@ -1,25 +1,25 @@
 <script setup>
-import { ref, onMounted, computed, watch } from 'vue';
+import { onMounted, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import {storeToRefs} from 'pinia';
-import {useLanguage} from '../stores/languageStore'
-import { useCollection } from 'vuefire'
-import { collection, addDoc } from 'firebase/firestore'
-import { useFirestore } from 'vuefire'
-const db = useFirestore()
-
-const users = useCollection(collection(db, 'users'))
-const categories = useCollection(collection(db, 'activities'))
+import { storeToRefs } from 'pinia';
+import { useLanguage } from '../stores/languageStore';
+// Importação do repositório de atividades
+import { useActivityRepository } from '@/composables/useActivityRepository';
 
 const uselanguage = useLanguage();
-const { currentLocaleKey, locale} = storeToRefs(uselanguage);
-
+const { currentLocaleKey, locale } = storeToRefs(uselanguage);
 const { t } = useI18n();
+
+const { activities, fetchActivities, isLoading } = useActivityRepository();
 
 const Activities = {
     title: {
-        pt: "Sobre Nós",
-        en: "About Us"
+        pt: "Nossas Atividades",
+        en: "Our Activities"
+    },
+    subtitle: {
+        pt: "Participe de nossas celebrações e eventos especiais",
+        en: "Join our celebrations and special events"
     },
     content: {
         pt: "O Ministério Life & Spirit Church é uma congregação enraizada na Palavra de Deus e dedicada a alcançar vidas de todas as nações e raças. Fundado por Cristiano da Silva e Kauane Gomes da Mata, nosso ministério nasceu da direção divina em junho de 2019 para seguir a única doutrina: a Bíblia, totalmente inspirada por Deus.\n\nSomos uma família vibrante de crentes que vivenciam profundamente o amor e a presença de Deus, unindo-se a Jesus para expressar a alegria e o poder do Seu reino em todas as áreas da vida. Nosso centro de operações está sediado em Claremorris, Co Mayo, Irlanda, e em novembro de 2019 fomos oficialmente registrados como Igreja Cristã na Irlanda, expandindo nosso alcance e conexão com outras igrejas globalmente. Convidamos você a se juntar a nós nesta jornada para que todos possam conhecer verdadeiramente a Deus e Pai.",
@@ -27,60 +27,61 @@ const Activities = {
     }
 };
 
-const activities = ref([
-  {
-    title: { pt: 'Encontro de oração - Mulheres', en: 'Women\'s Prayer Meeting' },
-    day: { pt: 'Quinta-Feira - 7:30 PM', en: 'Thursday - 7:30 PM' },
-    description: {
-      pt: 'Encontro de oração dedicado às mulheres, onde buscamos a presença de Deus em unidade.',
-      en: 'Prayer meeting dedicated to women, where we seek God\'s presence in unity.'
-    },
-    img: '/src/assets/woman.jpg'
-  },
-  {
-    title: { pt: 'Culto Oficial de Sábado', en: 'Official Saturday Service' },
-    day: { pt: 'Sábado - 7:00 PM', en: 'Saturday - 7:00 PM' },
-    description: {
-      pt: 'Nosso culto principal de louvor e adoração, celebrando a fé e a palavra.',
-      en: 'Our main service of praise and worship, celebrating faith and the word.'
-    },
-    img: '/src/assets/DSC00267.jpeg'
-  },
-  {
-    title: { pt: 'Encontro de Jovens', en: 'Youth Gathering' },
-    day: { pt: 'Domingo - 6:30 PM', en: 'Sunday - 6:30 PM' },
-    description: {
-      pt: 'Momento de comunhão e estudo da palavra para a juventude, com louvor e atividades.',
-      en: 'Time of fellowship and word study for youth, with praise and activities.'
-    },
-    img: '/src/assets/kids.jpg'
-  },
-  {
-    title: { pt: 'Culto de Oração e Estudo Bíblico', en: 'Prayer and Bible Study Service' },
-    day: { pt: 'Terça-Feira - 7:00 PM', en: 'Tuesday - 7:00 PM' },
-    description: {
-      pt: 'Um tempo para aprofundar na oração e no conhecimento das escrituras sagradas.',
-      en: 'A time to deepen in prayer and knowledge of the sacred scriptures.'
-    },
-    img: '/src/assets/prayer.jpg'
-  },
-  {
-    title: { pt: 'Encontro Teen', en: 'Teen Gathering' },
-    day: { pt: 'Sexta-Feira - 6:30 PM', en: 'Friday - 6:30 PM' },
-    description: {
-      pt: 'Encontro especial para adolescentes, com dinâmicas, louvor e reflexão.',
-      en: 'Special gathering for teenagers, with dynamics, worship, and reflection.'
-    },
-    img: '/src/assets/teen_gathering.jpg'
-  }
-]);
+// const activities = ref([
+//   {
+//     title: { pt: 'Encontro de oração - Mulheres', en: 'Women\'s Prayer Meeting' },
+//     day: { pt: 'Quinta-Feira - 7:30 PM', en: 'Thursday - 7:30 PM' },
+//     description: {
+//       pt: 'Encontro de oração dedicado às mulheres, onde buscamos a presença de Deus em unidade.',
+//       en: 'Prayer meeting dedicated to women, where we seek God\'s presence in unity.'
+//     },
+//     img: '/src/assets/woman.jpg'
+//   },
+//   {
+//     title: { pt: 'Culto Oficial de Sábado', en: 'Official Saturday Service' },
+//     day: { pt: 'Sábado - 7:00 PM', en: 'Saturday - 7:00 PM' },
+//     description: {
+//       pt: 'Nosso culto principal de louvor e adoração, celebrando a fé e a palavra.',
+//       en: 'Our main service of praise and worship, celebrating faith and the word.'
+//     },
+//     img: '/src/assets/DSC00267.jpeg'
+//   },
+//   {
+//     title: { pt: 'Encontro de Jovens', en: 'Youth Gathering' },
+//     day: { pt: 'Domingo - 6:30 PM', en: 'Sunday - 6:30 PM' },
+//     description: {
+//       pt: 'Momento de comunhão e estudo da palavra para a juventude, com louvor e atividades.',
+//       en: 'Time of fellowship and word study for youth, with praise and activities.'
+//     },
+//     img: '/src/assets/kids.jpg'
+//   },
+//   {
+//     title: { pt: 'Culto de Oração e Estudo Bíblico', en: 'Prayer and Bible Study Service' },
+//     day: { pt: 'Terça-Feira - 7:00 PM', en: 'Tuesday - 7:00 PM' },
+//     description: {
+//       pt: 'Um tempo para aprofundar na oração e no conhecimento das escrituras sagradas.',
+//       en: 'A time to deepen in prayer and knowledge of the sacred scriptures.'
+//     },
+//     img: '/src/assets/prayer.jpg'
+//   },
+//   {
+//     title: { pt: 'Encontro Teen', en: 'Teen Gathering' },
+//     day: { pt: 'Sexta-Feira - 6:30 PM', en: 'Friday - 6:30 PM' },
+//     description: {
+//       pt: 'Encontro especial para adolescentes, com dinâmicas, louvor e reflexão.',
+//       en: 'Special gathering for teenagers, with dynamics, worship, and reflection.'
+//     },
+//     img: '/src/assets/teen_gathering.jpg'
+//   }
+// ]);
 
 watch(locale, () => {
   // Isso forçará a atualização do conteúdo quando o idioma mudar
 });
 
-onMounted(() => {
+onMounted(async () => {
   const sections = document.querySelectorAll('.animate');
+  await fetchActivities();
   // observeElements(sections);
 });
 </script>
@@ -94,6 +95,15 @@ onMounted(() => {
           <Transition name="fade-blur" mode="out-in">
             <h1 :key="currentLocaleKey" class="hero-title">{{ Activities.title?.[locale] }}</h1>
           </Transition>
+           <Transition name="fade-blur" mode="out-in">
+            <p :key="currentLocaleKey" class="hero-subtitle">{{ Activities.subtitle?.[locale] }}</p>
+          </Transition>
+          <div class="scroll-indicator">
+            <div class="scroll-line"></div>
+          </div>
+        </div>
+        <div class="scroll-indicator">
+          <div class="scroll-line"></div>
         </div>
       </section>
 
@@ -102,8 +112,8 @@ onMounted(() => {
         <div class="container">
           <div class="about-text-wrapper">
             <Transition name="fade-blur" mode="out-in">
-              <div :key="currentLocaleKey" class="about-text">
-                <p v-for="(paragraph, index) in Activities.content?.[locale].split('\n\n')" :key="index">
+              <div :key="currentLocaleKey" class="text-bio">
+                <p v-for="(paragraph, index) in Activities.content?.[locale].split('\n\n')" :key="index" class="bio-paragraph">
                   {{ paragraph }}
                 </p>
               </div>
@@ -119,16 +129,19 @@ onMounted(() => {
             <h2>{{ locale === 'pt' ? 'Nossas Celebrações' : 'Our Celebrations' }}</h2>
             <div class="divider"></div>
           </div>
+          <div v-if="isLoading" class="loading-state">
+             <p>Carregando atividades...</p>
+          </div>
 
-          <div class="activities-grid">
+          <div v-else class="activities-grid">
             <div 
               v-for="(activity, index) in activities" 
-              :key="index" 
+              :key="activity.id"
               class="activity-card"
               :class="{ 'reverse': index % 2 !== 0 }"
             >
               <div class="activity-image">
-                <img :src="activity.img" :alt="activity.title?.[locale]" />
+                <img :src="activity.url" :alt="activity.title?.[locale]" />
                 <div class="image-overlay"></div>
               </div>
               
@@ -196,12 +209,12 @@ onMounted(() => {
   margin-bottom: 1rem;
 }
 
-.divider {
+/* .divider {
   width: 80px;
   height: 4px;
   background: var(--color-heading);
   margin: 0 auto;
-}
+} */
 
 .activities-grid {
   display: flex;
@@ -242,7 +255,7 @@ onMounted(() => {
 .activity-image {
   width: 100%;
   height: 100%;
-  min-height: 350px;
+  height: 350px;
   position: relative;
   overflow: hidden;
 }
