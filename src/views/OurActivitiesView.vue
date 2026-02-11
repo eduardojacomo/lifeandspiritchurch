@@ -102,9 +102,6 @@ onMounted(async () => {
             <div class="scroll-line"></div>
           </div>
         </div>
-        <div class="scroll-indicator">
-          <div class="scroll-line"></div>
-        </div>
       </section>
 
       <!-- About Content -->

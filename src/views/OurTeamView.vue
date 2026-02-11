@@ -372,10 +372,10 @@ const teamList = computed(() => {
 
 /* ========== RESPONSIVE ========== */
 @media screen and (max-width: 1024px) {
-  .hero-section {
+  /* .hero-section {
     height: 70vh;
     min-height: 500px;
-  }
+  } */
 
   .about-content-grid {
     grid-template-columns: 1fr;
@@ -398,9 +398,9 @@ const teamList = computed(() => {
 }
 
 @media screen and (max-width: 768px) {
-  .hero-section {
+  /* .hero-section {
     min-height: 450px;
-  }
+  } */
 
   .hero-badge {
     font-size: 0.75rem;
@@ -446,9 +446,9 @@ const teamList = computed(() => {
     padding: 0 1.25rem;
   }
 
-  .hero-section {
+  /* .hero-section {
     min-height: 400px;
-  }
+  } */
 
   .scroll-indicator {
     display: none;
