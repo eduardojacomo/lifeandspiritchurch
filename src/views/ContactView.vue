@@ -99,30 +99,79 @@ const isFormValid = computed(() => {
 });
 
 // Submit form
-const submitForm = async () => {
-  if (!isFormValid.value) return;
+// const submitForm = async () => {
+//   if (!isFormValid.value) return;
 
-  isSubmitting.value = true;
-  submitError.value = false;
+//   isSubmitting.value = true;
+//   submitError.value = false;
+
+//   try {
+//     // Aqui você implementaria o envio real do email
+//     // Exemplo com uma API:
+//     /*
+//     const response = await fetch('/api/contact', {
+//       method: 'POST',
+//       headers: { 'Content-Type': 'application/json' },
+//       body: JSON.stringify(form.value)
+//     });
+//     */
+
+//     // Simulação de envio (remova isso em produção)
+//     await new Promise(resolve => setTimeout(resolve, 2000));
+
+//     console.log('Form data:', form.value);
+
+//     // Sucesso
+//     submitSuccess.value = true;
+    
+//     // Limpa o formulário
+//     form.value = {
+//       name: '',
+//       email: '',
+//       phone: '',
+//       subject: '',
+//       message: ''
+//     };
+
+//     // Remove mensagem de sucesso após 5 segundos
+//     setTimeout(() => {
+//       submitSuccess.value = false;
+//     }, 5000);
+
+//   } catch (error) {
+//     console.error('Error submitting form:', error);
+//     submitError.value = true;
+//   } finally {
+//     isSubmitting.value = false;
+//   }
+// };
+
+
+const submitForm = async () => {
+  if (!isFormValid.value) return
+
+  isSubmitting.value = true
+  submitError.value = false
 
   try {
-    // Aqui você implementaria o envio real do email
-    // Exemplo com uma API:
-    /*
-    const response = await fetch('/api/contact', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(form.value)
-    });
-    */
+    // Envio real com EmailJS
+    await emailjs.send(
+      'seu_service_id',   // ID do serviço configurado no EmailJS
+      'seu_template_id',  // ID do template criado no EmailJS
+      {
+        from_name: form.value.name,
+        from_email: form.value.email,
+        phone: form.value.phone,
+        subject: form.value.subject,
+        message: form.value.message,
+      },
+      'seu_user_id'       // Public key do EmailJS
+    )
 
-    // Simulação de envio (remova isso em produção)
-    await new Promise(resolve => setTimeout(resolve, 2000));
-
-    console.log('Form data:', form.value);
+    console.log('Form data:', form.value)
 
     // Sucesso
-    submitSuccess.value = true;
+    submitSuccess.value = true
     
     // Limpa o formulário
     form.value = {
@@ -131,20 +180,19 @@ const submitForm = async () => {
       phone: '',
       subject: '',
       message: ''
-    };
+    }
 
-    // Remove mensagem de sucesso após 5 segundos
     setTimeout(() => {
-      submitSuccess.value = false;
-    }, 5000);
+      submitSuccess.value = false
+    }, 5000)
 
   } catch (error) {
-    console.error('Error submitting form:', error);
-    submitError.value = true;
+    console.error('Error submitting form:', error)
+    submitError.value = true
   } finally {
-    isSubmitting.value = false;
+    isSubmitting.value = false
   }
-};
+}
 
 // Copy to clipboard
 const copyToClipboard = (text) => {
@@ -252,25 +300,6 @@ const copyToClipboard = (text) => {
               </div>
             </div>
 
-            <!-- Social Links -->
-            <!-- <div class="social-card">
-              <h3>{{ locale === 'pt' ? 'Redes Sociais' : 'Social Media' }}</h3>
-              <div class="social-links">
-                <a 
-                  v-for="social in socialLinks" 
-                  :key="social.name"
-                  :href="social.url"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="social-link"
-                  :style="{ '--hover-color': social.color }"
-                  :title="social.name"
-                >
-                  <font-awesome-icon :icon="social.icon" />
-                  <span>{{ social.name }}</span>
-                </a>
-              </div>
-            </div>-->
           </div> 
 
           <!-- Contact Form -->
