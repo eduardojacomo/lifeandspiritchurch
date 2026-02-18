@@ -3,6 +3,8 @@ import { ref, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { storeToRefs } from 'pinia';
 import { useLanguage } from '../stores/languageStore';
+import emailjs from '@emailjs/browser'
+
 
 const uselanguage = useLanguage();
 const { currentLocaleKey, locale } = storeToRefs(uselanguage);
@@ -98,66 +100,17 @@ const isFormValid = computed(() => {
   );
 });
 
-// Submit form
-// const submitForm = async () => {
-//   if (!isFormValid.value) return;
-
-//   isSubmitting.value = true;
-//   submitError.value = false;
-
-//   try {
-//     // Aqui você implementaria o envio real do email
-//     // Exemplo com uma API:
-//     /*
-//     const response = await fetch('/api/contact', {
-//       method: 'POST',
-//       headers: { 'Content-Type': 'application/json' },
-//       body: JSON.stringify(form.value)
-//     });
-//     */
-
-//     // Simulação de envio (remova isso em produção)
-//     await new Promise(resolve => setTimeout(resolve, 2000));
-
-//     console.log('Form data:', form.value);
-
-//     // Sucesso
-//     submitSuccess.value = true;
-    
-//     // Limpa o formulário
-//     form.value = {
-//       name: '',
-//       email: '',
-//       phone: '',
-//       subject: '',
-//       message: ''
-//     };
-
-//     // Remove mensagem de sucesso após 5 segundos
-//     setTimeout(() => {
-//       submitSuccess.value = false;
-//     }, 5000);
-
-//   } catch (error) {
-//     console.error('Error submitting form:', error);
-//     submitError.value = true;
-//   } finally {
-//     isSubmitting.value = false;
-//   }
-// };
-
-
-const submitForm = async () => {
+async function submitForm() {
   if (!isFormValid.value) return
 
   isSubmitting.value = true
   submitError.value = false
-
+  console.log('Submitting form with data:', form.value)
   try {
     // Envio real com EmailJS
     await emailjs.send(
-      'seu_service_id',   // ID do serviço configurado no EmailJS
-      'seu_template_id',  // ID do template criado no EmailJS
+      'service_48g9ly9',   // ID do serviço configurado no EmailJS
+      'template_lt44z38',  // ID do template criado no EmailJS
       {
         from_name: form.value.name,
         from_email: form.value.email,
@@ -165,7 +118,7 @@ const submitForm = async () => {
         subject: form.value.subject,
         message: form.value.message,
       },
-      'seu_user_id'       // Public key do EmailJS
+      'j48ZSEktLRwBDjNFs'       // Public key do EmailJS
     )
 
     console.log('Form data:', form.value)
@@ -187,7 +140,7 @@ const submitForm = async () => {
     }, 5000)
 
   } catch (error) {
-    console.error('Error submitting form:', error)
+    console.log('Error submitting form:', error)
     submitError.value = true
   } finally {
     isSubmitting.value = false
