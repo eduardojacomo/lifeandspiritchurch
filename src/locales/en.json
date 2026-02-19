@@ -41,7 +41,7 @@
         "_videoRecent":{
         "_title":"Recently added"
     },
-      "_footer_navigation": "Navigation",
+    "_footer_navigation": "Navigation",
     "_footer_schedule": "Schedule",
     "_footer_contact": "Contact",
     "_btnSearch": "Search",
@@ -75,5 +75,19 @@
     "_event3": "Teen Gathering",
     "_event4": "Official Saturday Service",
     "_event5": "Youth Meeting",
-    "_searchVideosPlaceholder": "Search by title"
+    "_searchVideosPlaceholder": "Search by title",
+    "_footer":{
+      "_sceadle1":{
+        "_day": "Tuesday",
+        "_hour": "07:30 PM"
+      },
+      "_sceadle2":{
+        "_day": "Friday",
+        "_hour": "06:30 PM"
+      },
+      "_sceadle3":{
+        "_day": "Saturday",
+        "_hour": "07:00 PM"
+      }
+    }
   }

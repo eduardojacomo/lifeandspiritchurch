@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, Transition } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useLanguage } from '../stores/languageStore';
 import { storeToRefs } from 'pinia';
@@ -62,38 +62,45 @@ const butons = {
         <div class="schedule-card">
           <!-- Left Side - Service Info -->
           <div class="service-info">
-            <div class="service-badge">
+            <Transition name="fade-blur" mode="out-in">
+            <div class="service-badge" :key="currentLocaleKey">
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
                 <path d="M11 6.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5z"/>
                 <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5M1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4z"/>
               </svg>
-              {{ serviceTitle?.service[locale] }}
-            </div>
-
-            <h2 class="service-title">
-              {{ serviceTitle?.service[locale] }}
-            </h2>
+                {{ serviceTitle?.service[locale] }}
+              </div>
+            </Transition>
+            
+            <transition name="fade-blur" mode="out-in">
+              <h2 class="service-title" :key="currentLocaleKey">
+                {{ serviceTitle?.service[locale] }}
+              </h2>
+            </transition>
             
             <div class="service-details">
-              <div class="detail-item">
+              <Transition name="fade-blur" mode="out-in">
+              <div class="detail-item" :key="currentLocaleKey">
                 <div class="detail-icon">
                   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
                     <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5M2 2a1 1 0 0 0-1 1v1h14V3a1 1 0 0 0-1-1zm13 3H1v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1z"/>
                     <path d="M11 7.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5z"/>
                   </svg>
                 </div>
-                <span class="detail-text">{{ serviceTitle?.day[locale] }}</span>
-              </div>
-              
-              <div class="detail-item">
+                  <span class="detail-text">{{ serviceTitle?.day[locale] }}</span>
+                </div>
+              </Transition>
+              <transition name="fade-blur" mode="out-in">
+              <div class="detail-item" :key="currentLocaleKey">
                 <div class="detail-icon">
                   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
                     <path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71z"/>
                     <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0"/>
                   </svg>
                 </div>
-                <span class="detail-text">{{ serviceTitle?.hour[locale] }}</span>
+                    <span class="detail-text" >{{ serviceTitle?.hour[locale] }}</span>
               </div>
+              </Transition>
             </div>
           </div>
 
@@ -102,23 +109,28 @@ const butons = {
 
           <!-- Right Side - Action Buttons -->
           <div class="service-actions">
-            <a 
-              href="https://maps.google.com/?q=Life+and+Spirit+Church" 
-              target="_blank"
-              class="action-link"
-            >
-              <div class="action-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
-                  <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6"/>
-                </svg>
-              </div>
-              <span>{{ butons.inPerson[locale] }}</span>
-            </a>
+            <Transition name="fade-blur" mode="out-in">
+              <a 
+                href="https://maps.google.com/?q=Life+and+Spirit+Church" 
+                target="_blank"
+                class="action-link"
+                :key="currentLocaleKey"
+              >
+                <div class="action-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6"/>
+                  </svg>
+                </div>
+                <span>{{ butons.inPerson[locale] }}</span>
+              </a>
+            </Transition>
 
+            <transition name="fade-blur" mode="out-in">
             <a 
               href="https://youtube.com/@lifespiritchurch" 
               target="_blank"
               class="action-link"
+              :key="currentLocaleKey"
             >
               <div class="action-icon">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
@@ -127,19 +139,22 @@ const butons = {
               </div>
               <span>{{ butons.online[locale] }}</span>
             </a>
-
-            <router-link 
-              to="/events " 
-              class="action-link"
-            >
-              <div class="action-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
-                  <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5M2 2a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1z"/>
-                  <path d="M2.5 4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5H3a.5.5 0 0 1-.5-.5zM11 7.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm-3 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm-5 3a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5z"/>
-                </svg>
-              </div>
-              <span>{{ butons.otherTimes[locale] }}</span>
-            </router-link>
+            </transition> 
+            <transition name="fade-blur" mode="out-in">
+              <router-link 
+                to="/events " 
+                class="action-link"
+                :key="currentLocaleKey"
+              >
+                <div class="action-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5M2 2a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1z"/>
+                    <path d="M2.5 4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5H3a.5.5 0 0 1-.5-.5zM11 7.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm-3 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm-5 3a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5z"/>
+                  </svg>
+                </div>
+                <span>{{ butons.otherTimes[locale] }}</span>
+              </router-link>
+            </transition>
           </div>
         </div>
       </div>
@@ -186,7 +201,7 @@ main {
 
 .scrolling-text-content {
   display: flex;
-  whitespace: nowrap;
+  white-space: nowrap;
 }
 
 .scrolling-text span {

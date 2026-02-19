@@ -75,5 +75,19 @@
     "_event3": "Encontro Teen",
     "_event4": "Culto Oficial de Sábado",
     "_event5": "Encontro de Jovens",
-    "_searchVideosPlaceholder": "Buscar por título"
+    "_searchVideosPlaceholder": "Buscar por título",
+    "_footer":{
+      "_sceadle1":{
+        "_day": "Terça-Feira",
+        "_hour": "19:30"
+      },
+      "_sceadle2":{
+        "_day": "Sexta-Feira",
+        "_hour": "18:30"
+      },
+      "_sceadle3":{
+        "_day": "Sábado",
+        "_hour": "19:00"
+      }
+    }
   }

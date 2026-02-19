@@ -113,17 +113,6 @@ onMounted(() => {
   margin-bottom: 4rem;
 }
 
-.animate {
-  opacity: 0;
-  transform: translateY(30px);
-  transition: all 0.8s ease-out;
-}
-
-.in-view {
-  opacity: 1;
-  transform: translateY(0);
-}
-
 /* .divider {
   width: 80px;
   height: 4px;

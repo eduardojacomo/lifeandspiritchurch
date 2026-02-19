@@ -53,16 +53,16 @@
             <h3 class="footer-title">{{ t('_footer_schedule') || 'Horários' }}</h3>
             <ul class="footer-info">
               <li>
-                <span class="info-label">{{ t('_footer._sunday') || 'Domingo' }}</span>
-                <span class="info-value">10:00 & 18:00</span>
+                <span class="info-label">{{ t('_footer._sceadle1._day') }}</span>
+                <span class="info-value">{{ t('_footer._sceadle1._hour') }}</span>
               </li>
               <li>
-                <span class="info-label">{{ t('_footer._wednesday') || 'Quarta-feira' }}</span>
-                <span class="info-value">19:30</span>
+                <span class="info-label">{{ t('_footer._sceadle2._day') }}</span>
+                <span class="info-value">{{ t('_footer._sceadle2._hour') }}</span>
               </li>
               <li>
-                <span class="info-label">{{ t('_footer._prayer') || 'Oração' }}</span>
-                <span class="info-value">{{ t('_footer._daily') || 'Diariamente' }}</span>
+                <span class="info-label">{{ t('_footer._sceadle3._day') }}</span>
+                <span class="info-value">{{ t('_footer._sceadle3._hour') }}</span>
               </li>
             </ul>
           </div>

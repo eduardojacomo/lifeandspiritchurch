@@ -89,16 +89,19 @@ onMounted(() => {
         <div v-if="videos.length">
           <!-- Main Featured Video -->
           <div class="featured-wrapper">
-            <div class="featured-video" @click="openVideoSelected(videos[0])">
-              <div class="featured-thumbnail">
-                <img :src="videos[0].thumbnails?.high" :alt="videos[0].title?.[locale]" />
-                <div class="video-overlay">
-                  <div class="play-icon">▶</div>
+            <transition name="fade-blur" mode="out-in">
+              <div class="featured-video" @click="openVideoSelected(videos[0])" :key="currentLocaleKey">
+                <div class="featured-thumbnail">
+                  <img :src="videos[0].thumbnails?.high" :alt="videos[0].title?.[locale]" />
+                  <div class="video-overlay">
+                    <div class="play-icon">▶</div>
+                  </div>
                 </div>
               </div>
-            </div>
+            </transition> 
 
-            <div class="featured-info">
+            <transition name="fade-blur" mode="out-in">
+             <div class="featured-info" :key="currentLocaleKey">
               <div class="video-meta">
                 <span class="video-tag">Palavras</span>
                 <span class="video-date">{{ formatDate(videos[0].publishedAt) }}</span>
@@ -112,44 +115,50 @@ onMounted(() => {
                 Assistir Agora
               </button>
             </div>
+            </transition>
           </div>
 
           <!-- Secondary Videos Grid -->
           <div class="secondary-section">
-            <h3 class="secondary-title">{{ t('_videoRecent._title') || 'Vídeos Recentes' }}</h3>
-            
-            <div class="secondary-grid">
-              <div 
-                v-for="video in videos.slice(1, 5)" 
-                :key="video.id"
-                class="video-card"
-                @click="openVideoSelected(video)"
-              >
-                <div class="card-thumbnail">
-                  <img :src="video.thumbnails?.medium" :alt="video.title?.[locale]" />
-                  <div class="video-overlay">
-                    <div class="play-icon-small">▶</div>
+            <transition name="fade-blur" mode="out-in">
+              <h3 class="secondary-title">{{ t('_videoRecent._title') || 'Vídeos Recentes' }}</h3>
+            </transition>
+            <transition name="fade-blur" mode="out-in">
+              <div class="secondary-grid" :key="currentLocaleKey">
+                <div 
+                  v-for="video in videos.slice(1, 5)" 
+                  :key="video.id"
+                  class="video-card"
+                  @click="openVideoSelected(video)"
+                >
+                  <div class="card-thumbnail">
+                    <img :src="video.thumbnails?.medium" :alt="video.title?.[locale]" />
+                    <div class="video-overlay">
+                      <div class="play-icon-small">▶</div>
+                    </div>
                   </div>
-                </div>
-                <div class="card-content">
-                  <div class="video-meta">
-                    <span class="video-tag-small">Palavras</span>
-                    <span class="video-date-small">{{ formatDate(video.publishedAt) }}</span>
+                  <div class="card-content">
+                    <div class="video-meta">
+                      <span class="video-tag-small">Palavras</span>
+                      <span class="video-date-small">{{ formatDate(video.publishedAt) }}</span>
+                    </div>
+                    <h4 class="card-title">{{ video.title?.[locale] }}</h4>
                   </div>
-                  <h4 class="card-title">{{ video.title?.[locale] }}</h4>
                 </div>
               </div>
-            </div>
+            </transition> 
           </div>
         </div>
 
         <!-- View All Button -->
-        <div class="view-all-wrapper animate">
-          <router-link to="/content" class="btn-view-all">
-            {{ t('_contentDescription') }}
-            <font-awesome-icon icon="fa-solid fa-arrow-right" />
-          </router-link>
-        </div>
+        <transition name="fade-blur" mode="out-in">
+          <div class="view-all-wrapper" :key="currentLocaleKey">
+            <router-link to="/content" class="btn-view-all">
+              {{ t('_contentDescription') }}
+              <font-awesome-icon icon="fa-solid fa-arrow-right" />
+            </router-link>
+          </div>
+        </transition>
       </div>
     </section>
   </main>

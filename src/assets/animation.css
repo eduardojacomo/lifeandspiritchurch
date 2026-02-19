@@ -64,6 +64,17 @@
   50% { opacity: 1; transform: translateY(10px); }
 }
 
+.animate {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s ease-out;
+}
+
+.in-view {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 
 /* Animation Classes */
 .fade-in {
@@ -96,3 +107,72 @@
 .stagger-3 { animation-delay: 0.3s; }
 .stagger-4 { animation-delay: 0.4s; }
 .stagger-5 { animation-delay: 0.5s; }
+
+
+.animate-on-scroll {
+  opacity: 0;
+  /* A transformação será definida pela classe específica */
+}
+
+/* Quando o elemento entra na view */
+.animate-on-scroll.in-view {
+  opacity: 1;
+}
+
+/* ========== COMBINAÇÕES DE CLASSES ========== */
+
+/* Fade In on Scroll */
+.animate-on-scroll.fade-in.in-view {
+  animation: fadeIn 0.6s ease-out forwards;
+}
+
+/* Slide Up on Scroll */
+.animate-on-scroll.slide-in-up.in-view {
+  animation: slideInUp 0.8s ease-out forwards;
+}
+
+/* Slide Down on Scroll */
+.animate-on-scroll.slide-in-down.in-view {
+  animation: slideInDown 0.8s ease-out forwards;
+}
+
+/* Slide Left on Scroll */
+.animate-on-scroll.slide-in-left.in-view {
+  animation: slideInLeft 0.8s ease-out forwards;
+}
+
+/* Slide Right on Scroll */
+.animate-on-scroll.slide-in-right.in-view {
+  animation: slideInRight 0.8s ease-out forwards;
+}
+
+/* Scale In on Scroll */
+.animate-on-scroll.scale-in.in-view {
+  animation: scaleIn 0.6s ease-out forwards;
+}
+
+/* ========== DELAYS (STAGGER) ========== */
+/* Esses já existem no seu CSS, mas vamos garantir que funcionem com scroll */
+
+.animate-on-scroll.stagger-1.in-view { animation-delay: 0.1s; }
+.animate-on-scroll.stagger-2.in-view { animation-delay: 0.2s; }
+.animate-on-scroll.stagger-3.in-view { animation-delay: 0.3s; }
+.animate-on-scroll.stagger-4.in-view { animation-delay: 0.4s; }
+.animate-on-scroll.stagger-5.in-view { animation-delay: 0.5s; }
+
+/* ========== OPCIONAL: DESABILITAR EM MOBILE ========== */
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-on-scroll {
+    opacity: 1 !important;
+    animation: none !important;
+  }
+}
+
+/* Performance em mobile */
+@media screen and (max-width: 768px) {
+  .animate-on-scroll.mobile-no-animate {
+    opacity: 1 !important;
+    animation: none !important;
+  }
+}
